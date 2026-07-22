@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Masar Petroleum | Language Selection" description="Choose English or Arabic for the Masar Petroleum website.">
+	<section class="gateway" aria-labelledby="gateway-title">
+		<div class="gateway-card">
+			<img src="/logo.png" alt="Masar Petroleum logo" class="logo" />
+			<p class="eyebrow">Masar Petroleum</p>
+			<h1 id="gateway-title">Choose your language</h1>
+			<p class="lead">Select the site version you want to browse. English and Arabic are now available on separate routes.</p>
+			<div class="actions">
+				<a href="/en/">English</a>
+				<a href="/ar/">العربية</a>
+			</div>
+		</div>
+	</section>
+
+	<script is:inline>
+		const browserLang = navigator.language.toLowerCase();
+		const target = browserLang.startsWith('ar') ? '/ar/' : '/en/';
+		window.location.replace(target);
+	</script>
+</Layout>
+
+<style>
+	:global(body) {
+		margin: 0;
+		min-height: 100vh;
+		background:
+			radial-gradient(circle at top left, rgba(183, 53, 44, 0.25), transparent 30%),
+			radial-gradient(circle at bottom right, rgba(25, 34, 96, 0.24), transparent 30%),
+			linear-gradient(180deg, #f7f2ea 0%, #efe6d9 100%);
+	}
+
+	.gateway {
+		min-height: 100vh;
+		display: grid;
+		place-items: center;
+		padding: 24px;
+	}
+
+	.gateway-card {
+		width: min(100%, 560px);
+		padding: 40px;
+		border-radius: 32px;
+		background: rgba(255, 251, 246, 0.78);
+		border: 1px solid rgba(29, 33, 48, 0.08);
+		backdrop-filter: blur(16px);
+		box-shadow: 0 30px 90px rgba(37, 32, 57, 0.12);
+		text-align: center;
+	}
+
+	.logo {
+		width: 180px;
+		height: auto;
+		margin-bottom: 18px;
+	}
+
+	.eyebrow {
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		font-size: 0.78rem;
+		font-weight: 800;
+		color: #c44136;
+		margin: 0 0 18px;
+	}
+
+	h1 {
+		font-size: clamp(2.4rem, 6vw, 4rem);
+		line-height: 1;
+		letter-spacing: -0.05em;
+		margin: 0 0 16px;
+		color: #1d2130;
+	}
+
+	.lead {
+		font-size: 1.02rem;
+		line-height: 1.85;
+		color: rgba(29, 33, 48, 0.76);
+		margin: 0;
+	}
+
+	.actions {
+		display: flex;
+		gap: 14px;
+		margin-top: 28px;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.actions a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 14px 20px;
+		border-radius: 999px;
+		text-decoration: none;
+		font-weight: 700;
+		min-width: 180px;
+		background: #1f2a74;
+		color: #fff;
+		box-shadow: 0 18px 36px rgba(31, 42, 116, 0.2);
+	}
+
+	@media (max-width: 780px) {
+		.gateway-card {
+			padding: 28px;
+		}
+
+		.actions {
+			flex-direction: column;
+		}
+
+		.actions a {
+			width: 100%;
+		}
+	}
+</style>

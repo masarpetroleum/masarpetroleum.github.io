@@ -1,0 +1,41 @@
+---
+import type { SiteContent } from '../data/siteContent';
+import HeaderControls from './HeaderControls';
+
+interface Props {
+	content: SiteContent;
+	currentPath: string;
+}
+
+const { content, currentPath } = Astro.props;
+
+const homeHref = `/${content.lang}/`;
+
+const isActive = (href: string) => {
+	if (href === currentPath) return true;
+	return href !== homeHref && currentPath.startsWith(href);
+};
+---
+
+<header class="absolute inset-x-0 top-0 z-40 mx-auto mt-4 flex w-[calc(100%-1.5rem)] max-w-[1320px] flex-wrap items-center justify-between gap-4 rounded-[1.1rem] bg-white/85 px-4 py-3 shadow-[0_18px_48px_rgba(15,23,42,0.22)] backdrop-blur-xl dark:bg-slate-950/75 sm:w-[calc(100%-2.5rem)] sm:px-5 lg:flex-nowrap lg:gap-6">
+	<a href={homeHref} class="shrink-0">
+		<img src="/logo-dark.png" alt="Masar Petroleum logo" class="block h-16 w-auto sm:h-[4.5rem] dark:hidden" />
+		<img src="/logo-light.png" alt="Masar Petroleum logo" class="hidden h-16 w-auto sm:h-[4.5rem] dark:block" />
+	</a>
+
+	<nav class="order-3 flex basis-full flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-700 dark:text-white/88 lg:order-2 lg:basis-auto lg:text-[0.92rem]">
+		{content.nav.map((item) => (
+			<a
+				href={item.href}
+				aria-current={isActive(item.href) ? 'page' : undefined}
+				class={`rounded-lg px-3 py-2 transition hover:bg-slate-900/5 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white ${isActive(item.href) ? 'bg-slate-900/8 text-slate-950 dark:bg-white/10 dark:text-white' : ''}`}
+			>
+				{item.label}
+			</a>
+		))}
+	</nav>
+
+	<div class="order-2 lg:order-3">
+		<HeaderControls client:load lang={content.lang} dir={content.dir} />
+	</div>
+</header>

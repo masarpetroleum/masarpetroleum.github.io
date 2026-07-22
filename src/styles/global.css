@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
+@import 'overlayscrollbars/overlayscrollbars.css';
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--font-sans: 'Plus Jakarta Sans', 'Noto Sans Arabic', sans-serif;
+	--color-masar-sand: #f7f1e9;
+	--color-masar-ink: #121826;
+	--color-masar-copper: #c4543c;
+	--color-masar-night: #0f172a;
+	--color-masar-sky: #23427f;
+}
+
+@layer base {
+	:root {
+		color-scheme: light;
+	}
+
+	html {
+		scroll-behavior: smooth;
+		overflow-x: clip;
+	}
+
+	body {
+		min-height: 100vh;
+		overflow-x: clip;
+		font-family: var(--font-sans);
+		background: #ffffff;
+		color: #121826;
+	}
+
+	body.dark {
+		background:
+			radial-gradient(circle at top left, rgba(196, 84, 60, 0.14), transparent 26%),
+			radial-gradient(circle at top right, rgba(51, 99, 179, 0.2), transparent 24%),
+			linear-gradient(180deg, #0b1120 0%, #121a2a 100%);
+		color: #f8fafc;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	img {
+		display: block;
+		max-width: 100%;
+	}
+
+	body::selection {
+		background: rgba(196, 84, 60, 0.24);
+	}
+}
+
+.os-theme-masar {
+	--os-size: 12px;
+	--os-padding-perpendicular: 3px;
+	--os-padding-axis: 6px;
+	--os-track-border-radius: 999px;
+	--os-track-bg: transparent;
+	--os-track-bg-hover: rgba(18, 24, 38, 0.06);
+	--os-track-bg-active: rgba(18, 24, 38, 0.08);
+	--os-handle-border-radius: 999px;
+	--os-handle-bg: linear-gradient(180deg, rgba(35, 66, 127, 0.55), rgba(196, 84, 60, 0.55));
+	--os-handle-bg-hover: linear-gradient(180deg, rgba(35, 66, 127, 0.75), rgba(196, 84, 60, 0.75));
+	--os-handle-bg-active: linear-gradient(180deg, rgba(35, 66, 127, 0.9), rgba(196, 84, 60, 0.9));
+	--os-handle-min-size: 44px;
+	--os-handle-perpendicular-size: 100%;
+	--os-handle-perpendicular-size-hover: 100%;
+	--os-handle-perpendicular-size-active: 100%;
+}
+
+.dark .os-theme-masar {
+	--os-track-bg-hover: rgba(255, 255, 255, 0.06);
+	--os-track-bg-active: rgba(255, 255, 255, 0.08);
+	--os-handle-bg: linear-gradient(180deg, rgba(125, 165, 235, 0.5), rgba(233, 143, 114, 0.5));
+	--os-handle-bg-hover: linear-gradient(180deg, rgba(125, 165, 235, 0.72), rgba(233, 143, 114, 0.72));
+	--os-handle-bg-active: linear-gradient(180deg, rgba(125, 165, 235, 0.88), rgba(233, 143, 114, 0.88));
+}
+
