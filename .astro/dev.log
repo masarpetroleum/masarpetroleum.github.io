@@ -81,3 +81,11 @@ The collection "articles" does not exist or is empty. Please check your content 
 The collection "careers" does not exist or is empty. Please check your content config file for errors.
 The collection "events" does not exist or is empty. Please check your content config file for errors.
 {"message":"[200] /ar/articles/ 14ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/ 11ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /en/ 14ms","label":null,"level":"info"}
