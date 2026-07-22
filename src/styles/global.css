@@ -79,3 +79,24 @@
 	--os-handle-bg-active: linear-gradient(180deg, rgba(125, 165, 235, 0.88), rgba(233, 143, 114, 0.88));
 }
 
+.news-article > * + * {
+	margin-top: 1.25rem;
+}
+
+.news-article h2 {
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	font-size: 1.375rem;
+}
+
+.news-article a {
+	color: var(--color-masar-sky);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.dark .news-article a {
+	color: #7dd3fc;
+}
+

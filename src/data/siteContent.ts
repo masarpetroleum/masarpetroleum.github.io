@@ -33,7 +33,6 @@ export interface SiteContent {
 	news: {
 		kicker: string;
 		title: string;
-		items: Array<{ title: string; text: string }>;
 	};
 	contact: {
 		title: string;
@@ -118,16 +117,6 @@ export const siteContent: Record<Language, SiteContent> = {
 		news: {
 			kicker: 'News',
 			title: 'Recent momentum',
-			items: [
-				{
-					title: 'Hasirah Ridge discovery',
-					text: 'A major Block 7 update highlighted the scale of the opportunity.',
-				},
-				{
-					title: 'Starlink-enabled field connectivity',
-					text: 'Improved field communications support faster coordination and remote support.',
-				},
-			],
 		},
 		contact: {
 			title: 'Let’s start a serious conversation.',
@@ -210,16 +199,6 @@ export const siteContent: Record<Language, SiteContent> = {
 		news: {
 			kicker: 'الأخبار',
 			title: 'زخم حديث',
-			items: [
-				{
-					title: 'اكتشاف هضبة حصيرة',
-					text: 'تحديث مهم في البلوك 7 أكد حجم الفرصة المتاحة.',
-				},
-				{
-					title: 'اتصال ميداني عبر ستارلينك',
-					text: 'تحسين الاتصال الميداني يدعم التنسيق الأسرع والمساندة عن بُعد.',
-				},
-			],
 		},
 		contact: {
 			title: 'لنبدأ حواراً جاداً.',
