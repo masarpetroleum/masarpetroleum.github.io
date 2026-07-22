@@ -14,13 +14,11 @@ const copy =
 	content.lang === 'ar'
 		? {
 			tagline: content.footer,
-			quickLinks: 'روابط سريعة',
 			getInTouch: 'تواصل معنا',
 			rights: `© ${year} مسار بتروليوم. جميع الحقوق محفوظة.`,
 		}
 		: {
 			tagline: content.footer,
-			quickLinks: 'Quick links',
 			getInTouch: 'Get in touch',
 			rights: `© ${year} Masar Petroleum. All rights reserved.`,
 		};
@@ -29,21 +27,10 @@ const phoneHref = `tel:${content.contact.phone.replace(/\s+/g, '')}`;
 ---
 
 <footer class="relative mt-16 w-full border-t border-white/10 bg-slate-950 text-white">
-	<div class="mx-auto grid w-[calc(100%-1.5rem)] max-w-[1320px] gap-10 px-6 py-14 sm:w-[calc(100%-2.5rem)] sm:px-8 lg:grid-cols-[1.2fr_0.8fr_1fr] lg:gap-8 lg:py-16">
+	<div class="mx-auto grid w-[calc(100%-1.5rem)] max-w-[1320px] gap-10 px-6 py-14 sm:w-[calc(100%-2.5rem)] sm:px-8 lg:grid-cols-[1.3fr_1fr] lg:gap-8 lg:py-16">
 		<div class="flex flex-col items-center gap-4 text-center lg:items-start lg:text-start">
 			<img src="/logo-light.png" alt="Masar Petroleum logo" class="h-14 w-auto" />
 			<p class="max-w-sm text-sm leading-7 text-white/65">{copy.tagline}</p>
-		</div>
-
-		<div class="flex flex-col items-center gap-4 text-center lg:items-start lg:text-start">
-			<h3 class="text-xs font-extrabold uppercase tracking-[0.3em] text-white/45">{copy.quickLinks}</h3>
-			<ul class="flex flex-col items-center gap-3 text-sm font-semibold text-white/75 lg:items-start">
-				{content.nav.map((item) => (
-					<li>
-						<a href={item.href} class="transition hover:text-white">{item.label}</a>
-					</li>
-				))}
-			</ul>
 		</div>
 
 		<div class="flex flex-col items-center gap-4 text-center lg:items-start lg:text-start">

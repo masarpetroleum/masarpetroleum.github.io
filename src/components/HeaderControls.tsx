@@ -87,10 +87,10 @@ export default function HeaderControls({ lang, dir }: Props) {
 					onClick={() => setOpen((current) => !current)}
 					aria-haspopup="menu"
 					aria-expanded={open}
-					className="inline-flex h-11 items-center gap-2 rounded-[1rem] border border-white/45 bg-white/75 px-4 text-sm font-semibold text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-100"
+					className="inline-flex h-11 items-center gap-2 rounded-[1rem] border border-white/45 bg-white/75 px-3 text-sm font-semibold text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-100 sm:px-4"
 				>
 					<FiGlobe className="h-4 w-4" />
-					<span>{activeLanguage}</span>
+					<span className="hidden sm:inline">{activeLanguage}</span>
 					<FiChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
 				</button>
 

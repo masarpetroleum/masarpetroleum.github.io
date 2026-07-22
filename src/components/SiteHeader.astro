@@ -1,6 +1,10 @@
 ---
+import { getCollection } from 'astro:content';
 import type { SiteContent } from '../data/siteContent';
 import HeaderControls from './HeaderControls';
+import DesktopNav from './DesktopNav';
+import MobileNav from './MobileNav';
+import SiteSearch from './SiteSearch';
 
 interface Props {
 	content: SiteContent;
@@ -8,34 +12,85 @@ interface Props {
 }
 
 const { content, currentPath } = Astro.props;
-
 const homeHref = `/${content.lang}/`;
 
-const isActive = (href: string) => {
-	if (href === currentPath) return true;
-	return href !== homeHref && currentPath.startsWith(href);
+const navLabel = (href: string, fallback: string) => {
+	for (const item of content.nav) {
+		if (item.href === href) return item.label;
+		const child = item.children?.find((entry) => entry.href === href);
+		if (child) return child.label;
+	}
+	return fallback;
 };
+
+const staticPages = [
+	{ href: homeHref, title: navLabel(homeHref, content.nav[0].label), excerpt: content.hero.description },
+	{ href: `/${content.lang}/about/`, title: navLabel(`/${content.lang}/about/`, content.about.title), excerpt: content.about.text },
+	{ href: `/${content.lang}/about/team/`, title: navLabel(`/${content.lang}/about/team/`, content.team.title), excerpt: content.team.text },
+	{ href: `/${content.lang}/impact/`, title: navLabel(`/${content.lang}/impact/`, content.impact.title), excerpt: content.impact.text },
+	{
+		href: `/${content.lang}/operations/`,
+		title: navLabel(`/${content.lang}/operations/`, content.operations.title),
+		excerpt: content.operations.items[0]?.text ?? '',
+	},
+	{ href: `/${content.lang}/careers/`, title: navLabel(`/${content.lang}/careers/`, content.careers.title), excerpt: content.careers.text },
+	{ href: `/${content.lang}/events/`, title: navLabel(`/${content.lang}/events/`, content.events.title), excerpt: content.events.text },
+	{ href: `/${content.lang}/news/`, title: navLabel(`/${content.lang}/news/`, content.news.title), excerpt: content.news.title },
+	{ href: `/${content.lang}/articles/`, title: navLabel(`/${content.lang}/articles/`, content.articles.title), excerpt: content.articles.text },
+	{ href: `/${content.lang}/contact/`, title: navLabel(`/${content.lang}/contact/`, content.contact.title), excerpt: content.contact.text },
+];
+
+const [newsItems, articleItems, careerItems, eventItems] = await Promise.all([
+	getCollection('news', (entry) => entry.data.lang === content.lang),
+	getCollection('articles', (entry) => entry.data.lang === content.lang),
+	getCollection('careers', (entry) => entry.data.lang === content.lang),
+	getCollection('events', (entry) => entry.data.lang === content.lang),
+]);
+
+const slugOf = (id: string) => id.replace(`${content.lang}/`, '');
+
+const searchIndex = [
+	...staticPages.map((page) => ({ type: 'page' as const, title: page.title, excerpt: page.excerpt, url: page.href })),
+	...newsItems.map((post) => ({
+		type: 'news' as const,
+		title: post.data.title,
+		excerpt: post.data.excerpt,
+		url: `/${content.lang}/news/${slugOf(post.id)}/`,
+	})),
+	...articleItems.map((post) => ({
+		type: 'articles' as const,
+		title: post.data.title,
+		excerpt: post.data.excerpt,
+		url: `/${content.lang}/articles/${slugOf(post.id)}/`,
+	})),
+	...careerItems.map((post) => ({
+		type: 'careers' as const,
+		title: post.data.title,
+		excerpt: post.data.excerpt,
+		url: `/${content.lang}/careers/${slugOf(post.id)}/`,
+	})),
+	...eventItems.map((post) => ({
+		type: 'events' as const,
+		title: post.data.title,
+		excerpt: post.data.excerpt,
+		url: `/${content.lang}/events/${slugOf(post.id)}/`,
+	})),
+];
 ---
 
-<header class="absolute inset-x-0 top-0 z-40 mx-auto mt-4 flex w-[calc(100%-1.5rem)] max-w-[1320px] flex-wrap items-center justify-between gap-4 rounded-[1.1rem] bg-white/85 px-4 py-3 shadow-[0_18px_48px_rgba(15,23,42,0.22)] backdrop-blur-xl dark:bg-slate-950/75 sm:w-[calc(100%-2.5rem)] sm:px-5 lg:flex-nowrap lg:gap-6">
+<header class="absolute inset-x-0 top-0 z-40 mx-auto mt-4 flex w-[calc(100%-1.5rem)] max-w-[1320px] flex-nowrap items-center justify-between gap-3 rounded-[1.1rem] bg-white/85 px-4 py-3 shadow-[0_18px_48px_rgba(15,23,42,0.22)] backdrop-blur-xl dark:bg-slate-950/75 sm:w-[calc(100%-2.5rem)] sm:gap-4 sm:px-5">
 	<a href={homeHref} class="shrink-0">
-		<img src="/logo-dark.png" alt="Masar Petroleum logo" class="block h-16 w-auto sm:h-[4.5rem] dark:hidden" />
-		<img src="/logo-light.png" alt="Masar Petroleum logo" class="hidden h-16 w-auto sm:h-[4.5rem] dark:block" />
+		<img src="/logo-dark.png" alt="Masar Petroleum logo" class="block h-12 w-auto sm:h-16 lg:h-[4.5rem] dark:hidden" />
+		<img src="/logo-light.png" alt="Masar Petroleum logo" class="hidden h-12 w-auto sm:h-16 lg:h-[4.5rem] dark:block" />
 	</a>
 
-	<nav class="order-3 flex basis-full flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-700 dark:text-white/88 lg:order-2 lg:basis-auto lg:text-[0.92rem]">
-		{content.nav.map((item) => (
-			<a
-				href={item.href}
-				aria-current={isActive(item.href) ? 'page' : undefined}
-				class={`rounded-lg px-3 py-2 transition hover:bg-slate-900/5 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white ${isActive(item.href) ? 'bg-slate-900/8 text-slate-950 dark:bg-white/10 dark:text-white' : ''}`}
-			>
-				{item.label}
-			</a>
-		))}
-	</nav>
+	<div class="hidden lg:flex lg:flex-1 lg:justify-center">
+		<DesktopNav client:load items={content.nav} dir={content.dir} currentPath={currentPath} homeHref={homeHref} />
+	</div>
 
-	<div class="order-2 lg:order-3">
+	<div class="flex flex-1 items-center justify-end gap-2 sm:gap-3 lg:flex-none">
+		<SiteSearch client:load index={searchIndex} lang={content.lang} dir={content.dir} />
 		<HeaderControls client:load lang={content.lang} dir={content.dir} />
+		<MobileNav client:load items={content.nav} dir={content.dir} />
 	</div>
 </header>

@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageShell from '../../../components/PageShell.astro';
+import { siteContent } from '../../../data/siteContent';
+import { FiArrowLeft, FiCalendar } from 'react-icons/fi';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('articles', (entry) => entry.data.lang === 'en');
+	return posts.map((post) => ({
+		params: { slug: post.id.replace('en/', '') },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const content = siteContent.en;
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<PageShell content={content} title={`${post.data.title} | Masar Petroleum`} description={post.data.excerpt}>
+	<article class="mx-auto w-[calc(100%-1.5rem)] max-w-[820px] sm:w-[calc(100%-2.5rem)]">
+		<a href="/en/articles/" class="inline-flex items-center gap-2 text-sm font-bold text-masar-sky transition hover:gap-3 dark:text-sky-300">
+			<FiArrowLeft className="h-4 w-4" />
+			All articles
+		</a>
+
+		<div class="mt-6 flex flex-col items-center gap-3 text-center">
+			<p class="text-xs font-extrabold uppercase tracking-[0.35em] text-masar-copper">{post.data.kicker}</p>
+			<h1 class="max-w-[24ch] text-3xl font-extrabold tracking-[-0.05em] text-slate-950 dark:text-white sm:text-4xl">
+				{post.data.title}
+			</h1>
+			<div class="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+				<FiCalendar className="h-4 w-4" />
+				{dateFormatter.format(post.data.date)}
+			</div>
+		</div>
+
+		<div class="news-article mx-auto mt-10 text-start text-base leading-8 text-slate-700 dark:text-slate-300">
+			<Content />
+		</div>
+	</article>
+</PageShell>

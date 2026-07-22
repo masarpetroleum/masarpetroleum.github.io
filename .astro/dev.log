@@ -2,31 +2,82 @@
 {"message":"Generated 0ms","label":"types","level":"info"}
 {"message":"connected.","label":"vite","level":"info"}
 {"message":"Syncing content","label":"content","level":"info"}
+{"message":"No files found matching \"**/*.md\" in directory \"src/content/articles\"","label":"glob-loader","level":"warn"}
+{"message":"No files found matching \"**/*.md\" in directory \"src/content/careers\"","label":"glob-loader","level":"warn"}
+{"message":"No files found matching \"**/*.md\" in directory \"src/content/events\"","label":"glob-loader","level":"warn"}
 {"message":"Synced content","label":"content","level":"info"}
-{"message":"Re-optimizing dependencies because vite config has changed","label":"vite","level":"info"}
-{"message":" astro  v7.1.1 ready in 1437 ms\n┃ Local    http://localhost:4321/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+{"message":" astro  v7.1.1 ready in 1324 ms\n┃ Local    http://localhost:4321/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
 {"message":"watching for file changes...","label":null,"level":"info"}
-{"message":"(!) Failed to run dependency scan. Skipping dependency pre-bundling. Error: The following dependencies are imported but could not be resolved:\n\n  react-type-animation (imported by /home/milad/Documents/GitHub/masarpetroleum/website/src/components/HeroTyping.tsx)\n\nAre they installed?\n    at file:///home/milad/Documents/GitHub/masarpetroleum/website/node_modules/vite/dist/node/chunks/node.js:31452:33\n    at async file:///home/milad/Documents/GitHub/masarpetroleum/website/node_modules/vite/dist/node/chunks/node.js:33703:15","label":"vite","level":"error"}
-{"message":"[200] /en/news/ 63ms","label":null,"level":"info"}
-{"message":"[200] /en/news/ 8ms","label":null,"level":"info"}
-{"message":"[200] /en/news/ 3ms","label":null,"level":"info"}
-{"message":"dependency optimized: overlayscrollbars","label":"vite","level":"info"}
-{"message":"dependency optimized: react-icons/fi","label":"vite","level":"info"}
-{"message":"optimized dependencies changed. reloading","label":"vite","level":"info"}
-{"message":"[200] /en/news/ 5ms","label":null,"level":"info"}
-{"message":"[200] /en/news/hasirah-ridge-discovery/ 17ms","label":null,"level":"info"}
-{"message":"[200] /ar/news/hasirah-ridge-discovery/ 18ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /en/ 87ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/news/hasirah-ridge-discovery/ 24ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /en/ 15ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/ 22ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /en/ 12ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /en/contact/ 21ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/contact/ 20ms","label":null,"level":"info"}
 {"message":"program reload","label":"vite","level":"info"}
 {"message":"An error happened during full reload\nFailed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?\nError: Failed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?\n    at loadAndTransform (file:///home/milad/Documents/GitHub/masarpetroleum/website/node_modules/vite/dist/node/chunks/node.js:20113:31)","label":"vite","level":"error"}
 {"message":"/src/styles/global.css","label":"watch","level":"info"}
 {"message":"/src/styles/global.css","label":"watch","level":"info"}
-{"message":"[200] /en/news/ 23ms","label":null,"level":"info"}
-{"message":"[200] /en/news/ 6ms","label":null,"level":"info"}
-{"message":"[200] /en/news/hasirah-ridge-discovery/ 12ms","label":null,"level":"info"}
-{"message":"[200] /en/news/ 3ms","label":null,"level":"info"}
-{"message":"[200] /en/news/starlink-field-connectivity/ 12ms","label":null,"level":"info"}
-{"message":"[200] /en/news/ 2ms","label":null,"level":"info"}
-{"message":"[200] /en/news/ 4ms","label":null,"level":"info"}
-{"message":"[200] /en/impact/ 25ms","label":null,"level":"info"}
-{"message":"[200] /en/about/ 28ms","label":null,"level":"info"}
-{"message":"[200] /en/ 26ms","label":null,"level":"info"}
+{"message":"program reload","label":"vite","level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/news/hasirah-ridge-discovery/ 156ms","label":null,"level":"info"}
+{"message":"program reload","label":"vite","level":"info"}
+{"message":"program reload","label":"vite","level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/contact/ 16ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/articles/ 30ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /en/ 14ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/ 16ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/ 11ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/about/team/ 26ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/news/ 27ms","label":null,"level":"info"}
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "articles" does not exist or is empty. Please check your content config file for errors.
+The collection "careers" does not exist or is empty. Please check your content config file for errors.
+The collection "events" does not exist or is empty. Please check your content config file for errors.
+{"message":"[200] /ar/articles/ 14ms","label":null,"level":"info"}

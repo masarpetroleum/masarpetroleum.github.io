@@ -10,7 +10,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "new-post": "node scripts/new-news-post.mjs"
+    "new-content": "node scripts/new-content.mjs",
+    "new-post": "node scripts/new-content.mjs --type news",
+    "new-article": "node scripts/new-content.mjs --type articles",
+    "new-job": "node scripts/new-content.mjs --type careers",
+    "new-event": "node scripts/new-content.mjs --type events"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.1",
