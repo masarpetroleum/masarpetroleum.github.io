@@ -3,34 +3,16 @@
 {"message":"connected.","label":"vite","level":"info"}
 {"message":"Syncing content","label":"content","level":"info"}
 {"message":"Astro config changed","label":"content","level":"info"}
-{"message":"Content config changed","label":"content","level":"info"}
 {"message":"Astro version changed","label":"content","level":"info"}
 {"message":"Clearing content store","label":"content","level":"info"}
 {"message":"Synced content","label":"content","level":"info"}
-{"message":" astro  v7.1.1 ready in 583 ms\n┃ Local    http://localhost:4321/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+{"message":"Re-optimizing dependencies because lockfile has changed","label":"vite","level":"info"}
+{"message":" astro  v7.4.2 ready in 330 ms\n┃ Local    http://localhost:4321/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
 {"message":"watching for file changes...","label":null,"level":"info"}
-{"message":"[200] / 30ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[200] /team/Ali-AlFarsi/ 6ms","label":null,"level":"info"}
+{"message":"[200] / 31ms","label":null,"level":"info"}
+{"message":"[200] / 2ms","label":null,"level":"info"}
+{"message":"[200] /team/Ali-AlFarsi/ 7ms","label":null,"level":"info"}
 {"message":"[200] /articles/shale-oil/ 5ms","label":null,"level":"info"}
 {"message":"[200] /company/ 5ms","label":null,"level":"info"}
 {"message":"[200] /events/rebranding/ 5ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 4ms","label":null,"level":"info"}
-{"message":"[200] /search/ 5ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[200] /operations/ 13ms","label":null,"level":"info"}
-{"message":"[200] /careers/ 14ms","label":null,"level":"info"}
-{"message":"[200] /events/ 7ms","label":null,"level":"info"}
-{"message":"[200] /articles/ 13ms","label":null,"level":"info"}
-{"message":"[200] /articles/oil-gas-law-sultanate-of-oman/ 1ms","label":null,"level":"info"}
-{"message":"[200] /articles/oman-block-7-infrastructure/ 3ms","label":null,"level":"info"}
-{"message":"[200] /articles/oil-gas-law-sultanate-of-oman/ 2ms","label":null,"level":"info"}
-{"message":"[200] /articles/oman-block-7-infrastructure/ 2ms","label":null,"level":"info"}
-{"message":"[200] / 2ms","label":null,"level":"info"}
-{"message":"[200] /team/ 14ms","label":null,"level":"info"}
-{"message":"[200] /operations/ 4ms","label":null,"level":"info"}
-{"message":"[200] /careers/ 3ms","label":null,"level":"info"}
-{"message":"[200] /careers/petroleum-engineering-manager/ 14ms","label":null,"level":"info"}
-{"message":"[200] / 3ms","label":null,"level":"info"}
-{"message":"[200] /careers/ 4ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 5ms","label":null,"level":"info"}
