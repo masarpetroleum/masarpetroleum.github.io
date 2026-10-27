@@ -5,15 +5,14 @@ order: 9
 image: "/images/thumbs/content-14.jpg"
 excerpt: "Facilities and infrastructure: Multiple fixed and mobile processing capacity up to 21k gross bpd Permanent well test facilities available Fully operational gas compression station Oil storage capacity of 11k bbls Produced water injection facilities available…"
 carousel: 2
-related: [{"topic": "Oman", "ids": [24, 14, 3]}, {"topic": "Block 7", "ids": [29, 26]}]
+tags: ["Oman", "Block 7"]
 ---
 
-<section class="entry-section">
 <p style="text-align: center;"><iframe style="aspect-ratio: 16 / 9; width: 100% !important;" src="https://www.youtube.com/embed/j0AJpbokQUY?si=fuXAkJ2oKYfTeR2P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></p>
-</section>
 
-<section class="entry-section">
-<h3 style="text-align: center;"><img src="/files/images/Block7-1.jpg" alt="" width="900" height="758"></h3>
+<hr>
+
+<h3 style="text-align: center;"><img src="/images/files/Block7-1.jpg" alt="" width="900" height="758"></h3>
 <h3>Facilities and infrastructure:</h3>
 <ul>
 <li>Multiple fixed and mobile processing capacity up to 21k gross bpd</li>
@@ -34,4 +33,3 @@ related: [{"topic": "Oman", "ids": [24, 14, 3]}, {"topic": "Block 7", "ids": [29
 </ul>
 <h3>Exports:</h3>
 <p>Export pipeline connected to PDO main oil line, which transports the oil to export terminal in Mina Al Fahar port in Muscat</p>
-</section>

@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { CONTACT } from '../../consts';
+import { CONTACT, PAGES } from '../../consts';
 ---
 
-<BaseLayout title="Contact us" description="Contact Masar Petroleum — Coral Building, Next to Zakher Mall, Al Khuwair, Muscat, Oman. Phone +968 24398600.">
+<BaseLayout title={PAGES.contact.title} description={`Contact ${CONTACT.company} — ${CONTACT.address.join(' ')} Phone ${CONTACT.phone}.`}>
 	<div class="container page">
 		<Breadcrumbs items={[{ label: 'Contact', href: '/contact/' }]} />
 		<div class="contact-grid">
@@ -17,13 +17,13 @@ import { CONTACT } from '../../consts';
 					allowfullscreen></iframe>
 			</div>
 			<div class="contact-info">
-				<h1>Contact us</h1>
+				<h1>{PAGES.contact.title}</h1>
 				<ul class="contact-list">
 					<li>
 						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
 							<path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle>
 						</svg>
-						<span><strong>{CONTACT.company}</strong><br />{CONTACT.address[0]}<br />{CONTACT.address[1]}</span>
+						<span><strong>{CONTACT.company}</strong>{CONTACT.address.map((line) => (<><br />{line}</>))}</span>
 					</li>
 					<li>
 						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -49,7 +49,7 @@ import { CONTACT } from '../../consts';
 					<label class="sr-only" for="cf-message">Message</label>
 					<textarea id="cf-message" name="message" placeholder="Message" required></textarea>
 					<button class="btn-primary" type="submit">Send message</button>
-					<p class="form-note" id="cf-status" role="status">Your message will open in your email app, addressed to our team.</p>
+					<p class="form-note" id="cf-status" role="status">{PAGES.contact.formNote}</p>
 				</form>
 			</div>
 		</div>

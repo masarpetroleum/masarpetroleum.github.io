@@ -18,6 +18,7 @@ const { Content } = await render(entry);
 	image={entry.data.photo ?? entry.data.image}
 	crumbs={[{ label: 'About', href: '/about/' }, { label: 'Our Team', href: '/team/' }]}
 	aside={entry.data.photo}
+	tags={entry.data.tags}
 >
 	<Content />
 </EntryLayout>

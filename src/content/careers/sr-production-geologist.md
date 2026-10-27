@@ -7,7 +7,6 @@ image: "/images/thumbs/content-18.jpg"
 excerpt: "Start Date: Dec 25, 2024 End Date: Jan 16, 2025 ( Expired ) Position Type: Permanent Nationality Required: Omani To apply for this position please follow the link below: Link was expired Job Description Have active participation looking for solutions to field…"
 ---
 
-<section class="entry-section">
 <p><strong>Start Date:</strong>&nbsp; <span>Dec 25, 2024<br></span><strong>End Date:</strong> <span id="ctl00_ctl52_g_81bb0e81_7096_42b4_bb00_b771193c1865_lblJobClosingDate">Jan 16, 2025 (<span style="color: rgb(224, 62, 45);">Expired</span>)<br></span><strong>Position Type: </strong>Permanent<br><strong>Nationality Required: </strong>Omani</p>
 <p>To apply for this position please follow the link below:</p>
 <p style="text-align: center;"><a class="primaryButton">Link was expired</a></p>
@@ -23,4 +22,3 @@ excerpt: "Start Date: Dec 25, 2024 End Date: Jan 16, 2025 ( Expired ) Position T
 <div class="col-md-12 table_head"></div>
 </div>
 </div>
-</section>

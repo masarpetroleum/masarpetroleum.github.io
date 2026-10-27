@@ -1,10 +1,10 @@
 ---
-import { resolveRelated } from '../lib/content';
+import { getRelated } from '../lib/content';
 
 interface Props {
-	groups: Array<{ topic: string; ids: number[] }>;
+	tags: string[];
 }
-const groups = await resolveRelated(Astro.props.groups);
+const groups = await getRelated(Astro.props.tags, Astro.url.pathname);
 ---
 
 {

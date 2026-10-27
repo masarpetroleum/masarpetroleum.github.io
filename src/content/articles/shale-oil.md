@@ -5,11 +5,10 @@ legacyId: 22
 order: 3
 image: "/images/thumbs/content-22.jpg"
 excerpt: "Shale oil is a type of unconventional oil that is found trapped within shale rock formations. Unlike traditional crude oil that flows freely from underground reservoirs, shale oil is locked tightly within fine-grained sedimentary rocks and requires special…"
-related: [{"topic": "Technology", "ids": [16]}]
+tags: ["Technology"]
 ---
 
-<section class="entry-section">
-<p><strong><img src="/files/images/shale.jpg" alt="shale oil" width="300" style="float: right;"></strong></p>
+<p><strong><img src="/images/files/shale.jpg" alt="shale oil" width="300" style="float: right;"></strong></p>
 <p><strong>Shale oil</strong> is a type of unconventional oil that is found trapped within shale rock formations. Unlike traditional crude oil that flows freely from underground reservoirs, shale oil is locked tightly within fine-grained sedimentary rocks and requires special techniques to extract.</p>
 <p>Shale oil should not be confused with oil shale, which refers to solid organic material (kerogen) in rock that must be heated to produce oil. Shale oil, on the other hand, is a liquid and is extracted from shale formations like the Bakken (U.S.), Eagle Ford (U.S.), and Vaca Muerta (Argentina).</p>
 <h2>Why is Shale Oil Important?</h2>
@@ -32,4 +31,3 @@ related: [{"topic": "Technology", "ids": [16]}]
 <li>Induced seismic activity: Some regions have seen increased earthquake activity linked to fracking and wastewater injection.</li>
 <li>Greenhouse gas emissions: The process emits methane and other pollutants.</li>
 </ul>
-</section>

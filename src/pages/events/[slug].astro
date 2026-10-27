@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { PAGES } from '../../consts';
 import EntryLayout from '../../components/EntryLayout.astro';
 import { getEvents } from '../../lib/content';
 
@@ -16,9 +17,9 @@ const { Content } = await render(entry);
 	subtitle={entry.data.subtitle}
 	description={entry.data.excerpt}
 	image={entry.data.image}
-	crumbs={[{ label: 'Events', href: '/events/' }]}
+	crumbs={[{ label: PAGES.events.title, href: '/events/' }]}
 	gallery={entry.data.gallery}
-	related={entry.data.related}
+	tags={entry.data.tags}
 >
 	<Content />
 </EntryLayout>

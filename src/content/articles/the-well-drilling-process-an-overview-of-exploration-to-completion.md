@@ -7,7 +7,6 @@ excerpt: "Well drilling is a critical process in the oil and gas industry, enabl
 carousel: 4
 ---
 
-<section class="entry-section">
 <p>Well drilling is a critical process in the oil and gas industry, enabling the extraction of valuable resources from beneath the Earth's surface. This article outlines the essential steps in the well drilling process, from initial exploration to the final completion of the well.</p>
 <h4>1. <strong>Exploration</strong></h4>
 <p>The first step in the well drilling process is exploration, where geologists and geophysicists work together to identify potential drilling sites. This phase includes:</p>
@@ -99,4 +98,3 @@ carousel: 4
 </ul>
 <h3>Conclusion</h3>
 <p>The well drilling process is a complex and multifaceted operation that requires careful planning, execution, and adherence to safety and environmental standards. By following these steps&mdash;from exploration to decommissioning&mdash;operators can effectively locate and extract valuable resources while minimizing risks and impacts on the environment. Understanding this process is crucial for stakeholders in the oil and gas industry, as well as for communities affected by drilling activities.</p>
-</section>

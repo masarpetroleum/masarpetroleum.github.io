@@ -1,35 +1,43 @@
 ---
-import { CONTACT, SITE } from '../consts';
+import { CONTACT, FOOTER } from '../consts';
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
 	<div class="moving-background">
-		<img src="/template/masar-cover.svg" alt="Masar petroleum" width="1400" height="256" loading="lazy" />
+		<img src="/images/site/masar-cover.svg" alt="Masar petroleum" width="1400" height="256" loading="lazy" />
 	</div>
 	<div class="container footer-grid">
 		<ul class="footer-links">
-			<li><a href="/">Back to home</a></li>
-			<li><a href="/news/">News</a></li>
-			<li><a href="/contact/">Contact us</a></li>
+			{
+				FOOTER.links.map((l) => (
+					<li>
+						<a href={l.href}>{l.label}</a>
+					</li>
+				))
+			}
 		</ul>
 		<div class="footer-social">
 			<a href={CONTACT.phoneHref}>
-				<img src="/template/whatsapp.svg" alt="" width="30" height="30" loading="lazy" />
+				<img src="/images/site/whatsapp.svg" alt="" width="30" height="30" loading="lazy" />
 				Phone
 			</a>
 			<a href={CONTACT.linkedin} target="_blank" rel="noopener">
-				<img src="/files/images/linkedin.svg" alt="" width="30" height="30" loading="lazy" />
+				<img src="/images/files/linkedin.svg" alt="" width="30" height="30" loading="lazy" />
 				LinkedIn
 			</a>
 		</div>
 		<div class="footer-badge">
-			<a href={CONTACT.jsrs} target="_blank" rel="noopener">
-				<img src="/files/images/jsrs.png" alt="JSRS certified" width="200" height="263" loading="lazy" />
-			</a>
+			{
+				FOOTER.badgeImage && (
+					<a href={FOOTER.badgeLink} target="_blank" rel="noopener">
+						<img src={FOOTER.badgeImage} alt={FOOTER.badgeAlt} width="200" loading="lazy" />
+					</a>
+				)
+			}
 		</div>
 	</div>
 	<div class="footer-bottom">
-		<div class="container">© {year} {SITE.name} SAOC. All rights reserved.</div>
+		<div class="container">© {year} {FOOTER.copyright}</div>
 	</div>
 </footer>

@@ -884,7 +884,7 @@ main {
 
 /* Parallax band with pinned value cards */
 .parallax {
-	background-image: url('/files/images/FpBg.jpg');
+	background-image: url('/images/files/FpBg.jpg');
 	background-attachment: fixed;
 	background-size: cover;
 	background-position: center;
@@ -1138,7 +1138,7 @@ main {
 	width: 14px;
 	height: 14px;
 	margin: 0 6px;
-	background: url('/template/tree-arrow.png') no-repeat center / cover;
+	background: url('/images/site/tree-arrow.png') no-repeat center / cover;
 	opacity: 0.7;
 }
 
@@ -1683,7 +1683,7 @@ main {
 }
 
 .moving-background {
-	background-image: url('/template/movingbg.jpg');
+	background-image: url('/images/site/movingbg.jpg');
 	background-repeat: repeat-x;
 	background-size: auto 100%;
 	animation: moveBackground 50s linear infinite;

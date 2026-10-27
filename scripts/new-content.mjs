@@ -78,7 +78,7 @@ async function main() {
 	const existing = (await readdir(path.dirname(file)).catch(() => [])).length;
 	const frontmatter = { ...(values.type === 'team' ? { name: data.title } : { title: data.title }) };
 	for (const f of config.fields) if (f !== 'title' && f !== 'name' && data[f]) frontmatter[f] = data[f];
-	frontmatter.image ??= '/template/logo-og.png';
+	frontmatter.image ??= '/images/site/logo-og.png';
 	frontmatter.order = -existing - 1;
 
 	const body = ['---', ...Object.entries(frontmatter).map(([k, v]) => `${k}: ${JSON.stringify(v)}`), '---', '', '<section class="entry-section">', '<p>Write the content here. Markdown or HTML both work.</p>', '</section>', ''];

@@ -1,15 +1,17 @@
 ---
-import { SLIDES } from '../consts';
+import { HOME } from '../consts';
+
+const SLIDES = HOME.slides;
 ---
 
-<section class="billboard" aria-roledescription="carousel" aria-label="Highlights" data-billboard>
+<section class="billboard" aria-roledescription="carousel" aria-label="Highlights" data-billboard data-interval={HOME.slideInterval ?? 5}>
 	{
 		SLIDES.map((slide, i) => {
-			const Tag = 'cta' in slide ? 'a' : 'div';
+			const Tag = slide.ctaHref ? 'a' : 'div';
 			return (
 				<Tag
-					class:list={['billboard-slide', `theme-${slide.theme}`, { 'is-active': i === 0 }]}
-					href={'cta' in slide ? slide.cta.href : undefined}
+					class:list={['billboard-slide', `theme-${slide.theme ?? 'light'}`, { 'is-active': i === 0 }]}
+					href={slide.ctaHref}
 					aria-roledescription="slide"
 					aria-label={`${i + 1} of ${SLIDES.length}`}
 					aria-hidden={i === 0 ? undefined : 'true'}
@@ -26,8 +28,8 @@ import { SLIDES } from '../consts';
 					/>
 					<div class="billboard-text">
 						{i === 0 ? <h1 class="billboard-title">{slide.title}</h1> : <p class="billboard-title">{slide.title}</p>}
-						<p class="billboard-subtitle">{slide.subtitle}</p>
-						{'cta' in slide && <span class="billboard-cta">{slide.cta.label}</span>}
+						{slide.subtitle && <p class="billboard-subtitle">{slide.subtitle}</p>}
+						{slide.ctaHref && slide.ctaLabel && <span class="billboard-cta">{slide.ctaLabel}</span>}
 					</div>
 				</Tag>
 			);
@@ -42,6 +44,7 @@ import { SLIDES } from '../consts';
 	document.querySelectorAll<HTMLElement>('[data-billboard]').forEach((root) => {
 		const slides = Array.from(root.querySelectorAll<HTMLElement>('.billboard-slide'));
 		const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.billboard-dots button'));
+		const interval = Math.max(2, Number(root.dataset.interval) || 5) * 1000;
 		let current = 0;
 		let timer: number | undefined;
 
@@ -58,7 +61,7 @@ import { SLIDES } from '../consts';
 		};
 		const schedule = () => {
 			window.clearTimeout(timer);
-			timer = window.setTimeout(() => go(current + 1), 5000);
+			if (slides.length > 1) timer = window.setTimeout(() => go(current + 1), interval);
 		};
 
 		dots.forEach((d, n) => d.addEventListener('click', () => go(n)));

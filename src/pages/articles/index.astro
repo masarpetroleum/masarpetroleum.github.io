@@ -2,14 +2,15 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import Card from '../../components/Card.astro';
+import { PAGES } from '../../consts';
 import { getArticles } from '../../lib/content';
 
 const entries = await getArticles();
 ---
 
-<BaseLayout title="Articles" description="Articles on oil and gas exploration, drilling and technology from Masar Petroleum.">
+<BaseLayout title={PAGES.articles.title} description="Articles on oil and gas exploration, drilling and technology from Masar Petroleum.">
 	<div class="container page">
-		<PageHeading title="Articles" crumbs={[{ label: 'Articles', href: '/articles/' }]} />
+		<PageHeading title={PAGES.articles.title} crumbs={[{ label: PAGES.articles.title, href: '/articles/' }]} />
 		<div class="grid grid-4">
 			{entries.map((e, i) => <Card href={`/articles/${e.id}/`} image={e.data.image} title={e.data.title} subtitle={e.data.subtitle} eager={i < 4} />)}
 		</div>

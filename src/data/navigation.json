@@ -1,0 +1,42 @@
+{
+	"items": [
+		{
+			"label": "Home",
+			"href": "/"
+		},
+		{
+			"label": "About",
+			"href": "/about/",
+			"children": [
+				{
+					"label": "Company background",
+					"href": "/company/"
+				},
+				{
+					"label": "Our Team",
+					"href": "/team/"
+				}
+			]
+		},
+		{
+			"label": "Operations",
+			"href": "/operations/"
+		},
+		{
+			"label": "Careers",
+			"href": "/careers/"
+		},
+		{
+			"label": "Events",
+			"href": "/events/"
+		},
+		{
+			"label": "Articles",
+			"href": "/articles/"
+		},
+		{
+			"label": "Contact",
+			"href": "/contact/"
+		}
+	]
+}

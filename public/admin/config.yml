@@ -1,0 +1,368 @@
+# Sveltia CMS configuration — https://sveltiacms.app/en/docs
+# Every save is a commit to the GitHub repository; the Pages workflow then rebuilds the site (about 1–2 minutes).
+
+backend:
+  name: github
+  repo: masarpetroleum/masarpetroleum.github.io
+  branch: main
+  commit_messages:
+    create: 'Create {{collection}} “{{slug}}” (via CMS)'
+    update: 'Update {{collection}} “{{slug}}” (via CMS)'
+    delete: 'Delete {{collection}} “{{slug}}” (via CMS)'
+    uploadMedia: 'Upload “{{path}}” (via CMS)'
+    deleteMedia: 'Delete “{{path}}” (via CMS)'
+
+site_url: https://masarpetroleum.github.io
+display_url: https://masarpetroleum.github.io
+logo:
+  src: /images/site/logo.png
+
+# All site images live under public/images (subfolders: site, files, content, thumbs, billboard, photos, uploads…).
+media_folder: public/images
+public_folder: /images
+
+media_libraries:
+  default:
+    config:
+      max_file_size: 15000000
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 2400
+          height: 2400
+        svg:
+          optimize: true
+
+output:
+  omit_empty_optional_fields: true
+
+collections:
+  # ---------- Content ----------
+
+  - name: events
+    label: News & Events
+    label_singular: News item / Event
+    icon: campaign
+    description: News stories and events. Shown on the Events page; tick “Recent News” to feature one on the homepage.
+    folder: src/content/events
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    preview_path: events/{{slug}}/
+    thumbnail: image
+    summary: '{{title}}'
+    sortable_fields:
+      fields: [order, title, featured]
+      default: { field: order, direction: ascending }
+    fields:
+      - { name: title, label: Title }
+      - { name: subtitle, label: Subtitle / date, required: false, hint: 'For example “October 2024”.' }
+      - { name: image, label: Card image, widget: image, hint: 'Square-ish photo used on cards and the homepage.' }
+      - &excerpt
+        name: excerpt
+        label: Summary
+        widget: text
+        required: false
+        hint: One or two sentences shown on the homepage news list and in search results. Leave empty to use the start of the content.
+      - &body
+        name: body
+        label: Content
+        widget: richtext
+        format: html
+        modes: [rich_text, raw]
+        editor_components: [image, hr, table]
+        hint: Insert a horizontal line (⋯ menu → Horizontal rule) to start a new content box. Use the “Raw” mode to edit HTML such as embedded videos.
+      - name: gallery
+        label: Photo gallery
+        widget: list
+        required: false
+        hint: One photo shows beside the text; two or more are shown as a gallery with a lightbox.
+        field: { name: src, label: Photo, widget: image }
+      - &featured
+        name: featured
+        label: Show in “Recent News” — position
+        widget: number
+        value_type: int
+        required: false
+        min: 1
+        hint: 1 = first item on the homepage “Recent News” list. Leave empty to hide it there.
+      - &order
+        name: order
+        label: Position in list
+        widget: number
+        value_type: int
+        default: 0
+        hint: Lower numbers are listed first (use negative numbers to put something at the top).
+      - &tags
+        name: tags
+        label: Tags (related topics)
+        widget: list
+        required: false
+        hint: Pages that share a tag are linked to each other under “Related topics”. Separate with commas.
+      - &legacy
+        name: legacyId
+        widget: hidden
+  - name: articles
+    label: Articles
+    label_singular: Article
+    icon: article
+    folder: src/content/articles
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    preview_path: articles/{{slug}}/
+    thumbnail: image
+    summary: '{{title}}'
+    sortable_fields:
+      fields: [order, title, carousel, featured]
+      default: { field: order, direction: ascending }
+    fields:
+      - { name: title, label: Title }
+      - { name: subtitle, label: Subtitle, required: false }
+      - { name: image, label: Card image, widget: image }
+      - *excerpt
+      - *body
+      - name: carousel
+        label: Homepage “Recent articles” carousel — position
+        widget: number
+        value_type: int
+        required: false
+        min: 0
+        hint: Leave empty to keep this article out of the homepage carousel.
+      - *featured
+      - *order
+      - *tags
+      - *legacy
+
+  - name: careers
+    label: Careers
+    label_singular: Job posting
+    icon: work
+    folder: src/content/careers
+    extension: md
+    format: frontmatter
+    create: true
+    slug: '{{slug}}'
+    preview_path: careers/{{slug}}/
+    thumbnail: image
+    summary: '{{title}}'
+    sortable_fields:
+      fields: [order, title]
+      default: { field: order, direction: ascending }
+    fields:
+      - { name: title, label: Job title }
+      - { name: status, label: Status badge, required: false, hint: 'For example “Expired”. Leave empty for an open position.' }
+      - { name: image, label: Card image (wide), widget: image }
+      - *excerpt
+      - *body
+      - *order
+      - *legacy
+
+  - name: team
+    label: Our Team
+    label_singular: Team member
+    icon: groups
+    folder: src/content/team
+    extension: md
+    format: frontmatter
+    create: true
+    identifier_field: name
+    slug: '{{name}}'
+    preview_path: team/{{slug}}/
+    thumbnail: image
+    summary: '{{name}} — {{role}}'
+    sortable_fields:
+      fields: [order, name]
+      default: { field: order, direction: ascending }
+    fields:
+      - { name: name, label: Full name }
+      - { name: role, label: Position }
+      - { name: image, label: Card photo (square), widget: image }
+      - { name: photo, label: Large portrait (beside the bio), widget: image, required: false }
+      - { name: body, label: Biography, widget: richtext, format: html, modes: [rich_text, raw] }
+      - *excerpt
+      - *order
+      - *tags
+      - { name: slug, label: Page address (optional), required: false, hint: 'Keeps an existing URL, e.g. Ali-AlFarsi → /team/Ali-AlFarsi/. Leave empty for new members.' }
+      - *legacy
+
+  - name: pages
+    label: Pages
+    icon: description
+    files:
+      - name: company
+        label: Company background
+        file: src/content/pages/company.md
+        preview_path: company/
+        fields:
+          - { name: title, label: Title }
+          - { name: hero, label: Hero image (top banner), widget: image }
+          - { name: image, label: Card image, widget: image, required: false }
+          - *excerpt
+          - *body
+          - *featured
+          - *tags
+          - *legacy
+      - name: operations
+        label: Operations
+        file: src/content/pages/operations.md
+        preview_path: operations/
+        fields:
+          - { name: title, label: Title }
+          - *body
+          - name: gallery
+            label: Photos
+            widget: list
+            required: false
+            field: { name: src, label: Photo, widget: image }
+          - *excerpt
+          - *tags
+          - *legacy
+
+  # ---------- Site-wide settings ----------
+
+  - name: site
+    label: Site Settings
+    icon: settings
+    editor:
+      preview: false
+    files:
+      - name: home
+        label: Homepage (hero slider & sections)
+        file: src/data/home.json
+        fields:
+          - name: slides
+            label: Hero slides
+            label_singular: Slide
+            widget: list
+            summary: '{{fields.title}} — {{fields.subtitle}}'
+            fields:
+              - { name: image, label: Background image, widget: image, hint: 'Wide landscape image, about 2200 × 880 px.' }
+              - { name: title, label: Title }
+              - { name: subtitle, label: Subtitle, required: false }
+              - { name: ctaLabel, label: Button text, required: false }
+              - { name: ctaHref, label: Button link, required: false, hint: 'If set, the whole slide links here.' }
+              - name: theme
+                label: Text colour
+                widget: select
+                default: light
+                options:
+                  - { label: Dark text (for light images), value: light }
+                  - { label: White text (for dark images), value: dark }
+          - { name: slideInterval, label: Seconds per slide, widget: number, value_type: int, default: 5, min: 2, max: 30 }
+          - { name: newsTitle, label: '“Recent News” heading' }
+          - name: intro
+            label: About band (parallax section)
+            widget: object
+            fields:
+              - { name: title, label: Title }
+              - { name: text, label: Text, widget: text }
+              - { name: buttonLabel, label: Button text, required: false }
+              - { name: buttonHref, label: Button link, required: false }
+              - { name: background, label: Background image, widget: image, required: false }
+          - name: values
+            label: Value cards (pinned cards)
+            label_singular: Card
+            widget: list
+            summary: '{{fields.title}}'
+            fields:
+              - { name: image, label: Image, widget: image }
+              - { name: title, label: Title }
+              - { name: text, label: Text, widget: text }
+          - { name: articlesTitle, label: '“Recent articles” heading' }
+
+      - name: navigation
+        label: Main menu
+        file: src/data/navigation.json
+        fields:
+          - name: items
+            label: Menu items
+            label_singular: Menu item
+            widget: list
+            summary: '{{fields.label}} → {{fields.href}}'
+            fields:
+              - { name: label, label: Label }
+              - { name: href, label: Link, hint: 'A page path like /operations/ or a full URL.' }
+              - name: children
+                label: Dropdown items
+                label_singular: Dropdown item
+                widget: list
+                required: false
+                summary: '{{fields.label}} → {{fields.href}}'
+                fields: &link_fields
+                  - { name: label, label: Label }
+                  - { name: href, label: Link, hint: 'A page path like /about/ or a full URL.' }
+      - name: pages
+        label: Page titles & intros
+        file: src/data/pages.json
+        fields:
+          - name: about
+            label: About page
+            widget: object
+            fields:
+              - { name: title, label: Title }
+              - name: cards
+                label: Cards
+                widget: list
+                summary: '{{fields.title}}'
+                fields:
+                  - { name: title, label: Title }
+                  - { name: image, label: Image, widget: image }
+                  - { name: href, label: Link }
+          - name: team
+            label: Our Team page
+            widget: object
+            fields:
+              - { name: title, label: Title }
+              - { name: intro, label: Introduction, widget: text, required: false, hint: 'Blank line = new paragraph. *italic*, **bold**, [link](https://…) are supported.' }
+          - name: careers
+            label: Careers page
+            widget: object
+            fields:
+              - { name: title, label: Title }
+              - { name: intro, label: Introduction, widget: text, required: false, hint: 'Blank line = new paragraph. *italic*, **bold**, [link](https://…) are supported.' }
+              - { name: links, label: External job links, widget: list, required: false, summary: '{{fields.label}}', fields: *link_fields }
+          - { name: events, label: Events page, widget: object, fields: [{ name: title, label: Title }] }
+          - { name: articles, label: Articles page, widget: object, fields: [{ name: title, label: Title }] }
+          - { name: news, label: News page, widget: object, fields: [{ name: title, label: Title }] }
+          - name: contact
+            label: Contact page
+            widget: object
+            fields:
+              - { name: title, label: Title }
+              - { name: formNote, label: Note under the form, required: false }
+
+      - name: settings
+        label: Contact, footer & SEO
+        file: src/data/settings.json
+        fields:
+          - { name: siteName, label: Company name }
+          - { name: title, label: Homepage title (browser tab & Google) }
+          - { name: description, label: Site description (Google & social sharing), widget: text }
+          - { name: keywords, label: SEO keywords, widget: text, required: false }
+          - { name: logo, label: Logo, widget: image }
+          - { name: ogImage, label: Social sharing image, widget: image }
+          - { name: gaId, label: Google Analytics ID, required: false, hint: 'For example G-XXXXXXXXXX. Leave empty to disable analytics.' }
+          - name: contact
+            label: Contact details
+            widget: object
+            fields:
+              - { name: company, label: Company }
+              - { name: addressLine1, label: Address line 1 }
+              - { name: addressLine2, label: Address line 2, required: false }
+              - { name: phone, label: Phone }
+              - { name: email, label: Email }
+              - { name: linkedin, label: LinkedIn URL, required: false }
+              - { name: mapEmbed, label: Google Maps embed URL, widget: text, hint: 'Google Maps → Share → Embed a map → copy only the src="…" URL.' }
+          - name: footer
+            label: Footer
+            widget: object
+            fields:
+              - { name: links, label: Footer links, widget: list, summary: '{{fields.label}}', fields: *link_fields }
+              - { name: badgeImage, label: Badge image (e.g. JSRS), widget: image, required: false }
+              - { name: badgeLink, label: Badge link, required: false }
+              - { name: badgeAlt, label: Badge description, required: false }
+              - { name: copyright, label: Copyright text }

@@ -7,11 +7,10 @@ excerpt: "In the world of well drilling, particularly in the oil and gas industr
 carousel: 5
 ---
 
-<section class="entry-section">
 <p>In the world of well drilling, particularly in the oil and gas industry, the drawworks plays a pivotal role in the overall operation of the rig.</p>
 <p>As a key component of the drilling rig's hoisting system, the drawworks is responsible for managing the movement of heavy equipment, drill strings, and casing into and out of the wellbore. Understanding how drawworks function and their importance is essential for anyone involved in drilling operations</p>
 <h3>What is a Drawworks?</h3>
-<p><img src="/files/images/drawworks.jpg" alt="Drawworks" width="750" height="363"></p>
+<p><img src="/images/files/drawworks.jpg" alt="Drawworks" width="750" height="363"></p>
 <p>The drawworks is essentially a large winch that consists of a spool or drum, brakes, and a powerful motor (or engine). It is used to wind or unwind the steel cable, known as the drilling line, which is attached to the traveling block. The traveling block, in turn, is connected to the hook that suspends the drill string, casing, or other heavy tools used in the drilling process.</p>
 <p>The drawworks allows the drill crew to lower or raise the drill string into or out of the wellbore during operations such as drilling, tripping pipe, or running casing. It is typically located on the drill floor, integrated into the structure of the rig.</p>
 <h3>Functions of the Drawworks</h3>
@@ -53,4 +52,3 @@ carousel: 5
 <li><strong>Transmission and Gear Systems</strong>: These allow the drawworks to change speed and torque, depending on the operation being performed.</li>
 <li><strong>Control System</strong>: In modern rigs, drawworks are often operated by sophisticated control systems that automate many tasks, improving safety and efficiency.</li>
 </ul>
-</section>

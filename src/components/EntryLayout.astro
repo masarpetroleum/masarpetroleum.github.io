@@ -13,10 +13,10 @@ interface Props {
 	crumbs: Array<{ label: string; href?: string }>;
 	aside?: string;
 	gallery?: string[];
-	related?: Array<{ topic: string; ids: number[] }>;
+	tags?: string[];
 }
 
-const { title, subtitle, description, image, crumbs, aside, gallery = [], related = [] } = Astro.props;
+const { title, subtitle, description, image, crumbs, aside, gallery = [], tags = [] } = Astro.props;
 // A single photo sits beside the text (as on the original); several become a gallery below it.
 const sidePhoto = aside ?? (gallery.length === 1 ? gallery[0] : undefined);
 const galleryImages = gallery.length > 1 ? gallery : [];
@@ -57,7 +57,7 @@ const galleryImages = gallery.length > 1 ? gallery : [];
 					)
 				}
 			</div>
-			<RelatedTopics groups={related} />
+			<RelatedTopics tags={tags} />
 		</article>
 		<slot name="after" />
 	</div>

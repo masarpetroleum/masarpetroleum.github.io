@@ -1,5 +1,5 @@
 ---
-import { NAV } from '../consts';
+import { NAV, SITE } from '../consts';
 import SearchForm from './SearchForm.astro';
 
 const path = Astro.url.pathname;
@@ -14,7 +14,7 @@ const isActive = (item: (typeof NAV)[number]) => isCurrent(item.href) || !!item.
 <header class="site-header" id="site-header">
 	<div class="container header-inner">
 		<a class="brand" href="/" aria-label="Masar Petroleum home">
-			<img src="/template/logo.png" width="130" height="100" alt="Masar petroleum" />
+			<img src={SITE.logo} width="130" height="100" alt="Masar petroleum" />
 		</a>
 		<nav class="nav-desktop" aria-label="Main">
 			<ul>
@@ -41,7 +41,7 @@ const isActive = (item: (typeof NAV)[number]) => isCurrent(item.href) || !!item.
 				}
 				<li>
 					<button class="search-toggle" type="button" aria-controls="search-panel" aria-expanded="false" data-search-toggle>
-						<img src="/template/searchmenu.png" alt="" width="18" height="18" />
+						<img src="/images/site/searchmenu.png" alt="" width="18" height="18" />
 						<span class="sr-only">Search</span>
 					</button>
 				</li>
@@ -60,7 +60,7 @@ const isActive = (item: (typeof NAV)[number]) => isCurrent(item.href) || !!item.
 			)
 		}
 		<a class="brand" href="/" aria-label="Masar Petroleum home">
-			<img src="/template/logo.png" width="52" height="40" alt="Masar petroleum" />
+			<img src={SITE.logo} width="52" height="40" alt="Masar petroleum" />
 		</a>
 		<button class="menu-toggle" type="button" aria-controls="drawer" aria-expanded="false" aria-label="Menu" data-menu-toggle>
 			<span></span>
@@ -74,7 +74,7 @@ const isActive = (item: (typeof NAV)[number]) => isCurrent(item.href) || !!item.
 		<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 2l14 14M16 2 2 16" stroke="currentColor" stroke-width="2" /></svg>
 	</button>
 	<div class="drawer-logo">
-		<img src="/template/logo.png" width="130" height="100" alt="Masar petroleum" />
+		<img src={SITE.logo} width="130" height="100" alt="Masar petroleum" />
 	</div>
 	<SearchForm id="drawer-search" />
 	<nav aria-label="Mobile">

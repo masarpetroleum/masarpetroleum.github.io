@@ -1,10 +1,8 @@
 ---
-import { RECENT_NEWS } from '../consts';
-import { getByLegacyId } from '../lib/content';
+import { getFeatured } from '../lib/content';
 
-const map = await getByLegacyId();
-const items = RECENT_NEWS.map((id) => map.get(id)).filter((x) => !!x);
-// Prefer the wide original artwork (images/content/N.jpg) over the square thumbnail.
+const items = await getFeatured();
+// Prefer the wide original artwork (images/content/N.jpg) for migrated entries.
 const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/content/${legacyId}.jpg` : fallback);
 ---
 

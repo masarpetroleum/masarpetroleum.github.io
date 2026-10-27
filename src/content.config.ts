@@ -2,9 +2,10 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-// Groups of related entries, shown under "Related topics" on detail pages.
-// `ids` are the legacy numeric ids from masarpetroleum.om (content/?id=N).
-const related = z.array(z.object({ topic: z.string(), ids: z.array(z.number()) })).default([]);
+// Entries sharing a tag are listed under "Related topics" on each other's pages.
+const tags = z.array(z.string()).default([]);
+// Position in the homepage "Recent News" list (1 = first). Omit to leave it out.
+const featured = z.number().optional();
 
 const base = {
 	title: z.string(),
@@ -13,7 +14,8 @@ const base = {
 	order: z.number().default(100),
 	image: z.string(),
 	excerpt: z.string().default(''),
-	related,
+	tags,
+	featured,
 };
 
 const articles = defineCollection({
@@ -49,6 +51,7 @@ const team = defineCollection({
 		image: z.string(),
 		photo: z.string().optional(),
 		excerpt: z.string().default(''),
+		tags,
 	}),
 });
 
@@ -61,7 +64,8 @@ const pages = defineCollection({
 		image: z.string().optional(),
 		excerpt: z.string().default(''),
 		gallery: z.array(z.string()).default([]),
-		related,
+		tags,
+		featured,
 	}),
 });
 

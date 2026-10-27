@@ -1,0 +1,48 @@
+{
+	"about": {
+		"title": "About",
+		"cards": [
+			{
+				"title": "Company background",
+				"image": "/images/menu/3.jpg",
+				"href": "/company/"
+			},
+			{
+				"title": "Our Team",
+				"image": "/images/menu/4.jpg",
+				"href": "/team/"
+			}
+		]
+	},
+	"team": {
+		"title": "Our Team",
+		"intro": "Masar Petroleum is deeply committed to upholding its core values in every aspect of its operations. The company’s CEO, board members, and dedicated team of managers, including experts in operations, subsurface management, well engineering, and other critical fields, work tirelessly to ensure excellence.\n\nBy leveraging the expertise of top specialists in the industry, Masar Petroleum strives to achieve outstanding results while maintaining a steadfast focus on safety, innovation, and sustainability in all its endeavors."
+	},
+	"careers": {
+		"title": "Careers",
+		"intro": "*Disclaimer:* This page is intended for visitors arriving from search engines who are interested in job opportunities. For accurate and up-to-date information on available positions, application deadlines, and requirements, please visit our official careers pages at the following links:",
+		"links": [
+			{
+				"label": "Our station at petroJobs Oman",
+				"href": "https://www.petrojobs.om/en-us/Pages/Job/operator-jobs.aspx?opid=28"
+			},
+			{
+				"label": "Zoho Recruit",
+				"href": "https://hcfoman.zohorecruit.com/jobs/Careers/"
+			}
+		]
+	},
+	"events": {
+		"title": "Events"
+	},
+	"articles": {
+		"title": "Articles"
+	},
+	"news": {
+		"title": "News"
+	},
+	"contact": {
+		"title": "Contact us",
+		"formNote": "Your message will open in your email app, addressed to our team."
+	}
+}

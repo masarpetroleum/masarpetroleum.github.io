@@ -12,6 +12,7 @@ const { Content } = await render(entry);
 	image={entry.data.gallery[0]}
 	crumbs={[{ label: 'Operations', href: '/operations/' }]}
 	gallery={entry.data.gallery}
+	tags={entry.data.tags}
 >
 	<Content />
 </EntryLayout>

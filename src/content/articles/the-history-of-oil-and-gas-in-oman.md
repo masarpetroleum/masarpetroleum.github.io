@@ -4,10 +4,9 @@ legacyId: 3
 order: 11
 image: "/images/thumbs/content-3.jpg"
 excerpt: "Early Developments (Before 1960s) Pre-1950s: Oman had little known petroleum activity. Traditional fishing and agriculture were the main economic activities. 1960s 1962: The first oil exploration concession was awarded to the Petroleum Development Oman (PDO),…"
-related: [{"topic": "Oman", "ids": [24, 14]}, {"topic": "history", "ids": [29, 26]}]
+tags: ["Oman", "History", "Block 7"]
 ---
 
-<section class="entry-section">
 <h3>Early Developments (Before 1960s)</h3>
 <ul>
 <li><strong>Pre-1950s:</strong> Oman had little known petroleum activity. Traditional fishing and agriculture were the main economic activities.</li>
@@ -56,4 +55,3 @@ related: [{"topic": "Oman", "ids": [24, 14]}, {"topic": "history", "ids": [29, 2
 <li>Oman continues to seek foreign investment to develop new oil fields and enhance gas production, including initiatives in sustainability and renewable energy projects.</li>
 </ul>
 <p>This timeline highlights the major milestones in Oman's oil and gas development, showcasing the evolution of the sector and its significance to the country's economy.</p>
-</section>

@@ -3,56 +3,57 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Billboard from '../components/Billboard.astro';
 import NewsList from '../components/NewsList.astro';
 import ArticleCarousel from '../components/ArticleCarousel.astro';
-import { VALUES } from '../consts';
+import { CONTACT, HOME, SITE } from '../consts';
+import { renderText } from '../lib/text';
 
 const organization = {
 	'@context': 'https://schema.org',
 	'@type': 'Organization',
-	name: 'Masar Petroleum SAOC',
-	alternateName: 'Masar Petroleum',
+	name: `${SITE.name} SAOC`,
+	alternateName: SITE.name,
 	url: Astro.site?.href,
-	logo: new URL('/template/logo-og.png', Astro.site).href,
+	logo: new URL(SITE.ogImage, Astro.site).href,
 	foundingDate: '2015',
-	address: {
-		'@type': 'PostalAddress',
-		streetAddress: 'Coral Building, Next to Zakher Mall, Al Khuwair',
-		addressLocality: 'Muscat',
-		addressCountry: 'OM',
-	},
-	telephone: '+968 24398600',
-	email: 'info@masarpetroleum.om',
-	sameAs: ['https://www.linkedin.com/company/masarpetroleum/'],
+	address: { '@type': 'PostalAddress', streetAddress: CONTACT.address.join(' '), addressCountry: 'OM' },
+	telephone: CONTACT.phone,
+	email: CONTACT.email,
+	sameAs: [CONTACT.linkedin].filter(Boolean),
 };
+const { intro } = HOME;
 ---
 
 <BaseLayout>
 	<script type="application/ld+json" slot="head" set:html={JSON.stringify(organization)} />
 
-	<Billboard />
+	{HOME.slides.length > 0 && <Billboard />}
 
 	<section class="news-band" aria-labelledby="recent-news">
 		<div class="container">
-			<h2 class="section-title" id="recent-news">Recent News</h2>
+			<h2 class="section-title" id="recent-news">{HOME.newsTitle}</h2>
 			<NewsList />
 		</div>
 	</section>
 
-	<section class="parallax" aria-labelledby="about-masar">
+	<section class="parallax" aria-labelledby="about-masar" style={intro.background ? `background-image:url('${intro.background}')` : undefined}>
 		<div class="container">
 			<div class="intro-card" data-reveal>
-				<h2 id="about-masar">Masar Petroleum</h2>
-				<p>
-					Masar Petroleum is a dynamic and forward-thinking oil and gas exploration and production company that began operations in 2015. With a
-					strategic focus on unlocking hydrocarbon resources to meet the world's growing energy demands, Masar Petroleum owns 100% of Block 7 in
-					Sahmah, a significant asset with immense potential for exploration and production activities.
-				</p>
-				<p class="actions"><a class="btn-primary" href="/company/">more about us...</a></p>
+				<h2 id="about-masar">{intro.title}</h2>
+				<Fragment set:html={renderText(intro.text)} />
+				{
+					intro.buttonHref && intro.buttonLabel && (
+						<p class="actions">
+							<a class="btn-primary" href={intro.buttonHref}>
+								{intro.buttonLabel}
+							</a>
+						</p>
+					)
+				}
 			</div>
 			<div class="values">
 				{
-					VALUES.map((v) => (
+					HOME.values.map((v) => (
 						<div class="value-card">
-							<img class="value-pin" src="/template/pin1.png" alt="" width="23" height="26" />
+							<img class="value-pin" src="/images/site/pin1.png" alt="" width="23" height="26" />
 							<div class="value-inner">
 								<img src={v.image} alt={v.title} width="500" height="333" loading="lazy" decoding="async" />
 								<strong>{v.title}</strong>
@@ -67,7 +68,7 @@ const organization = {
 
 	<section class="section" aria-labelledby="recent-articles">
 		<div class="container">
-			<h2 class="section-title center" id="recent-articles">Recent articles</h2>
+			<h2 class="section-title center" id="recent-articles">{HOME.articlesTitle}</h2>
 			<ArticleCarousel />
 		</div>
 	</section>

@@ -1,0 +1,38 @@
+{
+	"siteName": "Masar Petroleum",
+	"title": "Masar petroleum | Oil & Gas Exploration in Oman",
+	"description": "Masar Petroleum SAOC is an innovative oil and gas exploration and production company founded in 2015. With a strategic focus on unlocking hydrocarbon resources, Masar Petroleum owns 100% of Block 7 in Sahmah and partners with S&T to enhance operational capabilities. Committed to safety, environmental stewardship, and global energy security, we aim to create long-term value and positively impact communities.",
+	"keywords": "oil drilling, Oman oil industry, oil exploration, oil production, Oman drilling services, offshore drilling Oman, oil and gas, petroleum exploration, energy sector Oman, drilling technology, oil services Oman, oil field development, oil reserves Oman, energy solutions Oman, oil drilling equipment, petroleum company Oman",
+	"logo": "/images/site/logo.png",
+	"ogImage": "/images/site/logo-og.png",
+	"gaId": "G-CKVK97VQ88",
+	"contact": {
+		"company": "Masar Petroleum",
+		"addressLine1": "Coral Building, Next to Zakher Mall, Al Khuwair,",
+		"addressLine2": "Muscat, Oman",
+		"phone": "+968 24398600",
+		"email": "info@masarpetroleum.om",
+		"linkedin": "https://www.linkedin.com/company/masarpetroleum/",
+		"mapEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.267496199289!2d58.43999857601969!3d23.594737694733254!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e91ff3d2f03f6a1%3A0xcfb802c6409280e9!2sCoral%20Building%2C%20Muscat!5e0!3m2!1sen!2som!4v1727610461459!5m2!1sen!2som"
+	},
+	"footer": {
+		"links": [
+			{
+				"label": "Back to home",
+				"href": "/"
+			},
+			{
+				"label": "News",
+				"href": "/news/"
+			},
+			{
+				"label": "Contact us",
+				"href": "/contact/"
+			}
+		],
+		"badgeImage": "/images/files/jsrs.png",
+		"badgeLink": "https://businessgateways.com/jsrs/",
+		"badgeAlt": "JSRS certified",
+		"copyright": "Masar Petroleum SAOC. All rights reserved."
+	}
+}

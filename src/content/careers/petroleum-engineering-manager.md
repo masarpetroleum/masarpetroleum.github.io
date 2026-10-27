@@ -6,7 +6,6 @@ image: "/images/thumbs/content-27.jpg"
 excerpt: "Job Description The Petroleum Engineering Manager is responsible for leading and managing the entire Sub-Surface Team for both Development and Exploration activities. This position plays a critical role in the company's growth strategy by providing technical…"
 ---
 
-<section class="entry-section">
 <h3>Job Description</h3>
 <div id="cw-rich-description">
 <div>The Petroleum Engineering Manager is responsible for leading and managing the entire Sub-Surface&nbsp;Team for both Development and Exploration activities. This position plays a critical role in the&nbsp;company's growth strategy by providing technical leadership, strategic direction, and operational oversight for all subsurface functions.</div>
@@ -27,4 +26,3 @@ excerpt: "Job Description The Petroleum Engineering Manager is responsible for l
 </ul>
 <p><span>To find out more, please visit our Recruitment system at : <a href="https://hcfoman.zohorecruit.com/jobs/Careers" target="_blank" rel="noopener">https://hcfoman.zohorecruit.com/jobs/Careers</a>&nbsp;</span></p>
 <span id="spandesc"></span></div>
-</section>

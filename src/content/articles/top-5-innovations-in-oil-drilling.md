@@ -5,10 +5,9 @@ order: 7
 image: "/images/thumbs/content-16.jpg"
 excerpt: "Oil drilling has been around for more than a century. But because of the numerous developments in the technology, it has grown leaps and bounds in that time. And this growth of oil production has also been essential to changing the face of civilization. In…"
 carousel: 3
-related: [{"topic": "technology", "ids": [22]}]
+tags: ["Technology"]
 ---
 
-<section class="entry-section">
 <p>Oil drilling has been around for more than a century. But because of the numerous developments in the technology, it has grown leaps and bounds in that time. And this growth of oil production has also been essential to changing the face of civilization.</p>
 <p>In 1859, Edwin Drake dug what is considered the first oil well in Titusville, Penn. During that period, oil was used primarily to make kerosene for lighting purposes. But the development of the automobile industry soon ignited a new market for oil and spurred increased production -- from 150 million barrels produced worldwide in 1900 to more than one billion barrels in 1925.</p>
 <p>One of the earliest innovations to improve oil drilling was the rotary drill, first used in the 1880s. This used a rotating drill bit to dig into the ground (as opposed to Drake&rsquo;s method of cable-tool drilling that lifted and dropped a drill bit into the well). For more on the rotary drill, as well as an overview of the oil drilling process, take a look at "How Oil Drilling Works."</p>
@@ -19,7 +18,7 @@ related: [{"topic": "technology", "ids": [22]}]
 <p>Controlled from the rig above the water&rsquo;s surface, an ROV is a robotic device that allows operators to see underwater. Some types allow the operator to make an ROV&rsquo;s robotic arms perform different functions, such as subsea tie-ins and deepwater installations, as deep as 10,000 feet (3,048 meters).</p>
 <h2>4: Hydraulic Fracturing</h2>
 <p>Developed in the 1940s, the process of hydraulic fracturing has become increasingly important in oil drilling. It comes in handy with "tight" reservoirs -- where the rocks containing the oil don&rsquo;t have large pores. This means that the oil flow from the rocks is weak, and drilling a simple well into the rock won&rsquo;t get much of the oil out.</p>
-<p><img src="/files/images/Hydraulic-Fracturing.jpg" width="1065" height="505" alt="Hydraulic Fracturing" style="display: block; margin-left: auto; margin-right: auto;"></p>
+<p><img src="/images/files/Hydraulic-Fracturing.jpg" width="1065" height="505" alt="Hydraulic Fracturing" style="display: block; margin-left: auto; margin-right: auto;"></p>
 <p>To help stimulate the well and drive out the trapped oil, drillers employ hydraulic fracturing. In this process, they inject water combined with chemicals into the well with enough pressure to create fractures in the rock formations -- fractures that can extend hundreds of feet long. To keep the fractures from closing again, drillers send down a proppant, which is a mixture of fluids, sand and pellets. These fractures allow oil to flow more freely from the rock.</p>
 <p>According to the American Petroleum Institute, in the United States alone, hydraulic fracturing has helped pump an extra 7 billion barrels of oil from the ground.</p>
 <h2>3: Seismic Imaging</h2>
@@ -35,4 +34,3 @@ related: [{"topic": "technology", "ids": [22]}]
 <p>Because many oil reservoirs are spread out horizontally, vertical wells may not extract enough oil efficiently from them. A horizontal well is drilled deep down vertically at first, but then changes direction (at what is called the kick-off point) before it encounters the reservoir (at the entry point) and extends horizontally through it. But the advantages of horizontal drilling go beyond increasing well productivity. It also allows wells to be dug safely under environmentally sensitive and protected land.</p>
 <p>Although the first horizontal well was drilled in 1929, they were expensive, and the development of hydraulic fracturing soon improved the productivity of vertical wells. Advances such as MWD and steerable motor assemblies, however, made horizontal drilling a more viable option by the 1980s.</p>
 <p><span style="font-size: 10pt;">Reference:<br></span><span style="font-size: 10pt;"><a href="https://science.howstuffworks.com/environmental/energy/5-innovations-oil-drilling.htm" target="_blank" rel="noopener">https://science.howstuffworks.com/environmental/energy/5-innovations-oil-drilling.htm</a></span></p>
-</section>

@@ -5,10 +5,10 @@ legacyId: 31
 order: 0
 image: "/images/thumbs/content-31.jpg"
 excerpt: "Seismic technology plays a central role in modern oil and gas exploration by helping geoscientists understand what lies beneath the earth’s surface before drilling begins. It is one of the most important tools used to reduce uncertainty, improve reservoir…"
+featured: 1
 ---
 
-<section class="entry-section">
-<p><img src="/files/images/Seismic.jpg" width="100%" alt="Seismic"></p>
+<p><img src="/images/files/Seismic.jpg" width="100%" alt="Seismic"></p>
 <p>Seismic technology plays a central role in modern oil and gas exploration by helping geoscientists understand what lies beneath the earth&rsquo;s surface before drilling begins. It is one of the most important tools used to reduce uncertainty, improve reservoir evaluation, and support safer and more cost-effective decisions throughout the exploration and production lifecycle.</p>
 <h2>What Is Seismic Exploration?</h2>
 <p>Seismic exploration is a geophysical method that uses sound waves to map subsurface rock formations. Controlled energy sources generate waves that travel through the earth and reflect back when they encounter changes in rock layers. These reflected signals are captured by sensors and processed into images that reveal geological structures hidden below ground or beneath the seabed.</p>
@@ -45,4 +45,3 @@ excerpt: "Seismic technology plays a central role in modern oil and gas explorat
 <p>For many operators, seismic is not simply a technical exercise but a critical component of investment planning and long-term asset management.</p>
 <h2>Environmental and Operational Benefits</h2>
 <p>By improving targeting accuracy and reducing unnecessary drilling, seismic can contribute to more efficient resource development. Better planning can help minimize operational disruptions, reduce waste, and support responsible field development practices.</p>
-</section>

@@ -1,6 +1,8 @@
 ---
 import LegacyRedirect from '../../components/LegacyRedirect.astro';
-import legacy from '../../data/legacy.json';
+
+// Old list/?refer=N section links from masarpetroleum.om.
+const map = { '2': '/about/', '3': '/company/', '4': '/team/', '5': '/operations/', '6': '/articles/', '10': '/careers/', '11': '/news/', '12': '/events/' };
 ---
 
-<LegacyRedirect param="refer" map={legacy.list} />
+<LegacyRedirect param="refer" map={map} />

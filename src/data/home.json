@@ -1,0 +1,51 @@
+{
+	"slides": [
+		{
+			"image": "/images/billboard/6.jpg",
+			"title": "Masar Petroleum",
+			"subtitle": "Paving the way for energy",
+			"ctaLabel": "More about us...",
+			"ctaHref": "/about/",
+			"theme": "light"
+		},
+		{
+			"image": "/images/billboard/7.jpg",
+			"title": "Masar",
+			"subtitle": "Powering the Future, Shaping the Way",
+			"theme": "dark"
+		},
+		{
+			"image": "/images/billboard/8.jpg",
+			"title": "Our Mission",
+			"subtitle": "Forging New Paths in Oil and Gas!",
+			"theme": "light"
+		}
+	],
+	"slideInterval": 5,
+	"newsTitle": "Recent News",
+	"intro": {
+		"title": "Masar Petroleum",
+		"text": "Masar Petroleum is a dynamic and forward-thinking oil and gas exploration and production company that began operations in 2015. With a strategic focus on unlocking hydrocarbon resources to meet the world's growing energy demands, Masar Petroleum owns 100% of Block 7 in Sahmah, a significant asset with immense potential for exploration and production activities.",
+		"buttonLabel": "more about us...",
+		"buttonHref": "/company/",
+		"background": "/images/files/FpBg.jpg"
+	},
+	"values": [
+		{
+			"image": "/images/fixedbg/2.png",
+			"title": "Innovating to Power Tomorrow",
+			"text": "Innovative methods and technologies to meet energy demands sustainably."
+		},
+		{
+			"image": "/images/fixedbg/3.png",
+			"title": "Maximizing Resources, Minimizing Impact.",
+			"text": "Strategic focus on responsibly unlocking hydrocarbon resources, with an eye on sustainability and environmental stewardship."
+		},
+		{
+			"image": "/images/fixedbg/4.png",
+			"title": "Fueling Economies, Creating Opportunities",
+			"text": "Driving economic growth and its commitment to stakeholder and community development"
+		}
+	],
+	"articlesTitle": "Recent articles"
+}
