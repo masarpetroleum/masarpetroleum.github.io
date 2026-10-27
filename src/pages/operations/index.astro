@@ -1,0 +1,17 @@
+---
+import { getEntry, render } from 'astro:content';
+import EntryLayout from '../../components/EntryLayout.astro';
+
+const entry = (await getEntry('pages', 'operations'))!;
+const { Content } = await render(entry);
+---
+
+<EntryLayout
+	title={entry.data.title}
+	description={entry.data.excerpt}
+	image={entry.data.gallery[0]}
+	crumbs={[{ label: 'Operations', href: '/operations/' }]}
+	gallery={entry.data.gallery}
+>
+	<Content />
+</EntryLayout>

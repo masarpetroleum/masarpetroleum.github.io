@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { CONTACT } from '../../consts';
+---
+
+<BaseLayout title="Contact us" description="Contact Masar Petroleum — Coral Building, Next to Zakher Mall, Al Khuwair, Muscat, Oman. Phone +968 24398600.">
+	<div class="container page">
+		<Breadcrumbs items={[{ label: 'Contact', href: '/contact/' }]} />
+		<div class="contact-grid">
+			<div class="contact-map">
+				<iframe
+					src={CONTACT.mapEmbed}
+					title="Masar Petroleum location — Coral Building, Muscat"
+					loading="lazy"
+					referrerpolicy="no-referrer-when-downgrade"
+					allowfullscreen></iframe>
+			</div>
+			<div class="contact-info">
+				<h1>Contact us</h1>
+				<ul class="contact-list">
+					<li>
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle>
+						</svg>
+						<span><strong>{CONTACT.company}</strong><br />{CONTACT.address[0]}<br />{CONTACT.address[1]}</span>
+					</li>
+					<li>
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"></path>
+						</svg>
+						<span>Phone: <a href={CONTACT.phoneHref}>{CONTACT.phone}</a></span>
+					</li>
+					<li>
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path>
+						</svg>
+						<span>Email: <a href="#" data-email={CONTACT.email.split('').reverse().join('')}>{CONTACT.email.replace('@', ' [at] ')}</a></span>
+					</li>
+				</ul>
+
+				<form class="form" id="contact-form" novalidate>
+					<label class="sr-only" for="cf-name">Name</label>
+					<input id="cf-name" name="name" placeholder="Name" required autocomplete="name" />
+					<label class="sr-only" for="cf-phone">Phone</label>
+					<input id="cf-phone" name="phone" type="tel" placeholder="Phone" autocomplete="tel" dir="ltr" />
+					<label class="sr-only" for="cf-email">Email</label>
+					<input id="cf-email" name="email" type="email" placeholder="Email" autocomplete="email" dir="ltr" />
+					<label class="sr-only" for="cf-message">Message</label>
+					<textarea id="cf-message" name="message" placeholder="Message" required></textarea>
+					<button class="btn-primary" type="submit">Send message</button>
+					<p class="form-note" id="cf-status" role="status">Your message will open in your email app, addressed to our team.</p>
+				</form>
+			</div>
+		</div>
+	</div>
+</BaseLayout>
+
+<script>
+	// The address is stored reversed in the markup to keep it away from simple scrapers.
+	const emailLink = document.querySelector<HTMLAnchorElement>('[data-email]');
+	const email = emailLink?.dataset.email?.split('').reverse().join('') ?? '';
+	if (emailLink && email) {
+		emailLink.href = `mailto:${email}`;
+		emailLink.textContent = email;
+	}
+
+	const form = document.getElementById('contact-form') as HTMLFormElement | null;
+	const status = document.getElementById('cf-status');
+	form?.addEventListener('submit', (e) => {
+		e.preventDefault();
+		const data = new FormData(form);
+		const name = String(data.get('name') ?? '').trim();
+		const message = String(data.get('message') ?? '').trim();
+		if (!name || !message) {
+			if (status) status.textContent = 'Please enter your name and a message.';
+			(form.querySelector(name ? '#cf-message' : '#cf-name') as HTMLElement | null)?.focus();
+			return;
+		}
+		const body = [message, '', `Name: ${name}`, `Phone: ${data.get('phone') || '-'}`, `Email: ${data.get('email') || '-'}`].join('\n');
+		window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Website enquiry from ${name}`)}&body=${encodeURIComponent(body)}`;
+		if (status) status.textContent = 'Thank you. Your email app should now open with your message ready to send.';
+	});
+</script>

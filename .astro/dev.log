@@ -2,90 +2,35 @@
 {"message":"Generated 0ms","label":"types","level":"info"}
 {"message":"connected.","label":"vite","level":"info"}
 {"message":"Syncing content","label":"content","level":"info"}
-{"message":"No files found matching \"**/*.md\" in directory \"src/content/articles\"","label":"glob-loader","level":"warn"}
-{"message":"No files found matching \"**/*.md\" in directory \"src/content/careers\"","label":"glob-loader","level":"warn"}
-{"message":"No files found matching \"**/*.md\" in directory \"src/content/events\"","label":"glob-loader","level":"warn"}
+{"message":"Astro config changed","label":"content","level":"info"}
+{"message":"Content config changed","label":"content","level":"info"}
+{"message":"Astro version changed","label":"content","level":"info"}
+{"message":"Clearing content store","label":"content","level":"info"}
 {"message":"Synced content","label":"content","level":"info"}
-{"message":" astro  v7.1.1 ready in 1324 ms\n┃ Local    http://localhost:4321/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+{"message":" astro  v7.1.1 ready in 583 ms\n┃ Local    http://localhost:4321/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
 {"message":"watching for file changes...","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /en/ 87ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/news/hasirah-ridge-discovery/ 24ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /en/ 15ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/ 22ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /en/ 12ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /en/contact/ 21ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/contact/ 20ms","label":null,"level":"info"}
-{"message":"program reload","label":"vite","level":"info"}
-{"message":"An error happened during full reload\nFailed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?\nError: Failed to load url astro:server-app.js (resolved id: astro:server-app.js). Does the file exist?\n    at loadAndTransform (file:///home/milad/Documents/GitHub/masarpetroleum/website/node_modules/vite/dist/node/chunks/node.js:20113:31)","label":"vite","level":"error"}
-{"message":"/src/styles/global.css","label":"watch","level":"info"}
-{"message":"/src/styles/global.css","label":"watch","level":"info"}
-{"message":"program reload","label":"vite","level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/news/hasirah-ridge-discovery/ 156ms","label":null,"level":"info"}
-{"message":"program reload","label":"vite","level":"info"}
-{"message":"program reload","label":"vite","level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/contact/ 16ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/articles/ 30ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /en/ 14ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/ 16ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/ 11ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/about/team/ 26ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/news/ 27ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/articles/ 14ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /ar/ 11ms","label":null,"level":"info"}
-The collection "articles" does not exist or is empty. Please check your content config file for errors.
-The collection "careers" does not exist or is empty. Please check your content config file for errors.
-The collection "events" does not exist or is empty. Please check your content config file for errors.
-{"message":"[200] /en/ 14ms","label":null,"level":"info"}
+{"message":"[200] / 30ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"[200] /team/Ali-AlFarsi/ 6ms","label":null,"level":"info"}
+{"message":"[200] /articles/shale-oil/ 5ms","label":null,"level":"info"}
+{"message":"[200] /company/ 5ms","label":null,"level":"info"}
+{"message":"[200] /events/rebranding/ 5ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 4ms","label":null,"level":"info"}
+{"message":"[200] /search/ 5ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"[200] /operations/ 13ms","label":null,"level":"info"}
+{"message":"[200] /careers/ 14ms","label":null,"level":"info"}
+{"message":"[200] /events/ 7ms","label":null,"level":"info"}
+{"message":"[200] /articles/ 13ms","label":null,"level":"info"}
+{"message":"[200] /articles/oil-gas-law-sultanate-of-oman/ 1ms","label":null,"level":"info"}
+{"message":"[200] /articles/oman-block-7-infrastructure/ 3ms","label":null,"level":"info"}
+{"message":"[200] /articles/oil-gas-law-sultanate-of-oman/ 2ms","label":null,"level":"info"}
+{"message":"[200] /articles/oman-block-7-infrastructure/ 2ms","label":null,"level":"info"}
+{"message":"[200] / 2ms","label":null,"level":"info"}
+{"message":"[200] /team/ 14ms","label":null,"level":"info"}
+{"message":"[200] /operations/ 4ms","label":null,"level":"info"}
+{"message":"[200] /careers/ 3ms","label":null,"level":"info"}
+{"message":"[200] /careers/petroleum-engineering-manager/ 14ms","label":null,"level":"info"}
+{"message":"[200] / 3ms","label":null,"level":"info"}
+{"message":"[200] /careers/ 4ms","label":null,"level":"info"}

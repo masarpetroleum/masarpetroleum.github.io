@@ -1,0 +1,80 @@
+---
+import { getArticles } from '../lib/content';
+
+const articles = (await getArticles())
+	.filter((a) => a.data.carousel !== undefined)
+	.sort((a, b) => a.data.carousel! - b.data.carousel!);
+---
+
+<div class="carousel" data-carousel>
+	<button class="carousel-arrow prev" type="button" aria-label="Previous articles">‹</button>
+	<div class="carousel-track" tabindex="0" aria-label="Recent articles">
+		{
+			articles.map((a) => (
+				<a class="carousel-item" href={`/articles/${a.id}/`}>
+					<img src={a.data.image} alt={a.data.title} width="400" height="400" loading="lazy" decoding="async" />
+					<span>{a.data.title}</span>
+				</a>
+			))
+		}
+	</div>
+	<button class="carousel-arrow next" type="button" aria-label="Next articles">›</button>
+	<div class="carousel-dots" aria-hidden="true"></div>
+</div>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+		const track = root.querySelector<HTMLElement>('.carousel-track')!;
+		const items = Array.from(track.children) as HTMLElement[];
+		const dotsBox = root.querySelector<HTMLElement>('.carousel-dots')!;
+		let timer: number | undefined;
+		let paused = false;
+
+		const step = () => items[0].offsetWidth + 10;
+		const index = () => Math.round(track.scrollLeft / step());
+		const maxIndex = () => Math.max(0, Math.round((track.scrollWidth - track.clientWidth) / step()));
+
+		const go = (i: number) => {
+			const max = maxIndex();
+			const target = i > max ? 0 : i < 0 ? max : i;
+			track.scrollTo({ left: target * step(), behavior: 'smooth' });
+		};
+
+		const renderDots = () => {
+			const count = maxIndex() + 1;
+			dotsBox.replaceChildren(
+				...Array.from({ length: count }, (_, i) => {
+					const b = document.createElement('button');
+					b.type = 'button';
+					b.tabIndex = -1;
+					b.addEventListener('click', () => go(i));
+					return b;
+				}),
+			);
+			syncDots();
+		};
+		const syncDots = () => {
+			const i = index();
+			Array.from(dotsBox.children).forEach((d, n) => d.setAttribute('aria-current', String(n === i)));
+		};
+
+		const schedule = () => {
+			window.clearInterval(timer);
+			timer = window.setInterval(() => !paused && !document.hidden && go(index() + 1), 3000);
+		};
+
+		root.querySelector('.prev')?.addEventListener('click', () => go(index() - 1));
+		root.querySelector('.next')?.addEventListener('click', () => go(index() + 1));
+		track.addEventListener('scroll', () => window.requestAnimationFrame(syncDots), { passive: true });
+		root.addEventListener('mouseenter', () => (paused = true));
+		root.addEventListener('mouseleave', () => (paused = false));
+		root.addEventListener('focusin', () => (paused = true));
+		root.addEventListener('focusout', () => (paused = false));
+		track.addEventListener('touchstart', () => (paused = true), { passive: true });
+		track.addEventListener('touchend', () => window.setTimeout(() => (paused = false), 4000));
+		window.addEventListener('resize', renderDots);
+
+		renderDots();
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) schedule();
+	});
+</script>

@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import Card from '../../components/Card.astro';
+---
+
+<BaseLayout title="About" description="Learn about Masar Petroleum SAOC — our company background and the team behind Block 7.">
+	<div class="container page">
+		<PageHeading title="About" crumbs={[{ label: 'About', href: '/about/' }]} />
+		<div class="grid grid-4">
+			<Card href="/company/" image="/images/menu/3.jpg" title="Company background" variant="centered" eager />
+			<Card href="/team/" image="/images/menu/4.jpg" title="Our Team" variant="centered" eager />
+		</div>
+	</div>
+</BaseLayout>

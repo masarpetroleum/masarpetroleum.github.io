@@ -1,0 +1,77 @@
+---
+import { SLIDES } from '../consts';
+---
+
+<section class="billboard" aria-roledescription="carousel" aria-label="Highlights" data-billboard>
+	{
+		SLIDES.map((slide, i) => {
+			const Tag = 'cta' in slide ? 'a' : 'div';
+			return (
+				<Tag
+					class:list={['billboard-slide', `theme-${slide.theme}`, { 'is-active': i === 0 }]}
+					href={'cta' in slide ? slide.cta.href : undefined}
+					aria-roledescription="slide"
+					aria-label={`${i + 1} of ${SLIDES.length}`}
+					aria-hidden={i === 0 ? undefined : 'true'}
+				>
+					<img
+						class="bg"
+						src={slide.image}
+						alt=""
+						width="2200"
+						height="880"
+						loading={i === 0 ? 'eager' : 'lazy'}
+						fetchpriority={i === 0 ? 'high' : undefined}
+						decoding="async"
+					/>
+					<div class="billboard-text">
+						{i === 0 ? <h1 class="billboard-title">{slide.title}</h1> : <p class="billboard-title">{slide.title}</p>}
+						<p class="billboard-subtitle">{slide.subtitle}</p>
+						{'cta' in slide && <span class="billboard-cta">{slide.cta.label}</span>}
+					</div>
+				</Tag>
+			);
+		})
+	}
+	<div class="billboard-dots">
+		{SLIDES.map((_, i) => <button type="button" aria-label={`Show slide ${i + 1}`} aria-current={i === 0 ? 'true' : 'false'} />)}
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-billboard]').forEach((root) => {
+		const slides = Array.from(root.querySelectorAll<HTMLElement>('.billboard-slide'));
+		const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.billboard-dots button'));
+		let current = 0;
+		let timer: number | undefined;
+
+		const go = (i: number) => {
+			current = (i + slides.length) % slides.length;
+			slides.forEach((s, n) => {
+				s.classList.toggle('is-active', n === current);
+				if (n === current) s.removeAttribute('aria-hidden');
+				else s.setAttribute('aria-hidden', 'true');
+				s.tabIndex = n === current ? 0 : -1;
+			});
+			dots.forEach((d, n) => d.setAttribute('aria-current', String(n === current)));
+			schedule();
+		};
+		const schedule = () => {
+			window.clearTimeout(timer);
+			timer = window.setTimeout(() => go(current + 1), 5000);
+		};
+
+		dots.forEach((d, n) => d.addEventListener('click', () => go(n)));
+
+		// Swipe support on touch screens.
+		let startX = 0;
+		root.addEventListener('touchstart', (e) => (startX = e.touches[0].clientX), { passive: true });
+		root.addEventListener('touchend', (e) => {
+			const dx = e.changedTouches[0].clientX - startX;
+			if (Math.abs(dx) > 40) go(current + (dx < 0 ? 1 : -1));
+		});
+
+		document.addEventListener('visibilitychange', () => (document.hidden ? window.clearTimeout(timer) : schedule()));
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) schedule();
+	});
+</script>

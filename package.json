@@ -1,5 +1,5 @@
 {
-  "name": "nasty-neptune",
+  "name": "masar-petroleum",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -11,19 +11,13 @@
     "preview": "astro preview",
     "astro": "astro",
     "new-content": "node scripts/new-content.mjs",
-    "new-post": "node scripts/new-content.mjs --type news",
     "new-article": "node scripts/new-content.mjs --type articles",
     "new-job": "node scripts/new-content.mjs --type careers",
-    "new-event": "node scripts/new-content.mjs --type events"
+    "new-event": "node scripts/new-content.mjs --type events",
+    "new-member": "node scripts/new-content.mjs --type team"
   },
   "dependencies": {
-    "@astrojs/react": "^6.0.1",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.1.1",
-    "overlayscrollbars": "^2.16.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-icons": "^5.7.0",
-    "tailwindcss": "^4.3.3"
+    "@fontsource/titillium-web": "^5.3.0",
+    "astro": "^7.1.1"
   }
 }

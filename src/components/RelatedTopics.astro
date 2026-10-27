@@ -1,0 +1,32 @@
+---
+import { resolveRelated } from '../lib/content';
+
+interface Props {
+	groups: Array<{ topic: string; ids: number[] }>;
+}
+const groups = await resolveRelated(Astro.props.groups);
+---
+
+{
+	groups.length > 0 && (
+		<aside class="box related" aria-labelledby="related-title">
+			<h2 class="related-title" id="related-title">Related topics:</h2>
+			{groups.map((g) => (
+				<>
+					<ul>
+						<li class="topic">
+							<a href={`/search/?key=${encodeURIComponent(g.topic)}`}>{g.topic}</a>
+						</li>
+					</ul>
+					<ul>
+						{g.items.map((item) => (
+							<li>
+								<a href={item.url}>{item.title}</a>
+							</li>
+						))}
+					</ul>
+				</>
+			))}
+		</aside>
+	)
+}

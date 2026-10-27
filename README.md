@@ -1,47 +1,22 @@
-# Astro Starter Kit: Basics
+# Masar Petroleum website
 
-```sh
-npm create astro@latest -- --template basics
-```
+Astro rebuild of [masarpetroleum.om](https://www.masarpetroleum.om), deployed to GitHub Pages by `.github/workflows/pages.yml` on every push.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commands
 
-## 🚀 Project Structure
+| Command                 | Action                                         |
+| :---------------------- | :--------------------------------------------- |
+| `npm install`           | Install dependencies                           |
+| `npm run dev`           | Dev server at `localhost:4321`                 |
+| `npm run build`         | Build the static site to `./dist/`             |
+| `npm run preview`       | Preview the build                              |
+| `npm run new-article`   | Scaffold an article (also `new-event`, `new-job`, `new-member`) |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Where things live
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+- `src/content/` — all page content as Markdown: `articles/`, `events/` (news & events), `careers/`, `team/`, and `pages/` (company background, operations). Bodies are HTML split into `<section class="entry-section">` blocks; `order` controls list order.
+- `src/consts.ts` — contact details, navigation, homepage slider, value cards, and which items appear under "Recent News".
+- `public/images`, `public/files`, `public/template` — every image from the original site, stored locally.
+- `src/data/legacy.json` — maps old `content/?id=N` and `list/?refer=N` URLs to the new pages so existing links keep working.
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
+The contact form opens the visitor's email app (the site is static). Search runs in the browser over `/search-index.json`.

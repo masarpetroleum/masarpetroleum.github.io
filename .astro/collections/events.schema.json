@@ -2,35 +2,61 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
-    "lang": {
-      "type": "string",
-      "enum": [
-        "en",
-        "ar"
-      ]
-    },
     "title": {
       "type": "string"
     },
-    "location": {
+    "subtitle": {
+      "type": "string"
+    },
+    "legacyId": {
+      "type": "number"
+    },
+    "order": {
+      "default": 100,
+      "type": "number"
+    },
+    "image": {
       "type": "string"
     },
     "excerpt": {
+      "default": "",
       "type": "string"
     },
-    "date": {
-      "type": "string",
-      "format": "date-time"
+    "related": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string"
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "topic",
+          "ids"
+        ]
+      }
+    },
+    "gallery": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "$schema": {
       "type": "string"
     }
   },
   "required": [
-    "lang",
     "title",
-    "location",
-    "excerpt",
-    "date"
+    "image"
   ]
 }

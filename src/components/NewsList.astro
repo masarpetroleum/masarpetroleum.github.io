@@ -1,0 +1,28 @@
+---
+import { RECENT_NEWS } from '../consts';
+import { getByLegacyId } from '../lib/content';
+
+const map = await getByLegacyId();
+const items = RECENT_NEWS.map((id) => map.get(id)).filter((x) => !!x);
+// Prefer the wide original artwork (images/content/N.jpg) over the square thumbnail.
+const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/content/${legacyId}.jpg` : fallback);
+---
+
+<div class="news-list">
+	{
+		items.map((item, i) => (
+			<a class="news-item" href={item.url}>
+				<div class="box box-hover">
+					<div class="news-media" data-reveal>
+						<img src={wide(item.legacyId, item.image)} alt={item.title} width="580" height="300" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+					</div>
+					<div class="news-body" data-reveal>
+						<strong>{item.title}</strong>
+						{item.subtitle && <span class="sub">{item.subtitle}</span>}
+						<span>{item.excerpt.replace(/…$/, '')} …</span> <span class="read-more">(Read more...)</span>
+					</div>
+				</div>
+			</a>
+		))
+	}
+</div>

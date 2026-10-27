@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import Card from '../../components/Card.astro';
+import { getTeam } from '../../lib/content';
+
+const team = await getTeam();
+---
+
+<BaseLayout title="Our Team" description="Meet the leadership and management team of Masar Petroleum.">
+	<div class="container page">
+		<PageHeading title="Our Team" crumbs={[{ label: 'About', href: '/about/' }, { label: 'Our Team', href: '/team/' }]} />
+		<div class="box page-intro">
+			<p>
+				Masar Petroleum is deeply committed to upholding its core values in every aspect of its operations. The company’s CEO, board members,
+				and dedicated team of managers, including experts in operations, subsurface management, well engineering, and other critical fields,
+				work tirelessly to ensure excellence.
+			</p>
+			<p>
+				By leveraging the expertise of top specialists in the industry, Masar Petroleum strives to achieve outstanding results while
+				maintaining a steadfast focus on safety, innovation, and sustainability in all its endeavors.
+			</p>
+		</div>
+		<div class="grid grid-4">
+			{team.map((m, i) => <Card href={`/team/${m.id}/`} image={m.data.image} title={m.data.name} subtitle={m.data.role} eager={i < 4} />)}
+		</div>
+	</div>
+</BaseLayout>

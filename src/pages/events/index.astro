@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import Card from '../../components/Card.astro';
+import { getEvents } from '../../lib/content';
+
+const entries = await getEvents();
+---
+
+<BaseLayout title="Events" description="News and events from Masar Petroleum, Block 7, Oman.">
+	<div class="container page">
+		<PageHeading title="Events" crumbs={[{ label: 'Events', href: '/events/' }]} />
+		<div class="grid grid-4">
+			{entries.map((e, i) => <Card href={`/events/${e.id}/`} image={e.data.image} title={e.data.title} subtitle={e.data.subtitle} eager={i < 4} />)}
+		</div>
+	</div>
+</BaseLayout>

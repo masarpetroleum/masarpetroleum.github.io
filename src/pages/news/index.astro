@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import NewsList from '../../components/NewsList.astro';
+---
+
+<BaseLayout title="News" description="The latest news from Masar Petroleum.">
+	<div class="news-band" style="padding-top:0">
+		<div class="container page">
+			<PageHeading title="News" crumbs={[{ label: 'News', href: '/news/' }]} />
+			<NewsList />
+		</div>
+	</div>
+</BaseLayout>

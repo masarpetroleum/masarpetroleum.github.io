@@ -1,0 +1,30 @@
+---
+interface Props {
+	href: string;
+	image: string;
+	title: string;
+	subtitle?: string;
+	badge?: string;
+	variant?: 'square' | 'wide' | 'centered';
+	eager?: boolean;
+}
+const { href, image, title, subtitle, badge, variant = 'square', eager = false } = Astro.props;
+---
+
+<div class="box box-hover" data-reveal="zoom">
+	<a class:list={['card', { wide: variant === 'wide', centered: variant === 'centered' }]} href={href}>
+		<div class="media">
+			<img
+				src={image}
+				alt={title}
+				width={variant === 'wide' ? 640 : 400}
+				height={variant === 'wide' ? 320 : 400}
+				loading={eager ? 'eager' : 'lazy'}
+				decoding="async"
+			/>
+		</div>
+		<span class="card-title">{title}</span>
+		{subtitle && <span class="card-sub">{subtitle}</span>}
+		{badge && <span class="badge">{badge}</span>}
+	</a>
+</div>

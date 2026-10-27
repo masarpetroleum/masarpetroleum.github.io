@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "legacyId": {
+      "type": "number"
+    },
+    "order": {
+      "default": 100,
+      "type": "number"
+    },
+    "image": {
+      "type": "string"
+    },
+    "photo": {
+      "type": "string"
+    },
+    "excerpt": {
+      "default": "",
+      "type": "string"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "role",
+    "image"
+  ]
+}

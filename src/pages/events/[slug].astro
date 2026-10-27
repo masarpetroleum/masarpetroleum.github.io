@@ -1,0 +1,24 @@
+---
+import { render } from 'astro:content';
+import EntryLayout from '../../components/EntryLayout.astro';
+import { getEvents } from '../../lib/content';
+
+export async function getStaticPaths() {
+	return (await getEvents()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<EntryLayout
+	title={entry.data.title}
+	subtitle={entry.data.subtitle}
+	description={entry.data.excerpt}
+	image={entry.data.image}
+	crumbs={[{ label: 'Events', href: '/events/' }]}
+	gallery={entry.data.gallery}
+	related={entry.data.related}
+>
+	<Content />
+</EntryLayout>

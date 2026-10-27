@@ -1,0 +1,22 @@
+---
+// Old masarpetroleum.om URLs used query strings (content/?id=N, list/?refer=N),
+// which a static host can't route, so this page maps them client-side.
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Props {
+	param: string;
+	map: Record<string, string>;
+}
+const { param, map } = Astro.props;
+---
+
+<BaseLayout title="Redirecting">
+	<meta name="robots" content="noindex" slot="head" />
+	<div class="container page not-found">
+		<p>Redirecting… If nothing happens, <a href="/">go to the homepage</a>.</p>
+	</div>
+	<script is:inline define:vars={{ param, map }}>
+		var key = new URLSearchParams(location.search).get(param);
+		location.replace((key && map[key]) || '/');
+	</script>
+</BaseLayout>

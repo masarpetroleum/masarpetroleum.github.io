@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import SearchForm from '../../components/SearchForm.astro';
+---
+
+<BaseLayout title="Search" description="Search Masar Petroleum news, events, articles and team.">
+	<div class="container page search-page">
+		<PageHeading title="Search" crumbs={[{ label: 'Search', href: '/search/' }]} />
+		<SearchForm id="page-search" />
+		<p id="search-summary" role="status"></p>
+		<ul class="search-results" id="search-results"></ul>
+	</div>
+</BaseLayout>
+
+<script>
+	interface Item {
+		section: string;
+		title: string;
+		subtitle?: string;
+		excerpt: string;
+		image?: string;
+		url: string;
+		text: string;
+	}
+
+	const LABELS: Record<string, string> = { articles: 'Article', events: 'Event', careers: 'Career', team: 'Team', pages: 'Page' };
+	const params = new URLSearchParams(location.search);
+	const key = (params.get('key') ?? '').trim();
+	const input = document.getElementById('page-search') as HTMLInputElement;
+	const summary = document.getElementById('search-summary')!;
+	const list = document.getElementById('search-results')!;
+	input.value = key;
+
+	const escape = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+	if (!key) {
+		summary.textContent = 'Type a keyword to search the site.';
+		input.focus();
+	} else {
+		summary.textContent = 'Searching…';
+		fetch('/search-index.json')
+			.then((r) => r.json())
+			.then((items: Item[]) => {
+				const terms = key.toLowerCase().split(/\s+/).filter(Boolean);
+				const scored = items
+					.map((item) => {
+						const title = item.title.toLowerCase();
+						const hay = `${title} ${(item.subtitle ?? '').toLowerCase()} ${item.text}`;
+						if (!terms.every((t) => hay.includes(t))) return null;
+						const score = terms.reduce((s, t) => s + (title.includes(t) ? 10 : 0) + hay.split(t).length - 1, 0);
+						return { item, score };
+					})
+					.filter((x): x is { item: Item; score: number } => !!x)
+					.sort((a, b) => b.score - a.score);
+
+				summary.textContent = scored.length
+					? `${scored.length} result${scored.length > 1 ? 's' : ''} for “${key}”`
+					: `No results found for “${key}”.`;
+				list.innerHTML = scored
+					.map(
+						({ item }) => `<li class="box box-hover"><a href="${item.url}">
+							${item.image ? `<img src="${item.image}" alt="" width="110" height="110" loading="lazy">` : '<span></span>'}
+							<span><span class="tag">${LABELS[item.section] ?? ''}</span>
+							<strong>${escape(item.title)}</strong>
+							<small>${escape(item.subtitle ? item.subtitle + ' — ' : '')}${escape(item.excerpt)}</small></span>
+						</a></li>`,
+					)
+					.join('');
+			})
+			.catch(() => (summary.textContent = 'Search is unavailable right now. Please try again.'));
+	}
+</script>

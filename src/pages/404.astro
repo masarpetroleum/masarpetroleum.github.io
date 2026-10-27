@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchForm from '../components/SearchForm.astro';
+---
+
+<BaseLayout title="Page not found">
+	<meta name="robots" content="noindex" slot="head" />
+	<div class="container not-found">
+		<div class="code">404</div>
+		<h1>Page not found</h1>
+		<p>The page you are looking for may have moved. Try searching, or head back home.</p>
+		<div style="max-width:520px;margin:24px auto">
+			<SearchForm id="nf-search" />
+		</div>
+		<a class="btn-primary" href="/">Back to home</a>
+	</div>
+</BaseLayout>

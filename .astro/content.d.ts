@@ -148,11 +148,19 @@ declare module 'astro:content' {
   rendered?: RenderedContent;
   filePath?: string;
 }>;
-"news": Record<string, {
+"pages": Record<string, {
   id: string;
   body?: string;
-  collection: "news";
-  data: InferEntrySchema<"news">;
+  collection: "pages";
+  data: InferEntrySchema<"pages">;
+  rendered?: RenderedContent;
+  filePath?: string;
+}>;
+"team": Record<string, {
+  id: string;
+  body?: string;
+  collection: "team";
+  data: InferEntrySchema<"team">;
   rendered?: RenderedContent;
   filePath?: string;
 }>;
@@ -186,6 +194,6 @@ declare module 'astro:content' {
 		LiveContentConfig['collections'][C]['loader']
 	>;
 
-	export type ContentConfig = typeof import("./../src/content.config.js");
+	export type ContentConfig = typeof import("../src/content.config.js");
 	export type LiveContentConfig = never;
 }

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import Card from '../../components/Card.astro';
+import { CONTACT } from '../../consts';
+import { getCareers } from '../../lib/content';
+
+const jobs = await getCareers();
+---
+
+<BaseLayout title="Careers" description="Job opportunities at Masar Petroleum, Oman.">
+	<div class="container page">
+		<PageHeading title="Careers" crumbs={[{ label: 'Careers', href: '/careers/' }]} />
+		<div class="box page-intro">
+			<p>
+				<em style="color:#7e8c8d">Disclaimer: </em>This page is intended for visitors arriving from search engines who are interested in job
+				opportunities. For accurate and up-to-date information on available positions, application deadlines, and requirements, please visit
+				our official careers pages at the following links:
+			</p>
+			{
+				CONTACT.careerLinks.map((l) => (
+					<p>
+						<a class="arrow-link" href={l.href} target="_blank" rel="noopener">
+							{l.label}
+						</a>
+					</p>
+				))
+			}
+		</div>
+		<div class="grid grid-2">
+			{jobs.map((j) => <Card href={`/careers/${j.id}/`} image={j.data.image} title={j.data.title} badge={j.data.status} variant="wide" eager />)}
+		</div>
+	</div>
+</BaseLayout>

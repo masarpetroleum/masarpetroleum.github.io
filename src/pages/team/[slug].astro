@@ -1,0 +1,23 @@
+---
+import { render } from 'astro:content';
+import EntryLayout from '../../components/EntryLayout.astro';
+import { getTeam } from '../../lib/content';
+
+export async function getStaticPaths() {
+	return (await getTeam()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<EntryLayout
+	title={entry.data.name}
+	subtitle={entry.data.role}
+	description={entry.data.excerpt}
+	image={entry.data.photo ?? entry.data.image}
+	crumbs={[{ label: 'About', href: '/about/' }, { label: 'Our Team', href: '/team/' }]}
+	aside={entry.data.photo}
+>
+	<Content />
+</EntryLayout>

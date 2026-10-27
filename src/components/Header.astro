@@ -1,0 +1,100 @@
+---
+import { NAV } from '../consts';
+import SearchForm from './SearchForm.astro';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const isActive = (item: (typeof NAV)[number]) => isCurrent(item.href) || !!item.children?.some((c) => isCurrent(c.href));
+---
+
+<div class="search-panel" id="search-panel">
+	<SearchForm id="header-search" />
+</div>
+
+<header class="site-header" id="site-header">
+	<div class="container header-inner">
+		<a class="brand" href="/" aria-label="Masar Petroleum home">
+			<img src="/template/logo.png" width="130" height="100" alt="Masar petroleum" />
+		</a>
+		<nav class="nav-desktop" aria-label="Main">
+			<ul>
+				{
+					NAV.map((item) => (
+						<li class:list={{ 'is-active': isActive(item) && item.href !== '/' }}>
+							<a href={item.href} aria-current={item.href === '/' && path === '/' ? 'page' : undefined}>
+								{item.label}
+								{item.children && <span class="caret" aria-hidden="true">▼</span>}
+							</a>
+							{item.children && (
+								<ul class="submenu">
+									{item.children.map((child) => (
+										<li>
+											<a href={child.href} aria-current={isCurrent(child.href) ? 'page' : undefined}>
+												{child.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							)}
+						</li>
+					))
+				}
+				<li>
+					<button class="search-toggle" type="button" aria-controls="search-panel" aria-expanded="false" data-search-toggle>
+						<img src="/template/searchmenu.png" alt="" width="18" height="18" />
+						<span class="sr-only">Search</span>
+					</button>
+				</li>
+			</ul>
+		</nav>
+	</div>
+
+	<div class="mobile-bar">
+		{
+			path !== '/' && (
+				<button class="mobile-back" type="button" aria-label="Go back" data-back hidden>
+					<svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true">
+						<path d="M8.5 1.5 2 8l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2" />
+					</svg>
+				</button>
+			)
+		}
+		<a class="brand" href="/" aria-label="Masar Petroleum home">
+			<img src="/template/logo.png" width="52" height="40" alt="Masar petroleum" />
+		</a>
+		<button class="menu-toggle" type="button" aria-controls="drawer" aria-expanded="false" aria-label="Menu" data-menu-toggle>
+			<span></span>
+		</button>
+	</div>
+</header>
+
+<div class="drawer-mask" data-menu-close></div>
+<aside class="drawer" id="drawer" aria-label="Mobile menu">
+	<button class="drawer-close" type="button" aria-label="Close menu" data-menu-close>
+		<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 2l14 14M16 2 2 16" stroke="currentColor" stroke-width="2" /></svg>
+	</button>
+	<div class="drawer-logo">
+		<img src="/template/logo.png" width="130" height="100" alt="Masar petroleum" />
+	</div>
+	<SearchForm id="drawer-search" />
+	<nav aria-label="Mobile">
+		{
+			NAV.map((item) => (
+				<>
+					<a href={item.href} aria-current={isCurrent(item.href) && (item.href !== '/' || path === '/') ? 'page' : undefined}>
+						{item.label}
+					</a>
+					{item.children && (
+						<div class="sub">
+							{item.children.map((child) => (
+								<a href={child.href} aria-current={isCurrent(child.href) ? 'page' : undefined}>
+									{child.label}
+								</a>
+							))}
+						</div>
+					)}
+				</>
+			))
+		}
+	</nav>
+</aside>

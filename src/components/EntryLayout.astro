@@ -1,0 +1,64 @@
+---
+// Shared detail-page layout: breadcrumbs, title box, sectioned body,
+// optional side photo or gallery, and related topics.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import RelatedTopics from './RelatedTopics.astro';
+
+interface Props {
+	title: string;
+	subtitle?: string;
+	description?: string;
+	image?: string;
+	crumbs: Array<{ label: string; href?: string }>;
+	aside?: string;
+	gallery?: string[];
+	related?: Array<{ topic: string; ids: number[] }>;
+}
+
+const { title, subtitle, description, image, crumbs, aside, gallery = [], related = [] } = Astro.props;
+// A single photo sits beside the text (as on the original); several become a gallery below it.
+const sidePhoto = aside ?? (gallery.length === 1 ? gallery[0] : undefined);
+const galleryImages = gallery.length > 1 ? gallery : [];
+---
+
+<BaseLayout title={title} description={description} image={image} type="article">
+	<div class="container page">
+		<Breadcrumbs items={crumbs} />
+		<article>
+			<div class="box">
+				<header class="entry-header">
+					<h1>{title}</h1>
+					{subtitle && <p class="entry-subtitle">{subtitle}</p>}
+				</header>
+				<div class:list={['entry-layout', { 'has-aside': sidePhoto }]}>
+					<div class="prose flat">
+						<slot />
+					</div>
+					{
+						sidePhoto && (
+							<div class="entry-aside">
+								<a href={sidePhoto} data-lightbox="entry">
+									<img src={sidePhoto} alt={title} width="450" height="450" loading="lazy" decoding="async" />
+								</a>
+							</div>
+						)
+					}
+				</div>
+				{
+					galleryImages.length > 0 && (
+						<div class="gallery" aria-label="Photo gallery">
+							{galleryImages.map((src, i) => (
+								<a href={src} data-lightbox="entry">
+									<img src={src} alt={`${title} — photo ${i + 1}`} width="300" height="300" loading="lazy" decoding="async" />
+								</a>
+							))}
+						</div>
+					)
+				}
+			</div>
+			<RelatedTopics groups={related} />
+		</article>
+		<slot name="after" />
+	</div>
+</BaseLayout>

@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Billboard from '../components/Billboard.astro';
+import NewsList from '../components/NewsList.astro';
+import ArticleCarousel from '../components/ArticleCarousel.astro';
+import { VALUES } from '../consts';
+
+const organization = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: 'Masar Petroleum SAOC',
+	alternateName: 'Masar Petroleum',
+	url: Astro.site?.href,
+	logo: new URL('/template/logo-og.png', Astro.site).href,
+	foundingDate: '2015',
+	address: {
+		'@type': 'PostalAddress',
+		streetAddress: 'Coral Building, Next to Zakher Mall, Al Khuwair',
+		addressLocality: 'Muscat',
+		addressCountry: 'OM',
+	},
+	telephone: '+968 24398600',
+	email: 'info@masarpetroleum.om',
+	sameAs: ['https://www.linkedin.com/company/masarpetroleum/'],
+};
+---
+
+<BaseLayout>
+	<script type="application/ld+json" slot="head" set:html={JSON.stringify(organization)} />
+
+	<Billboard />
+
+	<section class="news-band" aria-labelledby="recent-news">
+		<div class="container">
+			<h2 class="section-title" id="recent-news">Recent News</h2>
+			<NewsList />
+		</div>
+	</section>
+
+	<section class="parallax" aria-labelledby="about-masar">
+		<div class="container">
+			<div class="intro-card" data-reveal>
+				<h2 id="about-masar">Masar Petroleum</h2>
+				<p>
+					Masar Petroleum is a dynamic and forward-thinking oil and gas exploration and production company that began operations in 2015. With a
+					strategic focus on unlocking hydrocarbon resources to meet the world's growing energy demands, Masar Petroleum owns 100% of Block 7 in
+					Sahmah, a significant asset with immense potential for exploration and production activities.
+				</p>
+				<p class="actions"><a class="btn-primary" href="/company/">more about us...</a></p>
+			</div>
+			<div class="values">
+				{
+					VALUES.map((v) => (
+						<div class="value-card">
+							<img class="value-pin" src="/template/pin1.png" alt="" width="23" height="26" />
+							<div class="value-inner">
+								<img src={v.image} alt={v.title} width="500" height="333" loading="lazy" decoding="async" />
+								<strong>{v.title}</strong>
+								<p>{v.text}</p>
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section class="section" aria-labelledby="recent-articles">
+		<div class="container">
+			<h2 class="section-title center" id="recent-articles">Recent articles</h2>
+			<ArticleCarousel />
+		</div>
+	</section>
+</BaseLayout>
