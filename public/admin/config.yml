@@ -5,6 +5,11 @@ backend:
   name: github
   repo: masarpetroleum/masarpetroleum.github.io
   branch: main
+  # “Sign In with GitHub” needs an OAuth server (GitHub Pages can't provide one).
+  # To enable it, deploy https://github.com/sveltia/sveltia-cms-auth, then set
+  #   base_url: https://<your-worker>.workers.dev
+  # and change auth_methods to [oauth, token].
+  auth_methods: [token]
   commit_messages:
     create: 'Create {{collection}} “{{slug}}” (via CMS)'
     update: 'Update {{collection}} “{{slug}}” (via CMS)'
