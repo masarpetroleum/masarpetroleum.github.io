@@ -1,8 +1,10 @@
 // The home page hero: a full-bleed slideshow.
 //
-// - Slides are stacked. The next one opens over the current one like a curtain
-//   (a clip-path wipe) while its photo settles from a zoom; the text then rises
+// - The photos are drawn with WebGL (Three.js, see ./gl.ts): one blends into the
+//   next through a rippling front, and leans towards the mouse. The text rises
 //   line by line from behind a mask. The styles are in global.css ("Hero").
+// - Without WebGL, or under "reduce motion", the slides are plain stacked
+//   images and the next one opens over the current one like a curtain.
 // - Swipe on touch screens, drag with a mouse, or use the arrow keys.
 // - One tab per slide under the text. The current tab fills up as a timer; when
 //   it is full the next slide comes in.
@@ -16,6 +18,7 @@ import { ChevronLeft } from '../animate-ui/icons/chevron-left';
 import { ChevronRight } from '../animate-ui/icons/chevron-right';
 import { Pause } from '../animate-ui/icons/pause';
 import { Play } from '../animate-ui/icons/play';
+import type { HeroGL } from './gl';
 
 export interface HeroSlide {
 	image: string;
@@ -64,6 +67,10 @@ export default function Hero({ slides, interval }: Props) {
 	const reduceMotion = useReducedMotion();
 
 	const rootRef = React.useRef<HTMLElement>(null);
+	const canvasRef = React.useRef<HTMLCanvasElement>(null);
+	const glRef = React.useRef<HeroGL | null>(null);
+	// True once the WebGL layer has drawn its first photo and takes over from the images.
+	const [gl, setGl] = React.useState(false);
 	// `from` is the slide being covered; `direction` is 1 for next, -1 for previous.
 	const [view, setView] = React.useState<{ index: number; from: number | null; direction: 1 | -1 }>({ index: 0, from: null, direction: 1 });
 	const [playing, setPlaying] = React.useState(true);
@@ -103,6 +110,43 @@ export default function Hero({ slides, interval }: Props) {
 			document.removeEventListener('visibilitychange', onVisibility);
 		};
 	}, []);
+
+	// The WebGL layer. Three.js is fetched here, after the page is up, and only
+	// for visitors who haven't asked for less motion.
+	const images = slides.map((slide) => slide.image).join('\n');
+	const viewRef = React.useRef(view);
+	viewRef.current = view;
+	React.useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas || reduceMotion) return;
+		let cancelled = false;
+		import('./gl')
+			.then(({ createHeroGL }) => {
+				if (cancelled) return;
+				glRef.current = createHeroGL(canvas, images.split('\n'), {
+					index: viewRef.current.index,
+					onReady: () => setGl(true),
+					onLost: () => setGl(false),
+				});
+			})
+			.catch(() => {
+				// The stacked images keep working as the slideshow.
+			});
+		return () => {
+			cancelled = true;
+			glRef.current?.dispose();
+			glRef.current = null;
+			setGl(false);
+		};
+	}, [images, reduceMotion]);
+
+	React.useEffect(() => {
+		glRef.current?.show(view.index, view.direction);
+	}, [view]);
+
+	React.useEffect(() => {
+		glRef.current?.setActive(onScreen && tabVisible);
+	}, [onScreen, tabVisible, gl]);
 
 	const autoplay = playing && many;
 	const running = autoplay && !hovered && !focused && onScreen && tabVisible;
@@ -151,11 +195,17 @@ export default function Hero({ slides, interval }: Props) {
 				aria-roledescription="carousel"
 				aria-label="Highlights"
 				data-direction={view.direction}
+				data-gl={gl || undefined}
 				style={{ '--hero-interval': `${interval}s` } as React.CSSProperties}
 				onKeyDown={onKeyDown}
 				onPointerDown={onPointerDown}
 				onPointerUp={onPointerUp}
 				onPointerCancel={() => (gesture.current = null)}
+				onPointerMove={(e) => {
+					if (e.pointerType !== 'mouse' || !glRef.current) return;
+					const box = e.currentTarget.getBoundingClientRect();
+					glRef.current.pointer((e.clientX - box.left) / box.width, (e.clientY - box.top) / box.height);
+				}}
 				onClickCapture={onClickCapture}
 				onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(true)}
 				onPointerLeave={() => setHovered(false)}
@@ -164,6 +214,7 @@ export default function Hero({ slides, interval }: Props) {
 				onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setFocused(false)}
 			>
 				<div className="hero-stage" aria-live={running ? 'off' : 'polite'}>
+					<canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
 					{slides.map((slide, i) => {
 						const active = i === view.index;
 						// 'enter' plays the curtain; the very first slide is simply there.

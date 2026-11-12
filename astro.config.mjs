@@ -6,7 +6,7 @@ import rehypeSections from './src/lib/rehype-sections.mjs';
 // https://astro.build/config
 export default defineConfig({
 	// The public address (the custom domain set on GitHub Pages). Used for canonical links and the sitemap.
-	site: 'https://masarpetroleum.om',
+	site: 'https://www.masarpetroleum.om',
 	trailingSlash: 'ignore',
 	build: { format: 'directory' },
 	// React powers the interactive islands (the site header, built on Animate UI).

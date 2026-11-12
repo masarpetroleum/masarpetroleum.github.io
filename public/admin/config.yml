@@ -18,8 +18,8 @@ backend:
     uploadMedia: 'Upload “{{path}}” (via CMS)'
     deleteMedia: 'Delete “{{path}}” (via CMS)'
 
-site_url: https://masarpetroleum.om
-display_url: https://masarpetroleum.om
+site_url: https://www.masarpetroleum.om
+display_url: https://www.masarpetroleum.om
 logo:
   src: /images/site/logo.png
 
