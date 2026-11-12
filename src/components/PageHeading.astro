@@ -1,14 +1,22 @@
 ---
+// The banner at the top of every inner page: breadcrumbs, the title, and an
+// optional subtitle. Pass `image` to show a photo behind it.
 import Breadcrumbs from './Breadcrumbs.astro';
 
 interface Props {
 	title: string;
+	subtitle?: string;
+	image?: string;
 	crumbs: Array<{ label: string; href?: string }>;
 }
-const { title, crumbs } = Astro.props;
+const { title, subtitle, image, crumbs } = Astro.props;
 ---
 
-<Breadcrumbs items={crumbs} />
-<div class="page-title">
-	<h1>{title}</h1>
-</div>
+<header class:list={['page-head', { 'has-image': image }]}>
+	{image && <img class="page-head-bg" src={image} alt="" width="1600" height="640" fetchpriority="high" decoding="async" />}
+	<div class="container">
+		<Breadcrumbs items={crumbs} />
+		<h1>{title}</h1>
+		{subtitle && <p class="page-head-sub">{subtitle}</p>}
+	</div>
+</header>

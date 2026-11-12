@@ -8,8 +8,8 @@ const { title, cards } = PAGES.about;
 ---
 
 <BaseLayout title={title} description="Learn about Masar Petroleum SAOC — our company background and the team behind Block 7.">
+	<PageHeading title={title} crumbs={[{ label: title, href: '/about/' }]} />
 	<div class="container page">
-		<PageHeading title={title} crumbs={[{ label: title, href: '/about/' }]} />
 		<div class="grid grid-4">
 			{cards.map((c) => <Card href={c.href} image={c.image} title={c.title} variant="centered" eager />)}
 		</div>

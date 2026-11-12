@@ -1,7 +1,7 @@
 ---
 import { getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PageHeading from '../../components/PageHeading.astro';
 import RelatedTopics from '../../components/RelatedTopics.astro';
 
 const entry = (await getEntry('pages', 'company'))!;
@@ -9,14 +9,12 @@ const { Content } = await render(entry);
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.excerpt} image={entry.data.hero}>
-	<div class="hero-image" style={`background-image:url('${entry.data.hero}')`} role="img" aria-label="Masar Petroleum field operations"></div>
-	<div class="hero-band">
-		<div class="container">
-			<h1>{entry.data.title}</h1>
-		</div>
-	</div>
+	<PageHeading
+		title={entry.data.title}
+		image={entry.data.hero}
+		crumbs={[{ label: 'About', href: '/about/' }, { label: 'Company background', href: '/company/' }]}
+	/>
 	<div class="container page">
-		<Breadcrumbs items={[{ label: 'About', href: '/about/' }, { label: 'Company background', href: '/company/' }]} />
 		<div class="prose">
 			<Content />
 		</div>

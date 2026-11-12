@@ -9,8 +9,8 @@ const entries = await getEvents();
 ---
 
 <BaseLayout title={PAGES.events.title} description="News and events from Masar Petroleum, Block 7, Oman.">
+	<PageHeading title={PAGES.events.title} crumbs={[{ label: PAGES.events.title, href: '/events/' }]} />
 	<div class="container page">
-		<PageHeading title={PAGES.events.title} crumbs={[{ label: PAGES.events.title, href: '/events/' }]} />
 		<div class="grid grid-4">
 			{entries.map((e, i) => <Card href={`/events/${e.id}/`} image={e.data.image} title={e.data.title} subtitle={e.data.subtitle} eager={i < 4} />)}
 		</div>

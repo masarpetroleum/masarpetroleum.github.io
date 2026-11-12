@@ -6,10 +6,8 @@ import { PAGES } from '../../consts';
 ---
 
 <BaseLayout title={PAGES.news.title} description="The latest news from Masar Petroleum.">
-	<div class="news-band" style="padding-top:0">
-		<div class="container page">
-			<PageHeading title={PAGES.news.title} crumbs={[{ label: PAGES.news.title, href: '/news/' }]} />
-			<NewsList />
-		</div>
+	<PageHeading title={PAGES.news.title} crumbs={[{ label: PAGES.news.title, href: '/news/' }]} />
+	<div class="container page">
+		<NewsList />
 	</div>
 </BaseLayout>

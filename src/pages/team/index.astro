@@ -11,9 +11,9 @@ const { title, intro } = PAGES.team;
 ---
 
 <BaseLayout title={title} description="Meet the leadership and management team of Masar Petroleum.">
+	<PageHeading title={title} crumbs={[{ label: PAGES.about.title, href: '/about/' }, { label: title, href: '/team/' }]} />
 	<div class="container page">
-		<PageHeading title={title} crumbs={[{ label: PAGES.about.title, href: '/about/' }, { label: title, href: '/team/' }]} />
-		{intro && <div class="box page-intro" set:html={renderText(intro)} />}
+		{intro && <div class="lead" set:html={renderText(intro)} />}
 		<div class="grid grid-4">
 			{team.map((m, i) => <Card href={`/team/${m.id}/`} image={m.data.image} title={m.data.name} subtitle={m.data.role} eager={i < 4} />)}
 		</div>

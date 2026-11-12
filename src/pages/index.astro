@@ -27,39 +27,40 @@ const { intro } = HOME;
 
 	{HOME.slides.length > 0 && <Billboard />}
 
-	<section class="news-band" aria-labelledby="recent-news">
+	<section class="section section-tint" aria-labelledby="recent-news">
 		<div class="container">
-			<h2 class="section-title" id="recent-news">{HOME.newsTitle}</h2>
+			<div class="section-head">
+				<h2 id="recent-news">{HOME.newsTitle}</h2>
+				<a class="link-arrow" href="/news/">All news</a>
+			</div>
 			<NewsList />
 		</div>
 	</section>
 
-	<section class="parallax" aria-labelledby="about-masar" style={intro.background ? `background-image:url('${intro.background}')` : undefined}>
+	<section class="about-band" aria-labelledby="about-masar">
+		{intro.background && <img class="about-band-bg" src={intro.background} alt="" width="1600" height="900" loading="lazy" decoding="async" />}
 		<div class="container">
-			<div class="intro-card" data-reveal>
+			<div class="about-intro" data-reveal>
 				<h2 id="about-masar">{intro.title}</h2>
 				<Fragment set:html={renderText(intro.text)} />
 				{
 					intro.buttonHref && intro.buttonLabel && (
-						<p class="actions">
-							<a class="btn-primary" href={intro.buttonHref}>
-								{intro.buttonLabel}
-							</a>
-						</p>
+						<a class="btn-light" href={intro.buttonHref}>
+							{intro.buttonLabel.replace(/\s*(\.{2,}|…)\s*$/, '')}
+						</a>
 					)
 				}
 			</div>
 			<div class="values">
 				{
 					HOME.values.map((v) => (
-						<div class="value-card">
-							<img class="value-pin" src="/images/site/pin1.png" alt="" width="23" height="26" />
-							<div class="value-inner">
-								<img src={v.image} alt={v.title} width="500" height="333" loading="lazy" decoding="async" />
-								<strong>{v.title}</strong>
+						<article class="value-card" data-reveal>
+							<img src={v.image} alt="" width="500" height="333" loading="lazy" decoding="async" />
+							<div class="value-body">
+								<h3>{v.title}</h3>
 								<p>{v.text}</p>
 							</div>
-						</div>
+						</article>
 					))
 				}
 			</div>
@@ -68,7 +69,10 @@ const { intro } = HOME;
 
 	<section class="section" aria-labelledby="recent-articles">
 		<div class="container">
-			<h2 class="section-title center" id="recent-articles">{HOME.articlesTitle}</h2>
+			<div class="section-head">
+				<h2 id="recent-articles">{HOME.articlesTitle}</h2>
+				<a class="link-arrow" href="/articles/">All articles</a>
+			</div>
 			<ArticleCarousel />
 		</div>
 	</section>

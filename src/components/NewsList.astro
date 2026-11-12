@@ -2,6 +2,7 @@
 import { getFeatured } from '../lib/content';
 
 const items = await getFeatured();
+const LABELS: Record<string, string> = { events: 'News', articles: 'Article', pages: 'Company', careers: 'Careers', team: 'Team' };
 // Prefer the wide original artwork (images/content/N.jpg) for migrated entries.
 const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/content/${legacyId}.jpg` : fallback);
 ---
@@ -9,17 +10,16 @@ const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/cont
 <div class="news-list">
 	{
 		items.map((item, i) => (
-			<a class="news-item" href={item.url}>
-				<div class="box box-hover">
-					<div class="news-media" data-reveal>
-						<img src={wide(item.legacyId, item.image)} alt={item.title} width="580" height="300" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
-					</div>
-					<div class="news-body" data-reveal>
-						<strong>{item.title}</strong>
-						{item.subtitle && <span class="sub">{item.subtitle}</span>}
-						<span>{item.excerpt.replace(/…$/, '')} …</span>
-						<span class="read-more">Read more</span>
-					</div>
+			<a class="news-item" href={item.url} data-reveal>
+				<div class="news-media">
+					<img src={wide(item.legacyId, item.image)} alt="" width="580" height="300" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+				</div>
+				<div class="news-body">
+					<span class="news-tag">{LABELS[item.section] ?? 'News'}</span>
+					<strong>{item.title}</strong>
+					{item.subtitle && <span class="sub">{item.subtitle}</span>}
+					<span class="news-excerpt">{item.excerpt}</span>
+					<span class="read-more">Read more</span>
 				</div>
 			</a>
 		))

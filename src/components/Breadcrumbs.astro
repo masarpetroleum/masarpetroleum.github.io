@@ -20,11 +20,7 @@ const schema = {
 	<ol>
 		{
 			crumbs.map((c) => (
-				<li>
-					<a href={c.href} aria-current={c.href === current ? 'page' : undefined}>
-						{c.label}
-					</a>
-				</li>
+				<li>{c.href === current ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}</li>
 			))
 		}
 	</ol>

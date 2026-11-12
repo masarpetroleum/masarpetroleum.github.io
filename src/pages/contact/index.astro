@@ -1,23 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PageHeading from '../../components/PageHeading.astro';
 import { CONTACT, PAGES } from '../../consts';
 ---
 
 <BaseLayout title={PAGES.contact.title} description={`Contact ${CONTACT.company} — ${CONTACT.address.join(' ')} Phone ${CONTACT.phone}.`}>
+	<PageHeading title={PAGES.contact.title} crumbs={[{ label: 'Contact', href: '/contact/' }]} />
 	<div class="container page">
-		<Breadcrumbs items={[{ label: 'Contact', href: '/contact/' }]} />
 		<div class="contact-grid">
-			<div class="contact-map">
-				<iframe
-					src={CONTACT.mapEmbed}
-					title="Masar Petroleum location — Coral Building, Muscat"
-					loading="lazy"
-					referrerpolicy="no-referrer-when-downgrade"
-					allowfullscreen></iframe>
-			</div>
 			<div class="contact-info">
-				<h1>{PAGES.contact.title}</h1>
 				<ul class="contact-list">
 					<li>
 						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -39,18 +30,37 @@ import { CONTACT, PAGES } from '../../consts';
 					</li>
 				</ul>
 
+				<h2 class="contact-form-title">Send us a message</h2>
 				<form class="form" id="contact-form" novalidate>
-					<label class="sr-only" for="cf-name">Name</label>
-					<input id="cf-name" name="name" placeholder="Name" required autocomplete="name" />
-					<label class="sr-only" for="cf-phone">Phone</label>
-					<input id="cf-phone" name="phone" type="tel" placeholder="Phone" autocomplete="tel" dir="ltr" />
-					<label class="sr-only" for="cf-email">Email</label>
-					<input id="cf-email" name="email" type="email" placeholder="Email" autocomplete="email" dir="ltr" />
-					<label class="sr-only" for="cf-message">Message</label>
-					<textarea id="cf-message" name="message" placeholder="Message" required></textarea>
+					<div class="field">
+						<label for="cf-name">Name</label>
+						<input id="cf-name" name="name" required autocomplete="name" />
+					</div>
+					<div class="field-row">
+						<div class="field">
+							<label for="cf-phone">Phone</label>
+							<input id="cf-phone" name="phone" type="tel" autocomplete="tel" dir="ltr" />
+						</div>
+						<div class="field">
+							<label for="cf-email">Email</label>
+							<input id="cf-email" name="email" type="email" autocomplete="email" dir="ltr" />
+						</div>
+					</div>
+					<div class="field">
+						<label for="cf-message">Message</label>
+						<textarea id="cf-message" name="message" required></textarea>
+					</div>
 					<button class="btn-primary" type="submit">Send message</button>
 					<p class="form-note" id="cf-status" role="status">{PAGES.contact.formNote}</p>
 				</form>
+			</div>
+			<div class="contact-map">
+				<iframe
+					src={CONTACT.mapEmbed}
+					title="Masar Petroleum location — Coral Building, Muscat"
+					loading="lazy"
+					referrerpolicy="no-referrer-when-downgrade"
+					allowfullscreen></iframe>
 			</div>
 		</div>
 	</div>

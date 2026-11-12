@@ -9,24 +9,24 @@ const groups = await getRelated(Astro.props.tags, Astro.url.pathname);
 
 {
 	groups.length > 0 && (
-		<aside class="box related" aria-labelledby="related-title">
-			<h2 class="related-title" id="related-title">Related topics:</h2>
-			{groups.map((g) => (
-				<>
-					<ul>
-						<li class="topic">
-							<a href={`/search/?key=${encodeURIComponent(g.topic)}`}>{g.topic}</a>
-						</li>
-					</ul>
-					<ul>
-						{g.items.map((item) => (
-							<li>
-								<a href={item.url}>{item.title}</a>
-							</li>
-						))}
-					</ul>
-				</>
-			))}
+		<aside class="related" aria-labelledby="related-title">
+			<h2 class="related-title" id="related-title">Related topics</h2>
+			<div class="related-groups">
+				{groups.map((g) => (
+					<div class="related-group">
+						<a class="chip" href={`/search/?key=${encodeURIComponent(g.topic)}`}>
+							{g.topic}
+						</a>
+						<ul>
+							{g.items.map((item) => (
+								<li>
+									<a href={item.url}>{item.title}</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))}
+			</div>
 		</aside>
 	)
 }

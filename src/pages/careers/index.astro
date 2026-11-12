@@ -11,9 +11,9 @@ const { title, intro, links } = PAGES.careers;
 ---
 
 <BaseLayout title={title} description="Job opportunities at Masar Petroleum, Oman.">
+	<PageHeading title={title} crumbs={[{ label: title, href: '/careers/' }]} />
 	<div class="container page">
-		<PageHeading title={title} crumbs={[{ label: title, href: '/careers/' }]} />
-		<div class="box page-intro">
+		<div class="notice">
 			<Fragment set:html={renderText(intro)} />
 			{
 				links.map((l) => (

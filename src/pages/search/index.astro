@@ -5,8 +5,8 @@ import SearchForm from '../../components/SearchForm.astro';
 ---
 
 <BaseLayout title="Search" description="Search Masar Petroleum news, events, articles and team.">
+	<PageHeading title="Search" crumbs={[{ label: 'Search', href: '/search/' }]} />
 	<div class="container page search-page">
-		<PageHeading title="Search" crumbs={[{ label: 'Search', href: '/search/' }]} />
 		<SearchForm id="page-search" />
 		<p id="search-summary" role="status"></p>
 		<ul class="search-results" id="search-results"></ul>
@@ -59,7 +59,7 @@ import SearchForm from '../../components/SearchForm.astro';
 					: `No results found for “${key}”.`;
 				list.innerHTML = scored
 					.map(
-						({ item }) => `<li class="box box-hover"><a href="${item.url}">
+						({ item }) => `<li><a href="${item.url}">
 							${item.image ? `<img src="${item.image}" alt="" width="110" height="110" loading="lazy">` : '<span></span>'}
 							<span><span class="tag">${LABELS[item.section] ?? ''}</span>
 							<strong>${escape(item.title)}</strong>

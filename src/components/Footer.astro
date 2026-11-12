@@ -1,31 +1,52 @@
 ---
-import { CONTACT, FOOTER } from '../consts';
+import { CONTACT, FOOTER, NAV, SITE } from '../consts';
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
 	<div class="moving-background">
-		<img src="/images/site/masar-cover.svg" alt="Masar petroleum" width="1400" height="256" loading="lazy" />
+		<img src="/images/site/masar-cover.svg" alt="" width="1400" height="256" loading="lazy" />
 	</div>
 	<div class="container footer-grid">
-		<ul class="footer-links">
-			{
-				FOOTER.links.map((l) => (
-					<li>
-						<a href={l.href}>{l.label}</a>
-					</li>
-				))
-			}
-		</ul>
-		<div class="footer-social">
-			<a href={CONTACT.phoneHref}>
-				<img src="/images/site/whatsapp.svg" alt="" width="30" height="30" loading="lazy" />
-				Phone
-			</a>
-			<a href={CONTACT.linkedin} target="_blank" rel="noopener">
-				<img src="/images/files/linkedin.svg" alt="" width="30" height="30" loading="lazy" />
-				LinkedIn
-			</a>
+		<div class="footer-brand">
+			<p class="footer-name">{SITE.name}</p>
+			<address>
+				{CONTACT.address.map((line) => <span>{line}</span>)}
+			</address>
+			<div class="footer-social">
+				<a href={CONTACT.phoneHref}>
+					<img src="/images/site/whatsapp.svg" alt="" width="30" height="30" loading="lazy" />
+					{CONTACT.phone}
+				</a>
+				<a href={CONTACT.linkedin} target="_blank" rel="noopener">
+					<img src="/images/files/linkedin.svg" alt="" width="30" height="30" loading="lazy" />
+					LinkedIn
+				</a>
+			</div>
+		</div>
+		<nav class="footer-col" aria-label="Footer">
+			<h2>Explore</h2>
+			<ul>
+				{
+					NAV.filter((item) => item.href !== '/').map((item) => (
+						<li>
+							<a href={item.href}>{item.label}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<div class="footer-col">
+			<h2>Quick links</h2>
+			<ul>
+				{
+					FOOTER.links.map((l) => (
+						<li>
+							<a href={l.href}>{l.label}</a>
+						</li>
+					))
+				}
+			</ul>
 		</div>
 		<div class="footer-badge">
 			{
