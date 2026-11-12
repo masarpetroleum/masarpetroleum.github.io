@@ -17,7 +17,8 @@ const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/cont
 					<div class="news-body" data-reveal>
 						<strong>{item.title}</strong>
 						{item.subtitle && <span class="sub">{item.subtitle}</span>}
-						<span>{item.excerpt.replace(/…$/, '')} …</span> <span class="read-more">(Read more...)</span>
+						<span>{item.excerpt.replace(/…$/, '')} …</span>
+						<span class="read-more">Read more</span>
 					</div>
 				</div>
 			</a>

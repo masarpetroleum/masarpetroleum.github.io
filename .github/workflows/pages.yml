@@ -43,6 +43,9 @@ jobs:
           path: dist
 
   deploy:
+    # The github-pages environment only accepts deployments from main.
+    # Other branches still run the build as a check, but skip deploying.
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

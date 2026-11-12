@@ -246,18 +246,19 @@ collections:
             widget: list
             summary: '{{fields.title}} — {{fields.subtitle}}'
             fields:
-              - { name: image, label: Background image, widget: image, hint: 'Wide landscape image, about 2200 × 880 px.' }
+              - { name: image, label: Background image, widget: image, hint: 'Wide landscape image, about 2200 × 880 px. Keep the subject near the centre: phones crop the sides.' }
               - { name: title, label: Title }
               - { name: subtitle, label: Subtitle, required: false }
               - { name: ctaLabel, label: Button text, required: false }
-              - { name: ctaHref, label: Button link, required: false, hint: 'If set, the whole slide links here.' }
+              - { name: ctaHref, label: Button link, required: false, hint: 'The button links here. Both button fields are needed to show it.' }
               - name: theme
-                label: Text colour
+                label: Image brightness
+                hint: 'Text is always white; a bright image gets a darker shade behind it.'
                 widget: select
                 default: light
                 options:
-                  - { label: Dark text (for light images), value: light }
-                  - { label: White text (for dark images), value: dark }
+                  - { label: Bright image (darker shade), value: light }
+                  - { label: Dark image (lighter shade), value: dark }
           - { name: slideInterval, label: Seconds per slide, widget: number, value_type: int, default: 5, min: 2, max: 30 }
           - { name: newsTitle, label: '“Recent News” heading' }
           - name: intro
