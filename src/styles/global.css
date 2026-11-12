@@ -243,15 +243,6 @@ main {
 		background-color 0.3s ease;
 }
 
-/* Brand accent along the top edge, in the logo's navy and red. */
-.site-header::before {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto;
-	height: 3px;
-	background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 60%, var(--secondary) 100%);
-}
-
 .site-header[data-scrolled] {
 	background: rgba(255, 255, 255, 0.95);
 	border-bottom-color: var(--line);
@@ -263,7 +254,6 @@ main {
 	align-items: center;
 	gap: 12px;
 	height: var(--header-h);
-	padding-top: 3px;
 	transition: height 0.3s ease;
 }
 
@@ -324,28 +314,14 @@ main {
 	transition: color 0.2s ease;
 }
 
-/* Animate UI reads this background and slides it between items. */
+/* Animate UI reads this background and slides it between items. The current
+   section wears the same look, so it reads as "here". */
 .nav-link:hover,
 .nav-link:focus-visible,
-.nav-link[aria-expanded='true'] {
+.nav-link[aria-expanded='true'],
+.nav-link[data-section] {
 	color: var(--primary-dark);
 	background: var(--tint);
-}
-
-.nav-link[data-section] {
-	font-weight: 600;
-}
-
-.nav-link[data-section]::after {
-	content: '';
-	position: absolute;
-	left: 50%;
-	bottom: 3px;
-	width: 18px;
-	height: 3px;
-	margin-left: -9px;
-	border-radius: 3px;
-	background: var(--secondary);
 }
 
 .nav-caret {
@@ -429,14 +405,10 @@ main {
 }
 
 .nav-panel-link:hover,
-.nav-panel-link:focus-visible {
+.nav-panel-link:focus-visible,
+.nav-panel-link[data-active] {
 	color: var(--primary-dark);
 	background: var(--surface-alt);
-}
-
-.nav-panel-link[data-active] {
-	color: var(--secondary);
-	font-weight: 600;
 }
 
 .nav-panel-arrow {
@@ -634,26 +606,10 @@ main {
 	transition: background-color 0.2s ease;
 }
 
-.sheet-link:hover {
+.sheet-link:hover,
+.sheet-link[data-section] {
 	background: var(--surface-alt);
 	color: var(--primary-dark);
-}
-
-.sheet-link[data-section] {
-	color: var(--secondary);
-	font-weight: 600;
-	background: rgba(185, 51, 48, 0.06);
-}
-
-.sheet-link[data-section]::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 14px;
-	bottom: 14px;
-	width: 3px;
-	border-radius: 3px;
-	background: var(--secondary);
 }
 
 .sheet-toggle {
@@ -702,14 +658,10 @@ main {
 	font-weight: 400;
 }
 
-.sheet-sublink:hover {
+.sheet-sublink:hover,
+.sheet-sublink[aria-current='page'] {
 	background: var(--surface-alt);
 	color: var(--primary);
-}
-
-.sheet-sublink[aria-current='page'] {
-	color: var(--secondary);
-	font-weight: 600;
 }
 
 .sheet-foot {
@@ -751,176 +703,324 @@ main {
 	box-shadow: 0 1px 3px rgba(31, 33, 87, 0.14);
 }
 
-/* ---------- Billboard ---------- */
+/* ---------- Hero ---------- */
+/* Markup and behaviour: components/hero/Hero.tsx (Animate UI carousel). */
 
-.billboard {
+.hero {
 	position: relative;
-	width: 100%;
-	aspect-ratio: 5 / 2;
+	color: #fff;
+	background: #1b1d45;
+	isolation: isolate;
+}
+
+.hero-viewport {
 	overflow: hidden;
-	background: #eee;
+	/* Tall on phones with the text low, near full screen on larger ones. */
+	height: clamp(480px, 82vh, 660px);
+	height: clamp(480px, 82svh, 660px);
 }
 
-.billboard-slide {
-	position: absolute;
-	inset: 0;
+.hero-track {
 	display: flex;
-	align-items: center;
-	background-size: cover;
-	background-position: center;
-	opacity: 0;
-	visibility: hidden;
-	transition: opacity 0.8s ease, visibility 0.8s;
-	color: inherit;
+	height: 100%;
+	touch-action: pan-y pinch-zoom;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
-.billboard-slide.is-active {
-	opacity: 1;
-	visibility: visible;
-	z-index: 2;
+.hero-slide {
+	position: relative;
+	flex: 0 0 100%;
+	min-width: 0;
+	height: 100%;
+	overflow: hidden;
 }
 
-.billboard-slide img.bg {
+.hero-photo {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	z-index: -1;
+	transform: scale(1.07);
+	/* Reset the zoom only once the slide has moved off screen. */
+	transition: transform 0s linear 1s;
+	-webkit-user-drag: none;
+	pointer-events: none;
 }
 
-.billboard-text {
-	width: 100%;
-	max-width: calc(var(--container) + var(--gutter) * 2);
-	margin: auto;
-	padding-inline: calc(var(--gutter) + 24px);
+/* A slow settle on the slide that is showing. */
+.hero-slide[data-active] .hero-photo {
+	transform: none;
+	transition: transform 7s cubic-bezier(0.2, 0.6, 0.3, 1);
+}
+
+/* Phones: shade rises from the bottom, where the text sits. */
+.hero-shade {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		0deg,
+		rgba(14, 16, 46, 0.9) 0%,
+		rgba(14, 16, 46, 0.62) 34%,
+		rgba(14, 16, 46, 0.18) 62%,
+		rgba(14, 16, 46, 0.3) 100%
+	);
+}
+
+.hero-slide[data-theme='dark'] .hero-shade {
+	background: linear-gradient(
+		0deg,
+		rgba(14, 16, 46, 0.85) 0%,
+		rgba(14, 16, 46, 0.5) 34%,
+		rgba(14, 16, 46, 0.08) 62%,
+		rgba(14, 16, 46, 0.2) 100%
+	);
+}
+
+.hero-content {
+	position: absolute;
+	inset: 0;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
+	justify-content: flex-end;
+	padding-bottom: 96px;
 }
 
-.billboard-text > * {
-	opacity: 0;
-	transform-origin: 0 0;
+.hero-copy {
+	max-width: 760px;
 }
 
-.billboard-slide.is-active .billboard-text > * {
-	animation: billboardIn 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.billboard-slide.is-active .billboard-text > :nth-child(2) {
-	animation-name: billboardIn2;
-}
-
-.billboard-slide.is-active .billboard-text > :nth-child(3) {
-	animation-name: billboardIn3;
-}
-
-@keyframes billboardIn {
-	from {
-		opacity: 0.2;
-		transform: scale(0.8);
-	}
-	to {
-		opacity: 1;
-		transform: none;
-	}
-}
-
-@keyframes billboardIn2 {
-	from {
-		opacity: 0.2;
-		transform: scale(0.6);
-	}
-	to {
-		opacity: 1;
-		transform: none;
-	}
-}
-
-@keyframes billboardIn3 {
-	from {
-		opacity: 0.2;
-		transform: scale(0.4);
-	}
-	to {
-		opacity: 1;
-		transform: none;
-	}
-}
-
-.billboard-title {
-	font-size: clamp(1.6rem, 4.2vw, 3.35rem);
-	font-weight: 700;
-	line-height: 1.2;
-	padding-bottom: 0.4em;
-}
-
-.billboard-subtitle {
-	font-size: clamp(1rem, 2.9vw, 2.35rem);
-	font-weight: 700;
-	line-height: 1.25;
-	padding-bottom: 0.7em;
-}
-
-.theme-light .billboard-title,
-.theme-light .billboard-subtitle {
-	color: #000;
-	text-shadow: 0 0 15px #fff;
-}
-
-.theme-dark .billboard-title,
-.theme-dark .billboard-subtitle {
+.hero-title {
+	margin: 0;
+	max-width: 15ch;
 	color: #fff;
-	text-shadow: 0 0 15px #000;
-}
-
-.billboard-cta {
-	display: inline-block;
-	color: var(--secondary);
-	background: #fff;
+	font-size: clamp(2.2rem, 1.3rem + 4.4vw, 4.75rem);
 	font-weight: 700;
-	font-size: clamp(0.85rem, 1.2vw, 1.1rem);
-	padding: 8px 30px;
-	border-radius: 50px;
-	box-shadow: 0 2px 2px 2px rgba(50, 50, 50, 0.4);
-	transition: box-shadow 0.4s;
+	line-height: 1.05;
+	letter-spacing: -0.015em;
+	text-wrap: balance;
+	text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
 }
 
-.billboard-slide:hover .billboard-cta {
-	box-shadow: 0 4px 4px 4px rgba(50, 50, 50, 0.4);
+.hero-subtitle {
+	margin: 14px 0 0;
+	max-width: 34ch;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.6rem);
+	font-weight: 400;
+	line-height: 1.4;
+	text-wrap: balance;
 }
 
-.billboard-dots {
+.hero-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	height: 52px;
+	margin-top: 26px;
+	padding: 0 24px 0 28px;
+	border-radius: 999px;
+	background: var(--secondary);
+	color: #fff;
+	font-size: 1.05rem;
+	font-weight: 600;
+	line-height: 1;
+	box-shadow: 0 12px 28px -12px rgba(185, 51, 48, 0.8);
+	transition:
+		background-color 0.25s ease,
+		transform 0.25s ease,
+		box-shadow 0.25s ease;
+}
+
+.hero-cta:hover {
+	background: #a12b28;
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 16px 32px -12px rgba(185, 51, 48, 0.9);
+}
+
+.hero-cta:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
+}
+
+/* Controls: counter, dots, previous / pause / next */
+
+.hero-controls {
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 12px;
-	z-index: 5;
+	bottom: 22px;
+	z-index: 2;
 	display: flex;
-	justify-content: center;
-	gap: 6px;
+	align-items: center;
+	gap: 18px;
+	margin-inline: auto;
+	pointer-events: none;
 }
 
-.billboard-dots button {
-	width: 15px;
-	height: 15px;
-	border-radius: 50%;
-	border: 1px solid #888;
-	background: #fff;
-	cursor: pointer;
+.hero-controls > * {
+	pointer-events: auto;
+	animation: fadeIn 0.4s ease;
+}
+
+.hero-counter {
+	display: inline-flex;
+	align-items: baseline;
+	min-width: 3.2em;
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+}
+
+.hero-counter-total {
+	color: rgba(255, 255, 255, 0.6);
+	white-space: pre;
+}
+
+.hero-dots {
+	color: #fff;
+	gap: 12px !important;
+}
+
+.hero-dots [data-slot='carousel-dot'] {
+	position: relative;
+	width: 10px;
+	height: 10px;
+	/* Buttons don't inherit colour, and the dots paint with currentColor. */
+	color: inherit;
+	opacity: 0.4;
+	transition: opacity 0.2s ease;
+}
+
+.hero-dots [data-slot='carousel-dot']:hover {
+	opacity: 0.7;
+}
+
+/* A bigger hit area than the dot itself. */
+.hero-dots [data-slot='carousel-dot']::after {
+	content: '';
+	position: absolute;
+	inset: -14px -6px;
+}
+
+.hero-dots [data-slot='carousel-dots-indicator'] {
+	height: 10px;
+}
+
+.hero-buttons {
+	display: flex;
+	gap: 10px;
+	margin-left: auto;
+}
+
+.hero-btn {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
 	padding: 0;
-	transition: background 0.3s, transform 0.3s;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.14);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+	color: #fff;
+	cursor: pointer;
+	transition:
+		background-color 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
-.billboard-dots button[aria-current='true'] {
-	background: var(--primary);
-	transform: scale(1.15);
+.hero-btn:hover {
+	background: rgba(255, 255, 255, 0.26);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
-@media (max-width: 500px) {
-	.billboard {
-		aspect-ratio: 1 / 1;
+.hero-btn:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
+}
+
+.hero-ring {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	transform: rotate(-90deg);
+	pointer-events: none;
+}
+
+.hero-ring circle {
+	fill: none;
+	stroke-width: 2;
+}
+
+.hero-ring-track {
+	stroke: transparent;
+}
+
+.hero-ring-progress {
+	stroke: #fff;
+	stroke-linecap: round;
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	animation-name: heroRing;
+	animation-timing-function: linear;
+	animation-fill-mode: forwards;
+	/* This timer drives the slideshow, so it keeps its length even under
+	   reduced motion (which only plays when the visitor presses play). */
+	animation-duration: var(--hero-interval) !important;
+}
+
+@keyframes heroRing {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+/* Swipe is the way on phones; the arrows join from tablet size up. */
+.hero-step {
+	display: none;
+}
+
+@media (min-width: 640px) {
+	.hero-step {
+		display: grid;
+	}
+}
+
+@media (min-width: 768px) {
+	.hero-viewport {
+		height: clamp(520px, calc(100vh - var(--header-h)), 820px);
+		height: clamp(520px, calc(100svh - var(--header-h)), 820px);
+	}
+
+	/* Larger screens: shade from the left, behind the text, plus a little
+	   at the bottom for the controls. */
+	.hero-shade {
+		background:
+			linear-gradient(90deg, rgba(14, 16, 46, 0.82) 0%, rgba(14, 16, 46, 0.55) 34%, rgba(14, 16, 46, 0.12) 64%, rgba(14, 16, 46, 0) 80%),
+			linear-gradient(0deg, rgba(14, 16, 46, 0.55) 0%, rgba(14, 16, 46, 0) 28%);
+	}
+
+	.hero-slide[data-theme='dark'] .hero-shade {
+		background:
+			linear-gradient(90deg, rgba(14, 16, 46, 0.7) 0%, rgba(14, 16, 46, 0.4) 34%, rgba(14, 16, 46, 0.05) 64%, rgba(14, 16, 46, 0) 80%),
+			linear-gradient(0deg, rgba(14, 16, 46, 0.5) 0%, rgba(14, 16, 46, 0) 28%);
+	}
+
+	.hero-content {
+		justify-content: center;
+		padding-bottom: 40px;
+	}
+
+	.hero-controls {
+		bottom: 32px;
+		gap: 24px;
 	}
 }
 
