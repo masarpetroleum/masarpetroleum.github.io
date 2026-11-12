@@ -6,8 +6,7 @@
 // - Without WebGL, or under "reduce motion", the slides are plain stacked
 //   images and the next one opens over the current one like a curtain.
 // - Swipe on touch screens, drag with a mouse, or use the arrow keys.
-// - One tab per slide under the text. The current tab fills up as a timer; when
-//   it is full the next slide comes in.
+// - Moves on by itself every `interval` seconds; the buttons step and pause it.
 // - Pauses on hover, keyboard focus, when scrolled out of view and when the
 //   browser tab is hidden. Does not start by itself under "reduce motion".
 import * as React from 'react';
@@ -55,8 +54,6 @@ const fade: Variants = {
 	hidden: { opacity: 0, y: 16, transition: { duration: 0.01 } },
 	shown: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
-
-const pad = (n: number) => String(n).padStart(2, '0');
 
 // "More about us..." reads better without the dots next to an arrow.
 const tidyLabel = (label: string) => label.replace(/\s*(\.{2,}|…)\s*$/, '');
@@ -148,8 +145,23 @@ export default function Hero({ slides, interval }: Props) {
 		glRef.current?.setActive(onScreen && tabVisible);
 	}, [onScreen, tabVisible, gl]);
 
-	const autoplay = playing && many;
-	const running = autoplay && !hovered && !focused && onScreen && tabVisible;
+	const running = playing && many && !hovered && !focused && onScreen && tabVisible;
+
+	// The timer. A pause keeps the time already spent on the slide, so the slide
+	// doesn't start its wait again after every hover.
+	const remaining = React.useRef(interval * 1000);
+	React.useEffect(() => {
+		remaining.current = interval * 1000;
+	}, [view.index, interval]);
+	React.useEffect(() => {
+		if (!running) return;
+		const started = performance.now();
+		const timer = window.setTimeout(next, remaining.current);
+		return () => {
+			window.clearTimeout(timer);
+			remaining.current = Math.max(0, remaining.current - (performance.now() - started));
+		};
+	}, [running, view.index, next]);
 
 	const onKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === 'ArrowLeft') previous();
@@ -196,7 +208,6 @@ export default function Hero({ slides, interval }: Props) {
 				aria-label="Highlights"
 				data-direction={view.direction}
 				data-gl={gl || undefined}
-				style={{ '--hero-interval': `${interval}s` } as React.CSSProperties}
 				onKeyDown={onKeyDown}
 				onPointerDown={onPointerDown}
 				onPointerUp={onPointerUp}
@@ -247,13 +258,6 @@ export default function Hero({ slides, interval }: Props) {
 								<div className="hero-shade" aria-hidden="true" />
 								<div className="container hero-content">
 									<motion.div className="hero-copy" variants={copy} initial={false} animate={active ? 'shown' : 'hidden'}>
-										{many && (
-											<motion.p className="hero-eyebrow" variants={fade} aria-hidden="true">
-												<span>{pad(i + 1)}</span>
-												<span className="hero-eyebrow-line" />
-												<span>{pad(count)}</span>
-											</motion.p>
-										)}
 										<div className="hero-mask">
 											<motion.div variants={rise}>
 												<Title className="hero-title">{slide.title}</Title>
@@ -285,39 +289,6 @@ export default function Hero({ slides, interval }: Props) {
 
 				{many && (
 					<div className="container hero-ui">
-						<div className="hero-tabs" role="group" aria-label="Choose a slide">
-							{slides.map((slide, i) => {
-								const active = i === view.index;
-								return (
-									<button
-										key={i}
-										type="button"
-										className="hero-tab"
-										aria-label={`Slide ${i + 1}: ${slide.title}`}
-										aria-current={active ? 'true' : undefined}
-										onClick={() => go(i)}
-									>
-										<span className="hero-tab-bar">
-											{active &&
-												(autoplay ? (
-													<span
-														key={view.index}
-														className="hero-tab-fill is-timed"
-														style={{ animationPlayState: running ? 'running' : 'paused' }}
-														onAnimationEnd={next}
-													/>
-												) : (
-													<span className="hero-tab-fill" />
-												))}
-										</span>
-										<span className="hero-tab-text" aria-hidden="true">
-											<span className="hero-tab-num">{pad(i + 1)}</span>
-											<span className="hero-tab-title">{slide.title}</span>
-										</span>
-									</button>
-								);
-							})}
-						</div>
 						<div className="hero-buttons">
 							<button type="button" className="hero-btn hero-step" aria-label="Previous slide" onClick={previous}>
 								<ChevronLeft size={22} animateOnHover />
