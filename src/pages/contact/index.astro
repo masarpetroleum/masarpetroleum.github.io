@@ -2,6 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import { CONTACT, PAGES } from '../../consts';
+
+// Directions go to the same point the embedded map is centred on.
+const [, lng, lat] = CONTACT.mapEmbed.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/) ?? [];
+const directions =
+	lat && lng
+		? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+		: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${CONTACT.company}, ${CONTACT.address.join(' ')}`)}`;
 ---
 
 <BaseLayout title={PAGES.contact.title} description={`Contact ${CONTACT.company} — ${CONTACT.address.join(' ')} Phone ${CONTACT.phone}.`}>
@@ -55,12 +62,23 @@ import { CONTACT, PAGES } from '../../consts';
 				</form>
 			</div>
 			<div class="contact-map">
+				<div class="map-loading" aria-hidden="true">
+					<span class="map-pin"></span>
+				</div>
 				<iframe
 					src={CONTACT.mapEmbed}
-					title="Masar Petroleum location — Coral Building, Muscat"
+					title={`Map showing ${CONTACT.company}, ${CONTACT.address.join(' ')}`}
 					loading="lazy"
 					referrerpolicy="no-referrer-when-downgrade"
-					allowfullscreen></iframe>
+					allowfullscreen
+					onload="this.classList.add('is-loaded')"></iframe>
+				<div class="map-card">
+					<div>
+						<strong>{CONTACT.company}</strong>
+						<span>{CONTACT.address.join(' ')}</span>
+					</div>
+					<a class="btn-primary" href={directions} target="_blank" rel="noopener">Get directions</a>
+				</div>
 			</div>
 		</div>
 	</div>

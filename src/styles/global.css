@@ -2057,19 +2057,123 @@ main {
 }
 
 .contact-map {
-	min-height: 420px;
+	position: relative;
+	isolation: isolate;
+	min-height: 480px;
 	overflow: hidden;
-	background: var(--surface-alt);
+	background: #e9ebf3;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
 }
 
+/* Shown until the map arrives: a soft sweep of light and a pulsing pin. */
+.map-loading {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	display: grid;
+	place-items: center;
+	background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.7) 50%, transparent 70%) 0 0 / 250% 100% #e9ebf3;
+	animation: mapSweep 1.6s linear infinite;
+}
+
+@keyframes mapSweep {
+	from {
+		background-position: 120% 0;
+	}
+	to {
+		background-position: -130% 0;
+	}
+}
+
+.map-pin {
+	position: relative;
+	width: 18px;
+	height: 18px;
+	border: 3px solid #fff;
+	border-radius: 50%;
+	background: var(--secondary);
+	box-shadow: 0 2px 6px rgba(20, 22, 58, 0.3);
+}
+
+.map-pin::after {
+	content: '';
+	position: absolute;
+	inset: -3px;
+	border-radius: 50%;
+	background: var(--secondary);
+	opacity: 0.45;
+	animation: mapPulse 1.6s ease-out infinite;
+}
+
+@keyframes mapPulse {
+	to {
+		transform: scale(4);
+		opacity: 0;
+	}
+}
+
 .contact-map iframe {
+	position: absolute;
+	inset: 0;
 	display: block;
 	width: 100%;
 	height: 100%;
-	min-height: 420px;
 	border: 0;
+}
+
+/* The map fades and settles in once it has loaded. */
+.js .contact-map iframe {
+	opacity: 0;
+	transform: scale(1.03);
+	transition:
+		opacity 0.7s ease,
+		transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.js .contact-map iframe.is-loaded {
+	opacity: 1;
+	transform: none;
+}
+
+.map-card {
+	position: absolute;
+	left: 16px;
+	right: 16px;
+	/* Leaves Google's logo and attribution line visible under the card. */
+	bottom: 34px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 20px;
+	padding: 14px 14px 14px 20px;
+	background: rgba(255, 255, 255, 0.94);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-md);
+	line-height: 1.4;
+}
+
+.map-card div {
+	display: grid;
+	flex: 1 1 220px;
+}
+
+.map-card strong {
+	color: var(--primary-dark);
+}
+
+.map-card span {
+	color: var(--muted);
+	font-size: 0.9rem;
+}
+
+.map-card .btn-primary {
+	min-height: 44px;
+	padding: 0 22px;
 }
 
 @media (max-width: 900px) {
@@ -2077,9 +2181,8 @@ main {
 		grid-template-columns: 1fr;
 	}
 
-	.contact-map,
-	.contact-map iframe {
-		min-height: 340px;
+	.contact-map {
+		min-height: 420px;
 	}
 }
 
