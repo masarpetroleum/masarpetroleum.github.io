@@ -13,5 +13,95 @@
 		<script>
 			CMS.registerPreviewStyle('/admin/preview.css');
 		</script>
+		<script>
+			// Adds a "Messages" item under the collections in the sidebar. It opens /admin/messages
+			// (contact form messages, stored by the Cloudflare Worker in /worker) and shows how many are unread.
+			// The CMS has no setting for extra sidebar items, so this copies one of its own items to match the look.
+			(() => {
+				const API = 'https://masar-messages.miladsoft.workers.dev/messages';
+				const PAGE = '/admin/messages';
+				let unread = null;
+
+				const open = (event) => {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					location.href = PAGE;
+				};
+
+				function build(sample) {
+					const item = sample.cloneNode(true);
+					item.dataset.masarMessages = '';
+					item.removeAttribute('id');
+					item.removeAttribute('aria-controls');
+					item.setAttribute('aria-selected', 'false');
+					item.classList.remove('selected', 'current', 'active');
+					item.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+					item.querySelectorAll('[aria-selected]').forEach((el) => el.setAttribute('aria-selected', 'false'));
+					item.querySelectorAll('[role="group"]').forEach((el) => el.remove());
+
+					const icon = item.querySelector('[class*="icon"]');
+					if (icon) icon.textContent = 'mail';
+
+					// The label is the first piece of text that is neither the icon nor the count.
+					const walker = document.createTreeWalker(item, NodeFilter.SHOW_TEXT);
+					for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+						if (!node.nodeValue.trim() || node.parentElement.closest('[class*="icon"], .count')) continue;
+						node.nodeValue = 'Messages';
+						break;
+					}
+
+					for (const type of ['click', 'pointerdown', 'mousedown']) item.addEventListener(type, type === 'click' ? open : (e) => e.stopPropagation(), true);
+					item.addEventListener('keydown', (e) => (e.key === 'Enter' || e.key === ' ') && open(e), true);
+					return item;
+				}
+
+				function showCount(item) {
+					const count = item.querySelector('.count');
+					if (!count) return;
+					count.textContent = unread ? String(unread) : '';
+					count.setAttribute('aria-label', unread ? `(${unread} unread)` : '');
+				}
+
+				function inject() {
+					const sidebar = document.querySelector('nav.primary-sidebar');
+					if (!sidebar) return;
+					const existing = sidebar.querySelector('[data-masar-messages]');
+					if (existing) return showCount(existing);
+					const count = [...sidebar.querySelectorAll('.count')].at(-1);
+					const sample = count?.closest('[role="option"], [role="treeitem"]') ?? count?.closest('button');
+					if (!sample) return;
+					const item = build(sample);
+					showCount(item);
+					sample.after(item);
+				}
+
+				async function refresh() {
+					try {
+						const token = JSON.parse(localStorage.getItem('sveltia-cms.user') ?? '{}').token;
+						if (!token) return;
+						const response = await fetch(API, { headers: { authorization: `Bearer ${token}` } });
+						if (!response.ok) return;
+						unread = (await response.json()).messages.filter((m) => !m.read).length;
+						inject();
+					} catch {
+						// The badge is a convenience; the Messages page reports real errors.
+					}
+				}
+
+				let queued = false;
+				new MutationObserver(() => {
+					if (queued) return;
+					queued = true;
+					requestAnimationFrame(() => {
+						queued = false;
+						inject();
+					});
+				}).observe(document.body, { childList: true, subtree: true });
+
+				refresh();
+				setInterval(refresh, 120000);
+				window.addEventListener('focus', refresh);
+			})();
+		</script>
 	</body>
 </html>

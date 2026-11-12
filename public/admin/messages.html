@@ -200,7 +200,15 @@
 			const $ = (id) => document.getElementById(id);
 			const status = $('status');
 			const list = $('list');
-			let token = sessionStorage.getItem(TOKEN_KEY);
+			// Already signed in to the content admin? Use that sign-in, so there is no second prompt.
+			const cmsToken = () => {
+				try {
+					return JSON.parse(localStorage.getItem('sveltia-cms.user') ?? '{}').token ?? null;
+				} catch {
+					return null;
+				}
+			};
+			let token = sessionStorage.getItem(TOKEN_KEY) ?? cmsToken();
 
 			const say = (text, state = '') => {
 				status.textContent = text;

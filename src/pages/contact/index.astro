@@ -41,8 +41,8 @@ const directions =
 				<form class="form" id="contact-form" data-endpoint={MESSAGES_API} novalidate>
 					<!-- People never see this field; bots fill it in and are ignored. -->
 					<div class="form-trap" aria-hidden="true">
-						<label for="cf-website">Website</label>
-						<input id="cf-website" name="website" tabindex="-1" autocomplete="off" />
+						<label for="cf-hp">Leave this field empty</label>
+						<input id="cf-hp" name="hp_leave_empty" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" />
 					</div>
 					<div class="field">
 						<label for="cf-name">Name</label>

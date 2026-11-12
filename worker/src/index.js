@@ -90,7 +90,8 @@ async function submit(request, env, reply) {
 	const message = field('message');
 
 	// A hidden field people never see. Bots fill it in; pretend it worked.
-	if (field('website')) return reply({ ok: true });
+	// Its name is deliberately one that browser autofill has no reason to fill.
+	if (field('hp_leave_empty')) return reply({ ok: true });
 
 	if (!name || !message) return reply({ error: 'Please enter your name and a message.' }, 400);
 	for (const [key, max] of Object.entries(LIMITS)) {
