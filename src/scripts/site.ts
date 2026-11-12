@@ -1,50 +1,5 @@
-// Site-wide progressive enhancements: header, mobile drawer, search panel,
-// scroll reveal, image lightbox, and the mobile back button.
-
-const root = document.documentElement;
-
-// Compact the sticky header once the page scrolls.
-const header = document.getElementById('site-header');
-if (header) {
-	const onScroll = () => header.classList.toggle('is-compact', window.scrollY > 40);
-	onScroll();
-	window.addEventListener('scroll', onScroll, { passive: true });
-}
-
-// Mobile drawer.
-const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-const setMenu = (open: boolean) => {
-	root.classList.toggle('menu-open', open);
-	document.body.classList.toggle('menu-open', open);
-	menuToggle?.setAttribute('aria-expanded', String(open));
-};
-menuToggle?.addEventListener('click', () => setMenu(!root.classList.contains('menu-open')));
-document.querySelectorAll('[data-menu-close]').forEach((el) => el.addEventListener('click', () => setMenu(false)));
-document.addEventListener('keydown', (e) => {
-	if (e.key === 'Escape') setMenu(false);
-});
-window.matchMedia('(min-width: 861px)').addEventListener('change', (e) => e.matches && setMenu(false));
-
-// Desktop search panel.
-const searchPanel = document.getElementById('search-panel');
-document.querySelectorAll<HTMLButtonElement>('[data-search-toggle]').forEach((btn) =>
-	btn.addEventListener('click', () => {
-		const open = !searchPanel?.classList.contains('is-open');
-		searchPanel?.classList.toggle('is-open', open);
-		btn.setAttribute('aria-expanded', String(open));
-		if (open) {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-			searchPanel?.querySelector('input')?.focus();
-		}
-	}),
-);
-
-// Mobile back button: only shown when there is somewhere to go back to.
-const back = document.querySelector<HTMLButtonElement>('[data-back]');
-if (back && document.referrer && new URL(document.referrer).origin === location.origin) {
-	back.hidden = false;
-	back.addEventListener('click', () => history.back());
-}
+// Site-wide progressive enhancements: scroll reveal and the image lightbox.
+// The header, menu and search live in components/header/SiteHeader.tsx.
 
 // Reveal elements as they scroll into view.
 const revealables = document.querySelectorAll('[data-reveal]');
