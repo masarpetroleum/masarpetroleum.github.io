@@ -49,9 +49,23 @@
 	box-sizing: border-box;
 }
 
+/* Cross-fade between pages instead of a hard cut. The header keeps its own
+   layer, so it stays still while the page under it changes. */
+@view-transition {
+	navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 0.3s;
+	animation-timing-function: ease;
+}
+
 html {
 	-webkit-text-size-adjust: 100%;
 	scroll-behavior: smooth;
+	/* Reserve the scrollbar's space, so short and long pages line up. */
+	scrollbar-gutter: stable;
 	/* Keep in-page anchors clear of the sticky header. */
 	scroll-padding-top: calc(var(--header-h-compact) + 16px);
 }
@@ -306,6 +320,7 @@ main {
 /* Markup and behaviour: components/header/SiteHeader.tsx (Animate UI). */
 
 .site-header {
+	view-transition-name: site-header;
 	position: sticky;
 	top: 0;
 	z-index: 1000;
@@ -2425,6 +2440,10 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
+	@view-transition {
+		navigation: none;
+	}
+
 	*,
 	*::before,
 	*::after {

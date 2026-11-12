@@ -3,6 +3,11 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE } from '../consts';
+// The weights used above the fold. Preloading them means text is drawn in the
+// right font from the first frame, so the menu doesn't shift as fonts arrive.
+import font400 from '@fontsource/titillium-web/files/titillium-web-latin-400-normal.woff2?url';
+import font600 from '@fontsource/titillium-web/files/titillium-web-latin-600-normal.woff2?url';
+import font700 from '@fontsource/titillium-web/files/titillium-web-latin-700-normal.woff2?url';
 
 interface Props {
 	title?: string;
@@ -27,6 +32,7 @@ const ogImage = new URL(image, Astro.site);
 		<title>{fullTitle}</title>
 		<meta name="description" content={description} />
 		<meta name="keywords" content={SITE.keywords} />
+		{[font400, font600, font700].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
 		<link rel="canonical" href={canonical} />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<meta name="theme-color" content="#2d3075" />
