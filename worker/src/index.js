@@ -94,6 +94,11 @@ async function submit(request, env, reply) {
 	if (field('hp_leave_empty')) return reply({ ok: true });
 
 	if (!name || !message) return reply({ error: 'Please enter your name and a message.' }, 400);
+
+	// 403 (not 400) so that a page without the captcha falls back to email instead of showing an error it can't fix.
+	if (!(await passedCaptcha(field('captcha'), request, env))) {
+		return reply({ error: 'The security check did not pass. Please try it again.' }, 403);
+	}
 	for (const [key, max] of Object.entries(LIMITS)) {
 		if (field(key).length > max) return reply({ error: `The ${key} is too long.` }, 400);
 	}
@@ -112,6 +117,23 @@ async function submit(request, env, reply) {
 		.bind(new Date().toISOString(), name, phone, email, message, ipHash)
 		.run();
 	return reply({ ok: true }, 201);
+}
+
+/** True when Cloudflare Turnstile confirms the visitor solved the captcha on the form. */
+async function passedCaptcha(token, request, env) {
+	if (!env.TURNSTILE_SECRET) return true; // Captcha not configured for this deployment.
+	if (!token) return false;
+	const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+		method: 'POST',
+		headers: { 'content-type': 'application/json' },
+		body: JSON.stringify({
+			secret: env.TURNSTILE_SECRET,
+			response: token,
+			remoteip: request.headers.get('CF-Connecting-IP') ?? undefined,
+		}),
+	});
+	const result = await response.json().catch(() => ({}));
+	return result.success === true;
 }
 
 /** True when the request carries a GitHub token whose owner can push to GITHUB_REPO. */

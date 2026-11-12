@@ -5,7 +5,8 @@ import rehypeSections from './src/lib/rehype-sections.mjs';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://masarpetroleum.github.io',
+	// The public address (the custom domain set on GitHub Pages). Used for canonical links and the sitemap.
+	site: 'https://masarpetroleum.om',
 	trailingSlash: 'ignore',
 	build: { format: 'directory' },
 	// React powers the interactive islands (the site header, built on Animate UI).
@@ -17,9 +18,11 @@ export default defineConfig({
 				// The dev server doesn't resolve those short addresses on its own, so map them here.
 				name: 'admin-dev-urls',
 				configureServer(server) {
-					server.middlewares.use((req, _res, next) => {
+					/** @type {Record<string, string>} */
+					const files = { '/admin': '/admin/index.html', '/admin/': '/admin/index.html', '/admin/messages': '/admin/messages.html' };
+					server.middlewares.use((/** @type {{ url?: string }} */ req, /** @type {unknown} */ _res, /** @type {() => void} */ next) => {
 						const [path, query = ''] = (req.url ?? '').split('?');
-						const file = { '/admin': '/admin/index.html', '/admin/': '/admin/index.html', '/admin/messages': '/admin/messages.html' }[path];
+						const file = files[path];
 						if (file) req.url = file + (query && `?${query}`);
 						next();
 					});

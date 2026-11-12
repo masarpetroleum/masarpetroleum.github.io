@@ -39,6 +39,9 @@ export const CONTACT = {
 /** Receives the contact form (the Cloudflare Worker in /worker). Messages are read at /admin/messages.html. */
 export const MESSAGES_API = 'https://masar-messages.miladsoft.workers.dev/messages';
 
+/** Public site key of the Cloudflare Turnstile captcha on the contact form (its secret lives in the Worker). */
+export const TURNSTILE_SITE_KEY = '0x4AAAAAAF-KsEoRL3-R5Fkd';
+
 export const FOOTER = settings.footer;
 export const NAV: NavItem[] = navigation.items;
 export const HOME = home as Omit<typeof home, 'slides'> & { slides: Slide[] };

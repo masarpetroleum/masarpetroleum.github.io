@@ -6,11 +6,14 @@ compatibility_date = "2026-06-01"
 
 [vars]
 # Sites allowed to call this Worker from a browser (comma-separated origins).
-ALLOWED_ORIGINS = "https://masarpetroleum.github.io"
+ALLOWED_ORIGINS = "https://masarpetroleum.om,https://www.masarpetroleum.om,https://masarpetroleum.github.io"
 # People who can push to this GitHub repository can read the messages.
 GITHUB_REPO = "masarpetroleum/masarpetroleum.github.io"
 # Most messages one visitor may send per hour.
 MAX_PER_HOUR = "5"
+
+# TURNSTILE_SECRET (the captcha's secret key) is stored as a Worker secret:
+#   npx wrangler secret put TURNSTILE_SECRET
 
 [[d1_databases]]
 binding = "DB"

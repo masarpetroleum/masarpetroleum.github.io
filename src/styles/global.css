@@ -17,8 +17,8 @@
 	--surface: #ffffff;
 	--surface-alt: #f5f6fb;
 	--link: #0b63ce;
-	--radius: 12px;
-	--radius-lg: 18px;
+	--radius: 16px;
+	--radius-lg: 26px;
 	--shadow-sm: 0 1px 2px rgba(20, 22, 58, 0.06), 0 2px 8px rgba(20, 22, 58, 0.04);
 	--shadow-md: 0 8px 20px -12px rgba(20, 22, 58, 0.18), 0 1px 3px rgba(20, 22, 58, 0.05);
 	--container: 1240px;
@@ -331,10 +331,13 @@ main {
 	transition:
 		box-shadow 0.3s ease,
 		border-color 0.3s ease,
-		background-color 0.3s ease;
+		background-color 0.3s ease,
+		margin-bottom 0.3s ease;
 }
 
 .site-header[data-scrolled] {
+	/* Give back the height the bar loses, so the page below stays put. */
+	margin-bottom: calc(var(--header-h) - var(--header-h-compact));
 	background: rgba(255, 255, 255, 0.95);
 	border-bottom-color: var(--line);
 	box-shadow: 0 12px 30px -20px rgba(31, 33, 87, 0.4);
@@ -795,55 +798,149 @@ main {
 }
 
 /* ---------- Hero ---------- */
-/* Markup and behaviour: components/hero/Hero.tsx (Animate UI carousel). */
+/* Markup and behaviour: components/hero/Hero.tsx. */
 
 .hero {
 	position: relative;
 	color: #fff;
-	background: #1b1d45;
+	background: var(--navy);
 	isolation: isolate;
-}
-
-.hero-viewport {
-	overflow: hidden;
-	/* Tall on phones with the text low, near full screen on larger ones. */
-	height: clamp(480px, 82vh, 660px);
-	height: clamp(480px, 82svh, 660px);
-}
-
-.hero-track {
-	display: flex;
-	height: 100%;
+	/* Sideways gestures change the slide; vertical ones scroll the page. */
 	touch-action: pan-y pinch-zoom;
 	user-select: none;
 	-webkit-user-select: none;
+	--hero-ease: cubic-bezier(0.77, 0, 0.18, 1);
+	--hero-wipe: 1.15s;
 }
 
-.hero-slide {
+.hero-stage {
 	position: relative;
-	flex: 0 0 100%;
-	min-width: 0;
-	height: 100%;
 	overflow: hidden;
+	/* Tall on phones with the text low, near full screen on larger ones. */
+	height: clamp(500px, 84vh, 680px);
+	height: clamp(500px, 84svh, 680px);
+}
+
+/* Slides are stacked; only the current one and the one it covers are shown. */
+.hero-slide {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	visibility: hidden;
+}
+
+.hero-slide[data-state] {
+	visibility: visible;
+}
+
+.hero-slide[data-state='leave'] {
+	z-index: 1;
+}
+
+.hero-slide[data-state='start'],
+.hero-slide[data-state='enter'] {
+	z-index: 2;
+}
+
+/* The curtain: the new slide opens over the old one, from the side it comes from. */
+.hero-slide[data-state='enter'] {
+	animation: heroOpenFromRight var(--hero-wipe) var(--hero-ease) both;
+}
+
+.hero[data-direction='-1'] .hero-slide[data-state='enter'] {
+	animation-name: heroOpenFromLeft;
+}
+
+@keyframes heroOpenFromRight {
+	from {
+		clip-path: inset(0 0 0 100%);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+@keyframes heroOpenFromLeft {
+	from {
+		clip-path: inset(0 100% 0 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+.hero-media {
+	position: absolute;
+	inset: 0;
 }
 
 .hero-photo {
-	position: absolute;
-	inset: 0;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	transform: scale(1.07);
-	/* Reset the zoom only once the slide has moved off screen. */
-	transition: transform 0s linear 1s;
 	-webkit-user-drag: none;
 	pointer-events: none;
 }
 
-/* A slow settle on the slide that is showing. */
-.hero-slide[data-active] .hero-photo {
-	transform: none;
-	transition: transform 7s cubic-bezier(0.2, 0.6, 0.3, 1);
+/* The photo arrives zoomed in, settles, then drifts slowly. Every shown slide
+   carries the same animation list, so a slide that is being covered keeps its
+   place in the drift instead of snapping back. */
+.hero-slide[data-state] .hero-photo {
+	animation:
+		heroPhotoIn 1.7s cubic-bezier(0.16, 1, 0.3, 1) both,
+		heroDrift 9s linear 1.7s both;
+}
+
+@keyframes heroPhotoIn {
+	from {
+		transform: scale(1.3);
+	}
+	to {
+		transform: scale(1.1);
+	}
+}
+
+@keyframes heroDrift {
+	from {
+		transform: scale(1.1);
+	}
+	to {
+		transform: scale(1);
+	}
+}
+
+/* The covered slide slides away a little and dims, which gives the curtain depth. */
+.hero-slide[data-state='leave'] .hero-media {
+	animation: heroPushLeft var(--hero-wipe) var(--hero-ease) both;
+}
+
+.hero[data-direction='-1'] .hero-slide[data-state='leave'] .hero-media {
+	animation-name: heroPushRight;
+}
+
+.hero-slide[data-state='leave'] .hero-content {
+	animation: heroCopyOut 0.45s ease both;
+}
+
+@keyframes heroPushLeft {
+	to {
+		transform: translateX(-9%);
+		filter: brightness(0.45);
+	}
+}
+
+@keyframes heroPushRight {
+	to {
+		transform: translateX(9%);
+		filter: brightness(0.45);
+	}
+}
+
+@keyframes heroCopyOut {
+	to {
+		opacity: 0;
+	}
 }
 
 /* Phones: shade rises from the bottom, where the text sits. */
@@ -852,9 +949,9 @@ main {
 	inset: 0;
 	background: linear-gradient(
 		0deg,
-		rgba(14, 16, 46, 0.9) 0%,
-		rgba(14, 16, 46, 0.62) 34%,
-		rgba(14, 16, 46, 0.18) 62%,
+		rgba(14, 16, 46, 0.94) 0%,
+		rgba(14, 16, 46, 0.7) 36%,
+		rgba(14, 16, 46, 0.2) 64%,
 		rgba(14, 16, 46, 0.3) 100%
 	);
 }
@@ -862,9 +959,9 @@ main {
 .hero-slide[data-theme='dark'] .hero-shade {
 	background: linear-gradient(
 		0deg,
-		rgba(14, 16, 46, 0.85) 0%,
-		rgba(14, 16, 46, 0.5) 34%,
-		rgba(14, 16, 46, 0.08) 62%,
+		rgba(14, 16, 46, 0.9) 0%,
+		rgba(14, 16, 46, 0.55) 36%,
+		rgba(14, 16, 46, 0.1) 64%,
 		rgba(14, 16, 46, 0.2) 100%
 	);
 }
@@ -875,28 +972,55 @@ main {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	padding-bottom: 96px;
+	padding-bottom: 124px;
 }
 
 .hero-copy {
-	max-width: 760px;
+	max-width: 780px;
+}
+
+/* Text rises into view from behind this edge. The padding keeps descenders
+   and the title's shadow from being cut off. */
+.hero-mask {
+	overflow: hidden;
+	margin: -0.12em -0.5em;
+	padding: 0.12em 0.5em;
+}
+
+.hero-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 14px;
+	color: rgba(255, 255, 255, 0.78);
+	font-size: 0.875rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.hero-eyebrow-line {
+	width: 40px;
+	height: 1px;
+	background: currentColor;
+	opacity: 0.6;
 }
 
 .hero-title {
 	margin: 0;
 	max-width: 15ch;
 	color: #fff;
-	font-size: clamp(2.2rem, 1.3rem + 4.4vw, 4.75rem);
+	font-size: clamp(2.3rem, 1.3rem + 4.6vw, 5rem);
 	font-weight: 700;
-	line-height: 1.05;
-	letter-spacing: -0.015em;
+	line-height: 1.06;
+	letter-spacing: -0.02em;
 	text-wrap: balance;
-	text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
 }
 
 .hero-subtitle {
 	margin: 14px 0 0;
-	max-width: 34ch;
+	max-width: 36ch;
 	color: rgba(255, 255, 255, 0.9);
 	font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.6rem);
 	font-weight: 400;
@@ -908,96 +1032,115 @@ main {
 	display: inline-flex;
 	align-items: center;
 	gap: 10px;
-	height: 52px;
-	margin-top: 26px;
-	padding: 0 24px 0 28px;
+	height: 54px;
+	margin-top: 28px;
+	padding: 0 26px 0 30px;
 	border-radius: 999px;
 	background: var(--secondary);
 	color: #fff;
 	font-size: 1.05rem;
 	font-weight: 600;
 	line-height: 1;
-	box-shadow: 0 12px 28px -12px rgba(185, 51, 48, 0.8);
+	-webkit-user-drag: none;
 	transition:
 		background-color 0.25s ease,
-		transform 0.25s ease,
-		box-shadow 0.25s ease;
+		transform 0.25s ease;
 }
 
 .hero-cta:hover {
-	background: #a12b28;
+	background: var(--secondary-dark);
 	color: #fff;
 	transform: translateY(-2px);
-	box-shadow: 0 16px 32px -12px rgba(185, 51, 48, 0.9);
 }
 
-.hero-cta:focus-visible {
+.hero-cta:focus-visible,
+.hero-tab:focus-visible,
+.hero-btn:focus-visible {
 	outline: 2px solid #fff;
 	outline-offset: 3px;
 }
 
-/* Controls: counter, dots, previous / pause / next */
+/* Controls: a tab per slide, then previous / pause / next */
 
-.hero-controls {
+.hero-ui {
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 22px;
-	z-index: 2;
+	bottom: 24px;
+	z-index: 3;
 	display: flex;
 	align-items: center;
-	gap: 18px;
+	gap: 20px;
 	margin-inline: auto;
 	pointer-events: none;
 }
 
-.hero-controls > * {
+.hero-ui > * {
 	pointer-events: auto;
-	animation: fadeIn 0.4s ease;
 }
 
-.hero-counter {
-	display: inline-flex;
-	align-items: baseline;
-	min-width: 3.2em;
-	font-size: 1rem;
-	font-weight: 600;
-	letter-spacing: 0.04em;
+.hero-tabs {
+	display: flex;
+	flex: 1;
+	gap: 10px;
+	min-width: 0;
+	max-width: 760px;
 }
 
-.hero-counter-total {
-	color: rgba(255, 255, 255, 0.6);
-	white-space: pre;
-}
-
-.hero-dots {
+.hero-tab {
+	flex: 1;
+	min-width: 0;
+	/* Tall enough to tap comfortably, though the bar itself is thin. */
+	padding: 21px 0;
+	border: 0;
+	background: none;
 	color: #fff;
-	gap: 12px !important;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
 }
 
-.hero-dots [data-slot='carousel-dot'] {
+.hero-tab-bar {
 	position: relative;
-	width: 10px;
-	height: 10px;
-	/* Buttons don't inherit colour, and the dots paint with currentColor. */
-	color: inherit;
-	opacity: 0.4;
-	transition: opacity 0.2s ease;
+	display: block;
+	height: 3px;
+	overflow: hidden;
+	border-radius: 3px;
+	background: rgba(255, 255, 255, 0.28);
+	transition: background-color 0.2s ease;
 }
 
-.hero-dots [data-slot='carousel-dot']:hover {
-	opacity: 0.7;
+.hero-tab:hover .hero-tab-bar {
+	background: rgba(255, 255, 255, 0.5);
 }
 
-/* A bigger hit area than the dot itself. */
-.hero-dots [data-slot='carousel-dot']::after {
-	content: '';
+.hero-tab-fill {
 	position: absolute;
-	inset: -14px -6px;
+	inset: 0;
+	border-radius: inherit;
+	background: #fff;
+	transform-origin: left;
 }
 
-.hero-dots [data-slot='carousel-dots-indicator'] {
-	height: 10px;
+.hero-tab-fill.is-timed {
+	transform: scaleX(0);
+	animation-name: heroFill;
+	animation-timing-function: linear;
+	animation-fill-mode: forwards;
+	/* This timer drives the slideshow, so it keeps its length even under
+	   reduced motion (which only plays when the visitor presses play). */
+	animation-duration: var(--hero-interval) !important;
+}
+
+@keyframes heroFill {
+	to {
+		transform: scaleX(1);
+	}
+}
+
+/* Phones show the bars only; numbers and titles join on wider screens. */
+.hero-tab-text {
+	display: none;
 }
 
 .hero-buttons {
@@ -1007,7 +1150,6 @@ main {
 }
 
 .hero-btn {
-	position: relative;
 	display: grid;
 	place-items: center;
 	width: 48px;
@@ -1031,48 +1173,6 @@ main {
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
-.hero-btn:focus-visible {
-	outline: 2px solid #fff;
-	outline-offset: 3px;
-}
-
-.hero-ring {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	transform: rotate(-90deg);
-	pointer-events: none;
-}
-
-.hero-ring circle {
-	fill: none;
-	stroke-width: 2;
-}
-
-.hero-ring-track {
-	stroke: transparent;
-}
-
-.hero-ring-progress {
-	stroke: #fff;
-	stroke-linecap: round;
-	stroke-dasharray: 1;
-	stroke-dashoffset: 1;
-	animation-name: heroRing;
-	animation-timing-function: linear;
-	animation-fill-mode: forwards;
-	/* This timer drives the slideshow, so it keeps its length even under
-	   reduced motion (which only plays when the visitor presses play). */
-	animation-duration: var(--hero-interval) !important;
-}
-
-@keyframes heroRing {
-	to {
-		stroke-dashoffset: 0;
-	}
-}
-
 /* Swipe is the way on phones; the arrows join from tablet size up. */
 .hero-step {
 	display: none;
@@ -1085,33 +1185,72 @@ main {
 }
 
 @media (min-width: 768px) {
-	.hero-viewport {
-		height: clamp(520px, calc(100vh - var(--header-h)), 820px);
-		height: clamp(520px, calc(100svh - var(--header-h)), 820px);
+	.hero-stage {
+		height: clamp(540px, calc(100vh - var(--header-h)), 860px);
+		height: clamp(540px, calc(100svh - var(--header-h)), 860px);
 	}
 
-	/* Larger screens: shade from the left, behind the text, plus a little
-	   at the bottom for the controls. */
+	/* Larger screens: shade from the left, behind the text, plus the bottom
+	   edge for the controls. */
 	.hero-shade {
 		background:
-			linear-gradient(90deg, rgba(14, 16, 46, 0.82) 0%, rgba(14, 16, 46, 0.55) 34%, rgba(14, 16, 46, 0.12) 64%, rgba(14, 16, 46, 0) 80%),
-			linear-gradient(0deg, rgba(14, 16, 46, 0.55) 0%, rgba(14, 16, 46, 0) 28%);
+			linear-gradient(90deg, rgba(14, 16, 46, 0.86) 0%, rgba(14, 16, 46, 0.58) 34%, rgba(14, 16, 46, 0.14) 64%, rgba(14, 16, 46, 0) 82%),
+			linear-gradient(0deg, rgba(14, 16, 46, 0.75) 0%, rgba(14, 16, 46, 0) 34%);
 	}
 
 	.hero-slide[data-theme='dark'] .hero-shade {
 		background:
-			linear-gradient(90deg, rgba(14, 16, 46, 0.7) 0%, rgba(14, 16, 46, 0.4) 34%, rgba(14, 16, 46, 0.05) 64%, rgba(14, 16, 46, 0) 80%),
-			linear-gradient(0deg, rgba(14, 16, 46, 0.5) 0%, rgba(14, 16, 46, 0) 28%);
+			linear-gradient(90deg, rgba(14, 16, 46, 0.72) 0%, rgba(14, 16, 46, 0.42) 34%, rgba(14, 16, 46, 0.06) 64%, rgba(14, 16, 46, 0) 82%),
+			linear-gradient(0deg, rgba(14, 16, 46, 0.7) 0%, rgba(14, 16, 46, 0) 34%);
 	}
 
 	.hero-content {
 		justify-content: center;
-		padding-bottom: 40px;
+		padding-bottom: 96px;
 	}
 
-	.hero-controls {
-		bottom: 32px;
-		gap: 24px;
+	.hero-ui {
+		bottom: 36px;
+		align-items: flex-end;
+		gap: 32px;
+	}
+
+	.hero-tabs {
+		gap: 20px;
+	}
+
+	.hero-tab {
+		padding: 14px 0 0;
+	}
+
+	.hero-tab-text {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		margin-top: 12px;
+		line-height: 1.3;
+		opacity: 0.6;
+		transition: opacity 0.2s ease;
+	}
+
+	.hero-tab:hover .hero-tab-text,
+	.hero-tab[aria-current] .hero-tab-text {
+		opacity: 1;
+	}
+
+	.hero-tab-num {
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.hero-tab-title {
+		overflow: hidden;
+		font-size: 0.95rem;
+		font-weight: 600;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }
 
@@ -1593,8 +1732,7 @@ main {
 	padding: 20px 24px;
 	background: var(--surface-alt);
 	border: 1px solid var(--border);
-	border-left: 4px solid var(--secondary);
-	border-radius: var(--radius);
+	border-radius: var(--radius-lg);
 }
 
 .notice p {
@@ -2022,7 +2160,7 @@ main {
 	padding: 12px 14px;
 	background: #fbfbfe;
 	border: 1px solid #d6d8e6;
-	border-radius: 10px;
+	border-radius: 14px;
 	color: var(--text);
 	font: inherit;
 	font-size: 1rem;
@@ -2054,6 +2192,11 @@ main {
 	margin: 0;
 	color: var(--muted);
 	font-size: 0.875rem;
+}
+
+/* Reserves the widget's height, so the form doesn't jump when it loads. */
+.form-captcha {
+	min-height: 65px;
 }
 
 .form-note[data-state='success'] {

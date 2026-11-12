@@ -55,7 +55,9 @@ export default function SiteHeader({ items, path, logo, siteName, contact }: Pro
 	const [scrolled, setScrolled] = React.useState(false);
 
 	React.useEffect(() => {
-		const onScroll = () => setScrolled(window.scrollY > 8);
+		// Shrink a little way down the page and grow back only near the top. The gap
+		// between the two points keeps the bar from flickering at a single threshold.
+		const onScroll = () => setScrolled((was) => (was ? window.scrollY > 4 : window.scrollY > 48));
 		onScroll();
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => window.removeEventListener('scroll', onScroll);

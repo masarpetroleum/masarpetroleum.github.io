@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeading from '../../components/PageHeading.astro';
-import { CONTACT, MESSAGES_API, PAGES } from '../../consts';
+import { CONTACT, MESSAGES_API, PAGES, TURNSTILE_SITE_KEY } from '../../consts';
 
 // Directions go to the same point the embedded map is centred on.
 const [, lng, lat] = CONTACT.mapEmbed.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/) ?? [];
@@ -62,6 +62,9 @@ const directions =
 						<label for="cf-message">Message</label>
 						<textarea id="cf-message" name="message" required></textarea>
 					</div>
+					<div class="form-captcha">
+						<div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-size="flexible"></div>
+					</div>
 					<button class="btn-primary" type="submit">Send message</button>
 					<p class="form-note" id="cf-status" role="status">{PAGES.contact.formNote}</p>
 				</form>
@@ -88,6 +91,8 @@ const directions =
 		</div>
 	</div>
 </BaseLayout>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <script>
 	// The address is stored reversed in the markup to keep it away from simple scrapers.
@@ -117,6 +122,13 @@ const directions =
 			return;
 		}
 
+		// The captcha widget adds this field once the visitor has passed the check.
+		const captcha = String(data.get('cf-turnstile-response') ?? '');
+		if (!captcha) {
+			setStatus('Please complete the security check above the button.', 'error');
+			return;
+		}
+
 		const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 		if (button) button.disabled = true;
 		setStatus('Sending…');
@@ -124,13 +136,13 @@ const directions =
 			const response = await fetch(form.dataset.endpoint!, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify(Object.fromEntries(data)),
+				body: JSON.stringify({ ...Object.fromEntries(data), captcha }),
 			});
 			const result = await response.json().catch(() => ({}));
 			if (response.ok) {
 				form.reset();
 				setStatus('Thank you. Your message has been sent to our team.', 'success');
-			} else if (response.status === 400 || response.status === 429) {
+			} else if ([400, 403, 429].includes(response.status)) {
 				setStatus(result.error ?? 'Please check the form and try again.', 'error');
 			} else {
 				throw new Error(`Unexpected response ${response.status}`);
@@ -142,6 +154,8 @@ const directions =
 			setStatus('We could not send your message from this page, so your email app should now open with it ready to send.', 'error');
 		} finally {
 			if (button) button.disabled = false;
+			// A captcha answer works once; ask for a fresh one for the next attempt.
+			(window as { turnstile?: { reset(): void } }).turnstile?.reset();
 		}
 	});
 </script>

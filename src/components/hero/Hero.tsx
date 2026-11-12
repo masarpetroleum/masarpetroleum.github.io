@@ -1,8 +1,15 @@
-// The home page hero: a full-bleed slideshow that follows the finger on touch
-// screens. Built on Animate UI's carousel (Embla underneath) and icons.
+// The home page hero: a full-bleed slideshow.
+//
+// - Slides are stacked. The next one opens over the current one like a curtain
+//   (a clip-path wipe) while its photo settles from a zoom; the text then rises
+//   line by line from behind a mask. The styles are in global.css ("Hero").
+// - Swipe on touch screens, drag with a mouse, or use the arrow keys.
+// - One tab per slide under the text. The current tab fills up as a timer; when
+//   it is full the next slide comes in.
+// - Pauses on hover, keyboard focus, when scrolled out of view and when the
+//   browser tab is hidden. Does not start by itself under "reduce motion".
 import * as React from 'react';
 import { motion, MotionConfig, useReducedMotion, type Variants } from 'motion/react';
-import useEmblaCarousel, { CarouselCounter, CarouselDots } from '@animate-ui/react/primitives/carousel';
 import { AnimateIcon } from '@animate-ui/react/icons';
 import { ArrowRight } from '../animate-ui/icons/arrow-right';
 import { ChevronLeft } from '../animate-ui/icons/chevron-left';
@@ -26,86 +33,154 @@ interface Props {
 	interval: number;
 }
 
-const content: Variants = {
-	hidden: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
-	shown: { transition: { staggerChildren: 0.09, delayChildren: 0.12 } },
+/** A swipe must travel this far, and mostly sideways, to change the slide. */
+const SWIPE_DISTANCE = 48;
+
+const copy: Variants = {
+	// Reset out of sight, after the incoming slide has covered this one.
+	hidden: { transition: { staggerChildren: 0, delayChildren: 1.1 } },
+	shown: { transition: { staggerChildren: 0.11, delayChildren: 0.5 } },
 };
 
-const line: Variants = {
-	hidden: { opacity: 0, y: 28 },
-	shown: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 220, damping: 28 } },
+/** Text rises from behind its mask. */
+const rise: Variants = {
+	hidden: { y: '115%', transition: { duration: 0.01 } },
+	shown: { y: '0%', transition: { duration: 0.95, ease: [0.16, 1, 0.3, 1] } },
 };
+
+const fade: Variants = {
+	hidden: { opacity: 0, y: 16, transition: { duration: 0.01 } },
+	shown: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 // "More about us..." reads better without the dots next to an arrow.
 const tidyLabel = (label: string) => label.replace(/\s*(\.{2,}|…)\s*$/, '');
 
 export default function Hero({ slides, interval }: Props) {
 	const count = slides.length;
+	const many = count > 1;
 	const reduceMotion = useReducedMotion();
-	const [viewportRef, api] = useEmblaCarousel({ loop: count > 1, watchDrag: count > 1, duration: 32 });
 
-	const [selected, setSelected] = React.useState(0);
+	const rootRef = React.useRef<HTMLElement>(null);
+	// `from` is the slide being covered; `direction` is 1 for next, -1 for previous.
+	const [view, setView] = React.useState<{ index: number; from: number | null; direction: 1 | -1 }>({ index: 0, from: null, direction: 1 });
 	const [playing, setPlaying] = React.useState(true);
 	const [hovered, setHovered] = React.useState(false);
 	const [focused, setFocused] = React.useState(false);
-	const [dragging, setDragging] = React.useState(false);
+	const [onScreen, setOnScreen] = React.useState(true);
+	const [tabVisible, setTabVisible] = React.useState(true);
+
+	const go = React.useCallback(
+		(target: number, direction?: 1 | -1) =>
+			setView((current) => {
+				const index = ((target % count) + count) % count;
+				if (index === current.index) return current;
+				return { index, from: current.index, direction: direction ?? (index > current.index ? 1 : -1) };
+			}),
+		[count],
+	);
+	const next = React.useCallback(() => go(view.index + 1, 1), [go, view.index]);
+	const previous = React.useCallback(() => go(view.index - 1, -1), [go, view.index]);
 
 	// Don't start moving on its own for people who asked for less motion.
 	React.useEffect(() => {
 		if (reduceMotion) setPlaying(false);
 	}, [reduceMotion]);
 
+	// Only run the timer while the slideshow can be seen.
 	React.useEffect(() => {
-		if (!api) return;
-		const onSelect = () => setSelected(api.selectedScrollSnap());
-		const onDown = () => setDragging(true);
-		const onUp = () => setDragging(false);
-		onSelect();
-		api.on('select', onSelect).on('reInit', onSelect).on('pointerDown', onDown).on('pointerUp', onUp);
+		const root = rootRef.current;
+		if (!root || !('IntersectionObserver' in window)) return;
+		const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting), { threshold: 0.35 });
+		observer.observe(root);
+		const onVisibility = () => setTabVisible(!document.hidden);
+		onVisibility();
+		document.addEventListener('visibilitychange', onVisibility);
 		return () => {
-			api.off('select', onSelect).off('reInit', onSelect).off('pointerDown', onDown).off('pointerUp', onUp);
+			observer.disconnect();
+			document.removeEventListener('visibilitychange', onVisibility);
 		};
-	}, [api]);
+	}, []);
 
-	const autoplay = playing && count > 1;
-	const running = autoplay && !hovered && !focused && !dragging;
+	const autoplay = playing && many;
+	const running = autoplay && !hovered && !focused && onScreen && tabVisible;
 
 	const onKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === 'ArrowLeft') api?.scrollPrev();
-		else if (e.key === 'ArrowRight') api?.scrollNext();
+		if (e.key === 'ArrowLeft') previous();
+		else if (e.key === 'ArrowRight') next();
+		else if (e.key === 'Home') go(0, -1);
+		else if (e.key === 'End') go(count - 1, 1);
+		else return;
+		e.preventDefault();
+	};
+
+	// Swipe (touch) and drag (mouse): a sideways gesture changes the slide.
+	const gesture = React.useRef<{ x: number; y: number; swiped: boolean } | null>(null);
+	const onPointerDown = (e: React.PointerEvent) => {
+		if (!many || (e.pointerType === 'mouse' && e.button !== 0)) return;
+		if ((e.target as Element).closest('.hero-ui')) return;
+		gesture.current = { x: e.clientX, y: e.clientY, swiped: false };
+	};
+	const onPointerUp = (e: React.PointerEvent) => {
+		const start = gesture.current;
+		if (!start) return;
+		const dx = e.clientX - start.x;
+		const dy = e.clientY - start.y;
+		if (Math.abs(dx) >= SWIPE_DISTANCE && Math.abs(dx) > Math.abs(dy) * 1.2) {
+			start.swiped = true;
+			if (dx < 0) next();
+			else previous();
+		}
+	};
+	// A drag that ends on the button must not also follow its link.
+	const onClickCapture = (e: React.MouseEvent) => {
+		if (gesture.current?.swiped) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+		gesture.current = null;
 	};
 
 	return (
 		<MotionConfig reducedMotion="user">
 			<section
+				ref={rootRef}
 				className="hero"
-				data-slot="carousel"
 				aria-roledescription="carousel"
 				aria-label="Highlights"
+				data-direction={view.direction}
 				style={{ '--hero-interval': `${interval}s` } as React.CSSProperties}
 				onKeyDown={onKeyDown}
+				onPointerDown={onPointerDown}
+				onPointerUp={onPointerUp}
+				onPointerCancel={() => (gesture.current = null)}
+				onClickCapture={onClickCapture}
 				onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(true)}
 				onPointerLeave={() => setHovered(false)}
 				// Keyboard focus inside pauses the slideshow; a tap on a control does not.
 				onFocus={(e) => (e.target as Element).matches(':focus-visible') && setFocused(true)}
 				onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setFocused(false)}
 			>
-				<div className="hero-viewport" ref={viewportRef}>
-					<div className="hero-track">
-						{slides.map((slide, i) => {
-							const active = i === selected;
-							const Title = i === 0 ? 'h1' : 'p';
-							return (
-								<div
-									key={i}
-									className="hero-slide"
-									data-theme={slide.theme ?? 'light'}
-									data-active={active || undefined}
-									role="group"
-									aria-roledescription="slide"
-									aria-label={`${i + 1} of ${count}`}
-									inert={!active || undefined}
-								>
+				<div className="hero-stage" aria-live={running ? 'off' : 'polite'}>
+					{slides.map((slide, i) => {
+						const active = i === view.index;
+						// 'enter' plays the curtain; the very first slide is simply there.
+						const state = active ? (view.from === null ? 'start' : 'enter') : i === view.from ? 'leave' : undefined;
+						const Title = i === 0 ? 'h1' : 'p';
+						return (
+							<div
+								key={i}
+								className="hero-slide"
+								data-theme={slide.theme ?? 'light'}
+								data-state={state}
+								role="group"
+								aria-roledescription="slide"
+								aria-label={`${i + 1} of ${count}: ${slide.title}`}
+								inert={!active || undefined}
+							>
+								<div className="hero-media">
 									<img
 										className="hero-photo"
 										src={slide.image}
@@ -117,86 +192,95 @@ export default function Hero({ slides, interval }: Props) {
 										decoding={i === 0 ? 'auto' : 'async'}
 										draggable={false}
 									/>
-									<div className="hero-shade" aria-hidden="true" />
-									<div className="container hero-content">
-										<motion.div className="hero-copy" variants={content} initial={false} animate={active ? 'shown' : 'hidden'}>
-											<motion.div variants={line}>
+								</div>
+								<div className="hero-shade" aria-hidden="true" />
+								<div className="container hero-content">
+									<motion.div className="hero-copy" variants={copy} initial={false} animate={active ? 'shown' : 'hidden'}>
+										{many && (
+											<motion.p className="hero-eyebrow" variants={fade} aria-hidden="true">
+												<span>{pad(i + 1)}</span>
+												<span className="hero-eyebrow-line" />
+												<span>{pad(count)}</span>
+											</motion.p>
+										)}
+										<div className="hero-mask">
+											<motion.div variants={rise}>
 												<Title className="hero-title">{slide.title}</Title>
 											</motion.div>
-											{slide.subtitle && (
-												<motion.p className="hero-subtitle" variants={line}>
+										</div>
+										{slide.subtitle && (
+											<div className="hero-mask">
+												<motion.p className="hero-subtitle" variants={rise}>
 													{slide.subtitle}
 												</motion.p>
-											)}
-											{slide.ctaHref && slide.ctaLabel && (
-												<motion.div variants={line}>
-													<AnimateIcon animateOnHover asChild>
-														<a className="hero-cta" href={slide.ctaHref}>
-															{tidyLabel(slide.ctaLabel)}
-															<ArrowRight size={18} strokeWidth={2.4} />
-														</a>
-													</AnimateIcon>
-												</motion.div>
-											)}
-										</motion.div>
-									</div>
+											</div>
+										)}
+										{slide.ctaHref && slide.ctaLabel && (
+											<motion.div variants={fade}>
+												<AnimateIcon animateOnHover asChild>
+													<a className="hero-cta" href={slide.ctaHref} draggable={false}>
+														{tidyLabel(slide.ctaLabel)}
+														<ArrowRight size={18} strokeWidth={2.4} />
+													</a>
+												</AnimateIcon>
+											</motion.div>
+										)}
+									</motion.div>
 								</div>
-							);
-						})}
-					</div>
+							</div>
+						);
+					})}
 				</div>
 
-				{count > 1 && (
-					<div className="container hero-controls">
-						{api && (
-							<>
-								<CarouselCounter
-									className="hero-counter"
-									aria-live={running ? 'off' : 'polite'}
-									format={(current, total) => (
-										<>
-											<span className="sr-only">Slide </span>
-											{current}
-											<span className="hero-counter-total">
-												<span aria-hidden="true"> / </span>
-												<span className="sr-only"> of </span>
-												{total}
-											</span>
-										</>
-									)}
-								/>
-								<CarouselDots className="hero-dots" />
-							</>
-						)}
+				{many && (
+					<div className="container hero-ui">
+						<div className="hero-tabs" role="group" aria-label="Choose a slide">
+							{slides.map((slide, i) => {
+								const active = i === view.index;
+								return (
+									<button
+										key={i}
+										type="button"
+										className="hero-tab"
+										aria-label={`Slide ${i + 1}: ${slide.title}`}
+										aria-current={active ? 'true' : undefined}
+										onClick={() => go(i)}
+									>
+										<span className="hero-tab-bar">
+											{active &&
+												(autoplay ? (
+													<span
+														key={view.index}
+														className="hero-tab-fill is-timed"
+														style={{ animationPlayState: running ? 'running' : 'paused' }}
+														onAnimationEnd={next}
+													/>
+												) : (
+													<span className="hero-tab-fill" />
+												))}
+										</span>
+										<span className="hero-tab-text" aria-hidden="true">
+											<span className="hero-tab-num">{pad(i + 1)}</span>
+											<span className="hero-tab-title">{slide.title}</span>
+										</span>
+									</button>
+								);
+							})}
+						</div>
 						<div className="hero-buttons">
-							<button type="button" className="hero-btn hero-step" aria-label="Previous slide" onClick={() => api?.scrollPrev()}>
+							<button type="button" className="hero-btn hero-step" aria-label="Previous slide" onClick={previous}>
 								<ChevronLeft size={22} animateOnHover />
 							</button>
 							<button
 								type="button"
 								className="hero-btn"
 								aria-label={playing ? 'Pause slideshow' : 'Play slideshow'}
+								aria-pressed={!playing}
 								onClick={() => setPlaying((p) => !p)}
 							>
-								{/* The ring fills while a slide is showing; when it closes, the next slide comes in. */}
-								<svg className="hero-ring" viewBox="0 0 48 48" aria-hidden="true">
-									<circle className="hero-ring-track" cx="24" cy="24" r="22.5" />
-									{autoplay && (
-										<circle
-											key={selected}
-											className="hero-ring-progress"
-											cx="24"
-											cy="24"
-											r="22.5"
-											pathLength={1}
-											style={{ animationPlayState: running ? 'running' : 'paused' }}
-											onAnimationEnd={() => api?.scrollNext()}
-										/>
-									)}
-								</svg>
 								{playing ? <Pause size={18} /> : <Play size={18} />}
 							</button>
-							<button type="button" className="hero-btn hero-step" aria-label="Next slide" onClick={() => api?.scrollNext()}>
+							<button type="button" className="hero-btn hero-step" aria-label="Next slide" onClick={next}>
 								<ChevronRight size={22} animateOnHover />
 							</button>
 						</div>
