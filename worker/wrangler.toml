@@ -1,0 +1,18 @@
+# Receives the website's contact form and serves the messages to signed-in editors.
+# Deploy from this folder: npx wrangler deploy
+name = "masar-messages"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+[vars]
+# Sites allowed to call this Worker from a browser (comma-separated origins).
+ALLOWED_ORIGINS = "https://masarpetroleum.github.io"
+# People who can push to this GitHub repository can read the messages.
+GITHUB_REPO = "masarpetroleum/masarpetroleum.github.io"
+# Most messages one visitor may send per hour.
+MAX_PER_HOUR = "5"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "masar-messages"
+database_id = "4a145fb2-5801-41e5-b25c-ad039c21b727"

@@ -2056,6 +2056,31 @@ main {
 	font-size: 0.875rem;
 }
 
+.form-note[data-state='success'] {
+	color: #1b7a43;
+	font-weight: 600;
+}
+
+.form-note[data-state='error'] {
+	color: var(--secondary);
+	font-weight: 600;
+}
+
+.form button:disabled {
+	opacity: 0.6;
+	cursor: default;
+	transform: none;
+}
+
+/* Off screen rather than display:none, which some bots skip. */
+.form-trap {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
 .contact-map {
 	position: relative;
 	isolation: isolate;

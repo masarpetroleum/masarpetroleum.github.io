@@ -36,6 +36,9 @@ export const CONTACT = {
 	phoneHref: `tel:${settings.contact.phone.replace(/[^\d+]/g, '')}`,
 };
 
+/** Receives the contact form (the Cloudflare Worker in /worker). Messages are read at /admin/messages.html. */
+export const MESSAGES_API = 'https://masar-messages.miladsoft.workers.dev/messages';
+
 export const FOOTER = settings.footer;
 export const NAV: NavItem[] = navigation.items;
 export const HOME = home as Omit<typeof home, 'slides'> & { slides: Slide[] };

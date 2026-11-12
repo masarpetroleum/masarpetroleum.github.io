@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Masar Petroleum · Messages</title>
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<style>
+			:root {
+				--primary: #2d3075;
+				--primary-dark: #1f2157;
+				--secondary: #b93330;
+				--text: #2b2d3b;
+				--muted: #62657a;
+				--border: #e4e6f0;
+				--surface-alt: #f5f6fb;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--surface-alt);
+				color: var(--text);
+				font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif;
+			}
+			header {
+				position: sticky;
+				top: 0;
+				z-index: 1;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+			}
+			.bar,
+			main {
+				max-width: 880px;
+				margin: 0 auto;
+				padding: 0 16px;
+			}
+			.bar {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 8px 16px;
+				min-height: 64px;
+			}
+			.bar img {
+				height: 40px;
+				width: auto;
+			}
+			h1 {
+				flex: 1;
+				margin: 0;
+				color: var(--primary-dark);
+				font-size: 1.25rem;
+			}
+			main {
+				padding-block: 24px 64px;
+			}
+			button,
+			.button {
+				display: inline-flex;
+				align-items: center;
+				min-height: 40px;
+				padding: 0 16px;
+				border: 1px solid var(--border);
+				border-radius: 999px;
+				background: #fff;
+				color: var(--primary-dark);
+				font: inherit;
+				font-size: 0.9rem;
+				font-weight: 600;
+				text-decoration: none;
+				cursor: pointer;
+			}
+			button:hover,
+			.button:hover {
+				border-color: var(--primary);
+			}
+			button.primary {
+				border-color: var(--primary);
+				background: var(--primary);
+				color: #fff;
+			}
+			button.danger {
+				color: var(--secondary);
+			}
+			button:disabled {
+				opacity: 0.6;
+				cursor: default;
+			}
+			#status {
+				margin: 0 0 16px;
+				color: var(--muted);
+			}
+			#status[data-state='error'] {
+				color: var(--secondary);
+			}
+			.panel {
+				padding: 40px 24px;
+				background: #fff;
+				border: 1px solid var(--border);
+				border-radius: 16px;
+				text-align: center;
+			}
+			.panel p {
+				max-width: 46ch;
+				margin: 0 auto 20px;
+				color: var(--muted);
+			}
+			#list {
+				display: grid;
+				gap: 12px;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.msg {
+				padding: 18px 20px;
+				background: #fff;
+				border: 1px solid var(--border);
+				border-left: 4px solid var(--secondary);
+				border-radius: 12px;
+			}
+			.msg.read {
+				border-left-color: var(--border);
+			}
+			.msg-head {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 4px 16px;
+			}
+			.msg-name {
+				color: var(--primary-dark);
+				font-size: 1.05rem;
+				font-weight: 700;
+			}
+			.msg.read .msg-name {
+				font-weight: 600;
+			}
+			.msg-date,
+			.msg-contact {
+				color: var(--muted);
+				font-size: 0.875rem;
+			}
+			.msg-contact {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px 16px;
+				margin-top: 2px;
+			}
+			.msg-contact a {
+				color: var(--primary);
+			}
+			.msg-body {
+				margin: 12px 0 14px;
+				white-space: pre-wrap;
+				overflow-wrap: anywhere;
+			}
+			.msg-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+			[hidden] {
+				display: none !important;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="bar">
+				<img src="/images/site/logo.png" alt="" width="52" height="40" />
+				<h1>Messages</h1>
+				<a class="button" href="/admin/">Content admin</a>
+				<button id="refresh" type="button" hidden>Refresh</button>
+				<button id="signout" type="button" hidden>Sign out</button>
+			</div>
+		</header>
+		<main>
+			<p id="status" role="status"></p>
+			<div class="panel" id="signin-panel" hidden>
+				<p>Messages sent from the website's contact form. Sign in with the GitHub account you use to edit the site.</p>
+				<button class="primary" id="signin" type="button">Sign in with GitHub</button>
+			</div>
+			<ul id="list"></ul>
+		</main>
+
+		<script>
+			// Messages are stored by the masar-messages Cloudflare Worker (see /worker in the repository).
+			// Sign-in reuses the CMS's GitHub OAuth server; the Worker only answers people who can edit the repository.
+			const API = 'https://masar-messages.miladsoft.workers.dev';
+			const AUTH = 'https://masar-cms-auth.miladsoft.workers.dev';
+			const SITE_ID = 'masarpetroleum.github.io';
+			const TOKEN_KEY = 'masar-messages-token';
+
+			const $ = (id) => document.getElementById(id);
+			const status = $('status');
+			const list = $('list');
+			let token = sessionStorage.getItem(TOKEN_KEY);
+
+			const say = (text, state = '') => {
+				status.textContent = text;
+				status.dataset.state = state;
+			};
+
+			const showSignedIn = (signedIn) => {
+				$('signin-panel').hidden = signedIn;
+				$('refresh').hidden = $('signout').hidden = !signedIn;
+				if (!signedIn) list.replaceChildren();
+			};
+
+			const signOut = (message = '') => {
+				token = null;
+				sessionStorage.removeItem(TOKEN_KEY);
+				showSignedIn(false);
+				say(message, message ? 'error' : '');
+			};
+
+			async function api(path, options = {}) {
+				const response = await fetch(API + path, {
+					...options,
+					headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json', ...options.headers },
+				});
+				if (response.status === 401) {
+					signOut('This GitHub account cannot view the messages. Sign in with an account that can edit the site.');
+					throw new Error('unauthorized');
+				}
+				if (!response.ok) throw new Error(`Request failed (${response.status})`);
+				return response.json();
+			}
+
+			const el = (tag, className, text) => {
+				const node = document.createElement(tag);
+				if (className) node.className = className;
+				if (text !== undefined) node.textContent = text;
+				return node;
+			};
+
+			function render(messages) {
+				const unread = messages.filter((m) => !m.read).length;
+				say(messages.length ? `${messages.length} message${messages.length > 1 ? 's' : ''}, ${unread} unread` : 'No messages yet.');
+				list.replaceChildren(
+					...messages.map((m) => {
+						const item = el('li', m.read ? 'msg read' : 'msg');
+
+						const head = el('div', 'msg-head');
+						head.append(el('span', 'msg-name', m.name), el('span', 'msg-date', new Date(m.created_at).toLocaleString()));
+
+						const contact = el('div', 'msg-contact');
+						if (m.email) {
+							const a = el('a', '', m.email);
+							a.href = `mailto:${m.email}`;
+							contact.append(a);
+						}
+						if (m.phone) {
+							const a = el('a', '', m.phone);
+							a.href = `tel:${m.phone.replace(/[^\d+]/g, '')}`;
+							contact.append(a);
+						}
+
+						const actions = el('div', 'msg-actions');
+						if (m.email) {
+							const reply = el('a', 'button', 'Reply by email');
+							reply.href = `mailto:${m.email}?subject=${encodeURIComponent('Re: your message to Masar Petroleum')}`;
+							actions.append(reply);
+						}
+						const toggle = el('button', '', m.read ? 'Mark as unread' : 'Mark as read');
+						toggle.type = 'button';
+						toggle.addEventListener('click', async () => {
+							toggle.disabled = true;
+							await api(`/messages/${m.id}`, { method: 'PATCH', body: JSON.stringify({ read: !m.read }) }).then(load, () => (toggle.disabled = false));
+						});
+						const remove = el('button', 'danger', 'Delete');
+						remove.type = 'button';
+						remove.addEventListener('click', async () => {
+							if (!confirm(`Delete the message from ${m.name}? This cannot be undone.`)) return;
+							remove.disabled = true;
+							await api(`/messages/${m.id}`, { method: 'DELETE' }).then(load, () => (remove.disabled = false));
+						});
+						actions.append(toggle, remove);
+
+						item.append(head, contact, el('p', 'msg-body', m.message), actions);
+						return item;
+					}),
+				);
+			}
+
+			async function load() {
+				if (!token) return showSignedIn(false);
+				showSignedIn(true);
+				say('Loading…');
+				try {
+					render((await api('/messages')).messages);
+				} catch (error) {
+					if (error.message !== 'unauthorized') say('Could not load the messages. Check your connection and press Refresh.', 'error');
+				}
+			}
+
+			// GitHub sign-in in a popup, using the same handshake as the CMS.
+			function signIn() {
+				const popup = window.open(
+					`${AUTH}/auth?provider=github&site_id=${encodeURIComponent(SITE_ID)}&scope=repo,user`,
+					'masar-auth',
+					'width=600,height=700',
+				);
+				if (!popup) return say('Allow pop-ups for this page, then press Sign in again.', 'error');
+				const onMessage = (event) => {
+					if (event.origin !== new URL(AUTH).origin || typeof event.data !== 'string') return;
+					if (event.data === 'authorizing:github') return popup.postMessage(event.data, event.origin);
+					const match = event.data.match(/^authorization:github:(success|error):(.*)$/s);
+					if (!match) return;
+					window.removeEventListener('message', onMessage);
+					popup.close();
+					try {
+						const result = JSON.parse(match[2]);
+						if (match[1] !== 'success' || !result.token) throw new Error();
+						token = result.token;
+						sessionStorage.setItem(TOKEN_KEY, token);
+						load();
+					} catch {
+						say('GitHub sign-in did not finish. Please try again.', 'error');
+					}
+				};
+				window.addEventListener('message', onMessage);
+			}
+
+			$('signin').addEventListener('click', signIn);
+			$('signout').addEventListener('click', () => signOut());
+			$('refresh').addEventListener('click', load);
+			load();
+		</script>
+	</body>
+</html>

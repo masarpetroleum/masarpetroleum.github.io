@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeading from '../../components/PageHeading.astro';
-import { CONTACT, PAGES } from '../../consts';
+import { CONTACT, MESSAGES_API, PAGES } from '../../consts';
 
 // Directions go to the same point the embedded map is centred on.
 const [, lng, lat] = CONTACT.mapEmbed.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/) ?? [];
@@ -38,7 +38,12 @@ const directions =
 				</ul>
 
 				<h2 class="contact-form-title">Send us a message</h2>
-				<form class="form" id="contact-form" novalidate>
+				<form class="form" id="contact-form" data-endpoint={MESSAGES_API} novalidate>
+					<!-- People never see this field; bots fill it in and are ignored. -->
+					<div class="form-trap" aria-hidden="true">
+						<label for="cf-website">Website</label>
+						<input id="cf-website" name="website" tabindex="-1" autocomplete="off" />
+					</div>
 					<div class="field">
 						<label for="cf-name">Name</label>
 						<input id="cf-name" name="name" required autocomplete="name" />
@@ -95,18 +100,48 @@ const directions =
 
 	const form = document.getElementById('contact-form') as HTMLFormElement | null;
 	const status = document.getElementById('cf-status');
-	form?.addEventListener('submit', (e) => {
+	const setStatus = (text: string, state = '') => {
+		if (!status) return;
+		status.textContent = text;
+		status.dataset.state = state;
+	};
+
+	form?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		const data = new FormData(form);
 		const name = String(data.get('name') ?? '').trim();
 		const message = String(data.get('message') ?? '').trim();
 		if (!name || !message) {
-			if (status) status.textContent = 'Please enter your name and a message.';
+			setStatus('Please enter your name and a message.', 'error');
 			(form.querySelector(name ? '#cf-message' : '#cf-name') as HTMLElement | null)?.focus();
 			return;
 		}
-		const body = [message, '', `Name: ${name}`, `Phone: ${data.get('phone') || '-'}`, `Email: ${data.get('email') || '-'}`].join('\n');
-		window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Website enquiry from ${name}`)}&body=${encodeURIComponent(body)}`;
-		if (status) status.textContent = 'Thank you. Your email app should now open with your message ready to send.';
+
+		const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+		if (button) button.disabled = true;
+		setStatus('Sending…');
+		try {
+			const response = await fetch(form.dataset.endpoint!, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(Object.fromEntries(data)),
+			});
+			const result = await response.json().catch(() => ({}));
+			if (response.ok) {
+				form.reset();
+				setStatus('Thank you. Your message has been sent to our team.', 'success');
+			} else if (response.status === 400 || response.status === 429) {
+				setStatus(result.error ?? 'Please check the form and try again.', 'error');
+			} else {
+				throw new Error(`Unexpected response ${response.status}`);
+			}
+		} catch {
+			// The message could not be delivered: fall back to the visitor's email app so it is not lost.
+			const body = [message, '', `Name: ${name}`, `Phone: ${data.get('phone') || '-'}`, `Email: ${data.get('email') || '-'}`].join('\n');
+			window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Website enquiry from ${name}`)}&body=${encodeURIComponent(body)}`;
+			setStatus('We could not send your message from this page, so your email app should now open with it ready to send.', 'error');
+		} finally {
+			if (button) button.disabled = false;
+		}
 	});
 </script>
