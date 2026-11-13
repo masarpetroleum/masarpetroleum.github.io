@@ -7,6 +7,8 @@
 //   images and the next one opens over the current one like a curtain.
 // - Swipe on touch screens, drag with a mouse, or use the arrow keys.
 // - Moves on by itself every `interval` seconds; the buttons step and pause it.
+// - From 1 to 22 November the flag of Oman flies in the bottom left corner, for Oman
+//   National Day (see ./national-day/).
 // - Pauses on hover, keyboard focus, when scrolled out of view and when the
 //   browser tab is hidden. Does not start by itself under "reduce motion".
 import * as React from 'react';
@@ -18,6 +20,7 @@ import { ChevronRight } from '../animate-ui/icons/chevron-right';
 import { Pause } from '../animate-ui/icons/pause';
 import { Play } from '../animate-ui/icons/play';
 import type { HeroGL } from './gl';
+import NationalDay from './national-day/NationalDay';
 
 export interface HeroSlide {
 	image: string;
@@ -286,6 +289,8 @@ export default function Hero({ slides, interval }: Props) {
 						);
 					})}
 				</div>
+
+				<NationalDay active={onScreen && tabVisible} />
 
 				{many && (
 					<div className="container hero-ui">

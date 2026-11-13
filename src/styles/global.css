@@ -1167,6 +1167,168 @@ main {
 	}
 }
 
+/* ---------- Hero: Oman National Day ---------- */
+/* Shown from 1 to 22 November. Markup: components/hero/national-day/NationalDay.tsx. */
+
+.nd-wrap {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+/* A small flag with its caption beside it, in the bottom left corner of the
+   hero: under the slide text, on the same line as the slideshow buttons. */
+.nd {
+	position: absolute;
+	bottom: 20px;
+	/* In line with the left edge of the page's content. */
+	left: max(var(--gutter), calc((100% - var(--container)) / 2));
+	display: flex;
+	align-items: center;
+	gap: 0;
+	opacity: 0;
+	transition: opacity 1.4s ease;
+}
+
+.nd[data-flag='gl'],
+.nd[data-flag='flat'] {
+	opacity: 1;
+}
+
+/* A soft shadow behind the flag sets it off from the photo. */
+.nd::before {
+	content: '';
+	position: absolute;
+	inset: -45% -16%;
+	z-index: -1;
+	background: radial-gradient(closest-side, rgba(14, 16, 46, 0.6), rgba(14, 16, 46, 0.38) 50%, rgba(14, 16, 46, 0));
+}
+
+/* The box the flag is drawn in: 10 wide by 7 high, like the scene in flag.ts. */
+.nd-flag {
+	position: relative;
+	flex: none;
+	width: 92px;
+	aspect-ratio: 10 / 7;
+}
+
+.nd-canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+/* Without WebGL: a flat flag where the flying one would be. */
+.nd-flat {
+	position: absolute;
+	top: 15%;
+	left: 13%;
+	width: 72%;
+	height: auto;
+	border-radius: 2px;
+	box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.6);
+}
+
+.nd-caption {
+	color: #fff;
+	text-shadow:
+		0 1px 2px rgba(10, 12, 36, 0.55),
+		0 2px 18px rgba(10, 12, 36, 0.7);
+	opacity: 0;
+	transform: translateX(-8px);
+	transition:
+		opacity 1s ease 1.2s,
+		transform 1s cubic-bezier(0.16, 1, 0.3, 1) 1.2s;
+}
+
+.nd[data-flag='gl'] .nd-caption,
+.nd[data-flag='flat'] .nd-caption {
+	opacity: 1;
+	transform: none;
+}
+
+/* White, red and green: the colours of the flag. */
+.nd-rule {
+	display: flex;
+	gap: 3px;
+	margin-bottom: 5px;
+}
+
+.nd-rule i {
+	width: 13px;
+	height: 2px;
+	border-radius: 2px;
+	background: #fff;
+}
+
+.nd-rule i:nth-child(2) {
+	background: #df1a23;
+}
+
+.nd-rule i:nth-child(3) {
+	background: #00934a;
+}
+
+.nd-ar {
+	margin: 0;
+	font-family: 'Geeza Pro', 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+	font-size: 0.92rem;
+	font-weight: 700;
+	line-height: 1.45;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.nd-en {
+	margin: 1px 0 0;
+	color: rgba(255, 255, 255, 0.86);
+	font-size: 0.54rem;
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+	.nd {
+		bottom: 30px;
+		gap: 2px;
+	}
+
+	/* Kept small on short screens, so it stays clear of the slide text. */
+	.nd-flag {
+		width: clamp(128px, min(12vw, 21vh), 176px);
+	}
+
+	.nd-rule {
+		gap: 4px;
+		margin-bottom: 8px;
+	}
+
+	.nd-rule i {
+		width: 18px;
+		height: 3px;
+	}
+
+	.nd-ar {
+		font-size: clamp(1.05rem, 0.8rem + 0.6vw, 1.3rem);
+	}
+
+	.nd-en {
+		font-size: 0.66rem;
+		letter-spacing: 0.24em;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nd,
+	.nd-caption {
+		transition: none;
+	}
+}
+
 /* ---------- Sections ---------- */
 
 .section {
