@@ -1,24 +1,34 @@
 ---
 import { getArticles } from '../lib/content';
+import { langFromPath, localizePath, useT } from '../i18n';
 
-const articles = (await getArticles())
+interface Props {
+	label: string;
+}
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const articles = (await getArticles(lang))
 	.filter((a) => a.data.carousel !== undefined)
 	.sort((a, b) => a.data.carousel! - b.data.carousel!);
 ---
 
 <div class="carousel" data-carousel>
-	<button class="carousel-arrow prev" type="button" aria-label="Previous articles">‹</button>
-	<div class="carousel-track" tabindex="0" aria-label="Recent articles">
+	<button class="carousel-arrow prev" type="button" aria-label={t('previousArticles')}>
+		<svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+	</button>
+	<div class="carousel-track" tabindex="0" role="group" aria-label={Astro.props.label}>
 		{
 			articles.map((a) => (
-				<a class="carousel-item" href={`/articles/${a.id}/`}>
-					<img src={a.data.image} alt={a.data.title} width="400" height="400" loading="lazy" decoding="async" />
+				<a class="carousel-item" href={localizePath(`/articles/${a.id}/`, lang)}>
+					<img src={a.data.image} alt="" width="400" height="400" loading="lazy" decoding="async" />
 					<span>{a.data.title}</span>
 				</a>
 			))
 		}
 	</div>
-	<button class="carousel-arrow next" type="button" aria-label="Next articles">›</button>
+	<button class="carousel-arrow next" type="button" aria-label={t('nextArticles')}>
+		<svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+	</button>
 	<div class="carousel-dots" aria-hidden="true"></div>
 </div>
 
@@ -27,40 +37,42 @@ const articles = (await getArticles())
 		const track = root.querySelector<HTMLElement>('.carousel-track')!;
 		const items = Array.from(track.children) as HTMLElement[];
 		const dotsBox = root.querySelector<HTMLElement>('.carousel-dots')!;
+		if (!items.length) return;
+		// In a right-to-left page the track scrolls towards negative offsets.
+		const sign = getComputedStyle(track).direction === 'rtl' ? -1 : 1;
 		let timer: number | undefined;
 		let paused = false;
+		let count = 0;
 
-		const step = () => items[0].offsetWidth + 10;
-		const index = () => Math.round(track.scrollLeft / step());
+		const step = () => items[0].offsetWidth + parseFloat(getComputedStyle(track).columnGap || '0');
+		const index = () => Math.round(Math.abs(track.scrollLeft) / step());
 		const maxIndex = () => Math.max(0, Math.round((track.scrollWidth - track.clientWidth) / step()));
 
 		const go = (i: number) => {
 			const max = maxIndex();
 			const target = i > max ? 0 : i < 0 ? max : i;
-			track.scrollTo({ left: target * step(), behavior: 'smooth' });
+			track.scrollTo({ left: sign * target * step(), behavior: 'smooth' });
 		};
 
-		const renderDots = () => {
-			const count = maxIndex() + 1;
-			dotsBox.replaceChildren(
-				...Array.from({ length: count }, (_, i) => {
-					const b = document.createElement('button');
-					b.type = 'button';
-					b.tabIndex = -1;
-					b.addEventListener('click', () => go(i));
-					return b;
-				}),
-			);
-			syncDots();
-		};
 		const syncDots = () => {
 			const i = index();
 			Array.from(dotsBox.children).forEach((d, n) => d.setAttribute('aria-current', String(n === i)));
 		};
-
-		const schedule = () => {
-			window.clearInterval(timer);
-			timer = window.setInterval(() => !paused && !document.hidden && go(index() + 1), 3000);
+		const renderDots = () => {
+			const next = maxIndex() + 1;
+			if (next !== count) {
+				count = next;
+				dotsBox.replaceChildren(
+					...Array.from({ length: count > 1 ? count : 0 }, (_, i) => {
+						const b = document.createElement('button');
+						b.type = 'button';
+						b.tabIndex = -1;
+						b.addEventListener('click', () => go(i));
+						return b;
+					}),
+				);
+			}
+			syncDots();
 		};
 
 		root.querySelector('.prev')?.addEventListener('click', () => go(index() - 1));
@@ -75,6 +87,11 @@ const articles = (await getArticles())
 		window.addEventListener('resize', renderDots);
 
 		renderDots();
-		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) schedule();
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			// Only move by itself while the carousel can be seen.
+			let visible = false;
+			new IntersectionObserver(([entry]) => (visible = entry.isIntersecting), { threshold: 0.4 }).observe(root);
+			timer = window.setInterval(() => visible && !paused && !document.hidden && go(index() + 1), 3500);
+		}
 	});
 </script>

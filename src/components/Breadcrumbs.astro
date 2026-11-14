@@ -1,9 +1,16 @@
 ---
+import { langFromPath, localizePath, useT } from '../i18n';
+
 interface Props {
+	/** Site paths are written without the language (`/about/`); it is added here. */
 	items: Array<{ label: string; href?: string }>;
 }
-const current = Astro.url.pathname;
-const crumbs = [{ label: 'Home', href: '/' }, ...Astro.props.items];
+const lang = langFromPath(Astro.url.pathname);
+const current = Astro.url.pathname.replace(/\/?$/, '/');
+const crumbs = [{ label: useT(lang)('home'), href: '/' }, ...Astro.props.items].map((c) => ({
+	...c,
+	href: c.href && localizePath(c.href, lang),
+}));
 const schema = {
 	'@context': 'https://schema.org',
 	'@type': 'BreadcrumbList',
@@ -20,7 +27,7 @@ const schema = {
 	<ol>
 		{
 			crumbs.map((c) => (
-				<li>{c.href === current ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}</li>
+				<li>{!c.href || c.href === current ? <span aria-current={c.href ? 'page' : undefined}>{c.label}</span> : <a href={c.href}>{c.label}</a>}</li>
 			))
 		}
 	</ol>

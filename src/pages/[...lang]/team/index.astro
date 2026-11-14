@@ -1,21 +1,26 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeading from '../../components/PageHeading.astro';
-import Card from '../../components/Card.astro';
-import { PAGES } from '../../consts';
-import { getTeam } from '../../lib/content';
-import { renderText } from '../../lib/text';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeading from '../../../components/PageHeading.astro';
+import Card from '../../../components/Card.astro';
+import { siteData } from '../../../consts';
+import { langPaths, localizePath, useT, type Lang } from '../../../i18n';
+import { getTeam } from '../../../lib/content';
+import { renderText } from '../../../lib/text';
 
-const team = await getTeam();
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const team = await getTeam(lang);
+const { PAGES } = siteData(lang);
 const { title, intro } = PAGES.team;
 ---
 
-<BaseLayout title={title} description="Meet the leadership and management team of Masar Petroleum.">
+<BaseLayout title={title} description={useT(lang)('teamDescription')}>
 	<PageHeading title={title} crumbs={[{ label: PAGES.about.title, href: '/about/' }, { label: title, href: '/team/' }]} />
 	<div class="container page">
 		{intro && <div class="lead" set:html={renderText(intro)} />}
 		<div class="grid grid-4">
-			{team.map((m, i) => <Card href={`/team/${m.id}/`} image={m.data.image} title={m.data.name} subtitle={m.data.role} eager={i < 4} />)}
+			{team.map((m, i) => <Card href={localizePath(`/team/${m.id}/`, lang)} image={m.data.image} title={m.data.name} subtitle={m.data.role} eager={i < 4} />)}
 		</div>
 	</div>
 </BaseLayout>

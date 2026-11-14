@@ -1,8 +1,12 @@
 ---
 import { getFeatured } from '../lib/content';
+import { langFromPath, useT, type UIKey } from '../i18n';
 
-const items = await getFeatured();
-const LABELS: Record<string, string> = { events: 'News', articles: 'Article', pages: 'Company', careers: 'Careers', team: 'Team' };
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const items = await getFeatured(lang);
+const LABELS: Record<string, UIKey> = { events: 'labelNews', articles: 'labelArticle', pages: 'labelCompany', careers: 'labelCareers', team: 'labelTeam' };
+// The first item is the lead story, shown large; the rest are cards.
 // Prefer the wide original artwork (images/content/N.jpg) for migrated entries.
 const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/content/${legacyId}.jpg` : fallback);
 ---
@@ -10,16 +14,23 @@ const wide = (legacyId?: number, fallback?: string) => (legacyId ? `/images/cont
 <div class="news-list">
 	{
 		items.map((item, i) => (
-			<a class="news-item" href={item.url} data-reveal>
+			<a class:list={['news-item', { 'news-lead': i === 0 }]} href={item.url} data-reveal>
 				<div class="news-media">
-					<img src={wide(item.legacyId, item.image)} alt="" width="580" height="300" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+					<img
+						src={wide(item.legacyId, item.image)}
+						alt=""
+						width={i === 0 ? 760 : 580}
+						height={i === 0 ? 480 : 360}
+						loading={i === 0 ? 'eager' : 'lazy'}
+						decoding="async"
+					/>
+					<span class="news-tag">{t(LABELS[item.section] ?? 'labelNews')}</span>
 				</div>
 				<div class="news-body">
-					<span class="news-tag">{LABELS[item.section] ?? 'News'}</span>
-					<strong>{item.title}</strong>
 					{item.subtitle && <span class="sub">{item.subtitle}</span>}
+					<strong>{item.title}</strong>
 					<span class="news-excerpt">{item.excerpt}</span>
-					<span class="read-more">Read more</span>
+					<span class="read-more">{t('readMore')}</span>
 				</div>
 			</a>
 		))

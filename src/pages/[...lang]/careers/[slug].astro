@@ -1,14 +1,21 @@
 ---
 import { render } from 'astro:content';
-import EntryLayout from '../../components/EntryLayout.astro';
-import { getCareers } from '../../lib/content';
+import { siteData } from '../../../consts';
+import EntryLayout from '../../../components/EntryLayout.astro';
+import { LOCALES, DEFAULT_LANG } from '../../../i18n';
+import { getCareers } from '../../../lib/content';
 
 export async function getStaticPaths() {
-	return (await getCareers()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+	const pages = await Promise.all(
+		LOCALES.map(async (lang) =>
+			(await getCareers(lang)).map((entry) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: entry.id }, props: { entry, lang } })),
+		),
+	);
+	return pages.flat();
 }
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { entry, lang } = Astro.props;
+const { Content } = await render(entry.source);
 ---
 
 <EntryLayout
@@ -16,7 +23,8 @@ const { Content } = await render(entry);
 	subtitle={entry.data.status}
 	description={entry.data.excerpt}
 	image={entry.data.image}
-	crumbs={[{ label: 'Careers', href: '/careers/' }]}
+	crumbs={[{ label: siteData(lang).PAGES.careers.title, href: '/careers/' }]}
+	translated={entry.translated}
 >
 	<Content />
 </EntryLayout>

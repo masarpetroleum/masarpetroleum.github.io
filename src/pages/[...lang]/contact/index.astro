@@ -1,18 +1,45 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeading from '../../components/PageHeading.astro';
-import { CONTACT, MESSAGES_API, PAGES, TURNSTILE_SITE_KEY } from '../../consts';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeading from '../../../components/PageHeading.astro';
+import { MESSAGES_API, TURNSTILE_SITE_KEY, siteData } from '../../../consts';
+import { langPaths, useT, type Lang } from '../../../i18n';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const t = useT(lang);
+const { CONTACT, PAGES } = siteData(lang);
+const address = CONTACT.address.join(' ');
 
 // Directions go to the same point the embedded map is centred on.
 const [, lng, lat] = CONTACT.mapEmbed.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/) ?? [];
 const directions =
 	lat && lng
-		? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
-		: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${CONTACT.company}, ${CONTACT.address.join(' ')}`)}`;
+		? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&hl=${lang}`
+		: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${CONTACT.company}, ${address}`)}&hl=${lang}`;
+// The map's own labels and buttons follow the page language.
+const mapEmbed = CONTACT.mapEmbed.replace(/!1s[a-z]{2}(-[A-Z]{2})?!2s/, `!1s${lang}!2s`);
+
+// Texts the form script shows, in the language of the page.
+const texts = {
+	missing: t('formMissing'),
+	email: t('formEmail'),
+	captcha: t('formCaptcha'),
+	captchaFailed: t('formCaptchaFailed'),
+	sending: t('formSending'),
+	sent: t('formSent'),
+	tooMany: t('formTooMany'),
+	check: t('formCheck'),
+	fallback: t('formFallback'),
+	subject: t('mailSubject'),
+	name: t('name'),
+	phone: t('phone'),
+	emailLabel: t('email'),
+};
 ---
 
-<BaseLayout title={PAGES.contact.title} description={`Contact ${CONTACT.company} — ${CONTACT.address.join(' ')} Phone ${CONTACT.phone}.`}>
-	<PageHeading title={PAGES.contact.title} crumbs={[{ label: 'Contact', href: '/contact/' }]} />
+<BaseLayout title={PAGES.contact.title} description={t('contactDescription', { company: CONTACT.company, address, phone: CONTACT.phone })}>
+	<PageHeading title={PAGES.contact.title} crumbs={[{ label: PAGES.contact.title, href: '/contact/' }]} />
 	<div class="container page">
 		<div class="contact-grid">
 			<div class="contact-info">
@@ -27,45 +54,45 @@ const directions =
 						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
 							<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"></path>
 						</svg>
-						<span>Phone: <a href={CONTACT.phoneHref}>{CONTACT.phone}</a></span>
+						<span>{t('phone')}: <a href={CONTACT.phoneHref}><bdi dir="ltr">{CONTACT.phone}</bdi></a></span>
 					</li>
 					<li>
 						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
 							<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path>
 						</svg>
-						<span>Email: <a href="#" data-email={CONTACT.email.split('').reverse().join('')}>{CONTACT.email.replace('@', ' [at] ')}</a></span>
+						<span>{t('email')}: <a href="#" dir="ltr" data-email={CONTACT.email.split('').reverse().join('')}>{CONTACT.email.replace('@', ' [at] ')}</a></span>
 					</li>
 				</ul>
 
-				<h2 class="contact-form-title">Send us a message</h2>
-				<form class="form" id="contact-form" data-endpoint={MESSAGES_API} novalidate>
+				<h2 class="contact-form-title">{t('sendMessage')}</h2>
+				<form class="form" id="contact-form" data-endpoint={MESSAGES_API} data-texts={JSON.stringify(texts)} novalidate>
 					<!-- People never see this field; bots fill it in and are ignored. -->
 					<div class="form-trap" aria-hidden="true">
-						<label for="cf-hp">Leave this field empty</label>
+						<label for="cf-hp">{t('trap')}</label>
 						<input id="cf-hp" name="hp_leave_empty" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" />
 					</div>
 					<div class="field">
-						<label for="cf-name">Name</label>
-						<input id="cf-name" name="name" required autocomplete="name" />
+						<label for="cf-name">{t('name')}</label>
+						<input id="cf-name" name="name" required autocomplete="name" maxlength="100" enterkeyhint="next" />
 					</div>
 					<div class="field-row">
 						<div class="field">
-							<label for="cf-phone">Phone</label>
-							<input id="cf-phone" name="phone" type="tel" autocomplete="tel" dir="ltr" />
+							<label for="cf-phone">{t('phone')}</label>
+							<input id="cf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="40" dir="ltr" enterkeyhint="next" />
 						</div>
 						<div class="field">
-							<label for="cf-email">Email</label>
-							<input id="cf-email" name="email" type="email" autocomplete="email" dir="ltr" />
+							<label for="cf-email">{t('email')}</label>
+							<input id="cf-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="200" dir="ltr" enterkeyhint="next" />
 						</div>
 					</div>
 					<div class="field">
-						<label for="cf-message">Message</label>
-						<textarea id="cf-message" name="message" required></textarea>
+						<label for="cf-message">{t('message')}</label>
+						<textarea id="cf-message" name="message" required maxlength="5000"></textarea>
 					</div>
 					<div class="form-captcha">
-						<div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-size="flexible"></div>
+						<div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-size="flexible" data-language={lang}></div>
 					</div>
-					<button class="btn-primary" type="submit">Send message</button>
+					<button class="btn-primary" type="submit">{t('send')}</button>
 					<p class="form-note" id="cf-status" role="status">{PAGES.contact.formNote}</p>
 				</form>
 			</div>
@@ -74,8 +101,8 @@ const directions =
 					<span class="map-pin"></span>
 				</div>
 				<iframe
-					src={CONTACT.mapEmbed}
-					title={`Map showing ${CONTACT.company}, ${CONTACT.address.join(' ')}`}
+					src={mapEmbed}
+					title={t('mapTitle', { place: `${CONTACT.company}, ${address}` })}
 					loading="lazy"
 					referrerpolicy="no-referrer-when-downgrade"
 					allowfullscreen
@@ -83,9 +110,9 @@ const directions =
 				<div class="map-card">
 					<div>
 						<strong>{CONTACT.company}</strong>
-						<span>{CONTACT.address.join(' ')}</span>
+						<span>{address}</span>
 					</div>
-					<a class="btn-primary" href={directions} target="_blank" rel="noopener">Get directions</a>
+					<a class="btn-primary" href={directions} target="_blank" rel="noopener">{t('getDirections')}</a>
 				</div>
 			</div>
 		</div>
@@ -105,6 +132,7 @@ const directions =
 
 	const form = document.getElementById('contact-form') as HTMLFormElement | null;
 	const status = document.getElementById('cf-status');
+	const texts: Record<string, string> = JSON.parse(form?.dataset.texts ?? '{}');
 	const setStatus = (text: string, state = '') => {
 		if (!status) return;
 		status.textContent = text;
@@ -116,42 +144,48 @@ const directions =
 		const data = new FormData(form);
 		const name = String(data.get('name') ?? '').trim();
 		const message = String(data.get('message') ?? '').trim();
+		const address = String(data.get('email') ?? '').trim();
 		if (!name || !message) {
-			setStatus('Please enter your name and a message.', 'error');
+			setStatus(texts.missing, 'error');
 			(form.querySelector(name ? '#cf-message' : '#cf-name') as HTMLElement | null)?.focus();
+			return;
+		}
+		if (address && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+			setStatus(texts.email, 'error');
+			(form.querySelector('#cf-email') as HTMLElement | null)?.focus();
 			return;
 		}
 
 		// The captcha widget adds this field once the visitor has passed the check.
 		const captcha = String(data.get('cf-turnstile-response') ?? '');
 		if (!captcha) {
-			setStatus('Please complete the security check above the button.', 'error');
+			setStatus(texts.captcha, 'error');
 			return;
 		}
 
 		const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 		if (button) button.disabled = true;
-		setStatus('Sending…');
+		setStatus(texts.sending);
 		try {
 			const response = await fetch(form.dataset.endpoint!, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify({ ...Object.fromEntries(data), captcha }),
 			});
-			const result = await response.json().catch(() => ({}));
 			if (response.ok) {
 				form.reset();
-				setStatus('Thank you. Your message has been sent to our team.', 'success');
+				setStatus(texts.sent, 'success');
 			} else if ([400, 403, 429].includes(response.status)) {
-				setStatus(result.error ?? 'Please check the form and try again.', 'error');
+				// The server answers in English; show the matching text in the page language.
+				setStatus({ 403: texts.captchaFailed, 429: texts.tooMany }[response.status] ?? texts.check, 'error');
 			} else {
 				throw new Error(`Unexpected response ${response.status}`);
 			}
 		} catch {
 			// The message could not be delivered: fall back to the visitor's email app so it is not lost.
-			const body = [message, '', `Name: ${name}`, `Phone: ${data.get('phone') || '-'}`, `Email: ${data.get('email') || '-'}`].join('\n');
-			window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Website enquiry from ${name}`)}&body=${encodeURIComponent(body)}`;
-			setStatus('We could not send your message from this page, so your email app should now open with it ready to send.', 'error');
+			const body = [message, '', `${texts.name}: ${name}`, `${texts.phone}: ${data.get('phone') || '-'}`, `${texts.emailLabel}: ${address || '-'}`].join('\n');
+			window.location.href = `mailto:${email}?subject=${encodeURIComponent(texts.subject.replace('{name}', name))}&body=${encodeURIComponent(body)}`;
+			setStatus(texts.fallback, 'error');
 		} finally {
 			if (button) button.disabled = false;
 			// A captcha answer works once; ask for a fresh one for the next attempt.

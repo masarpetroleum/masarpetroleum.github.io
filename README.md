@@ -24,6 +24,16 @@ What can be edited: news & events (with photo galleries), articles, careers, tea
 
 Content tips: in the editor, a **horizontal rule** starts a new content box; **Tags** link pages under "Related topics"; **Show in Recent News** puts an item on the homepage. Uploaded images are converted to WebP and stored in `public/images/uploads/`.
 
+## Languages
+
+The site is in English (at the root, e.g. `/about/`) and Arabic (under `/ar/`, e.g. `/ar/about/`, right-to-left, set in Vazirmatn).
+
+- Every content file `src/content/<section>/<name>.md` can have an Arabic translation beside it, `<name>.ar.md`, holding only the translated fields (title, subtitle, excerpt, tags, body…). Images, order and the rest come from the English file. An entry without a translation is shown in English on the Arabic site, with a short note.
+- `src/data/<file>.ar.json` holds the Arabic texts of `src/data/<file>.json` in the same shape; anything left out falls back to English.
+- Short interface texts (buttons, labels, messages) are in `src/i18n/index.ts`.
+- All pages live in `src/pages/[...lang]/`, which builds each one once per language.
+- In the admin panel, switch between English and العربية at the top of an entry.
+
 ## Where things live
 
 - `src/content/` — page content as Markdown files: `articles/`, `events/` (news & events), `careers/`, `team/`, and `pages/` (company background, operations). Bodies are HTML; `<hr>` splits them into boxes (`src/lib/rehype-sections.mjs`); `order` controls list order.
@@ -32,4 +42,4 @@ Content tips: in the editor, a **horizontal rule** starts a new content box; **T
 - `public/images/` — every image from the original site (plus `site/` for logos and UI graphics, `files/` for article images, `uploads/` for CMS uploads), stored locally.
 - Old `content/?id=N` and `list/?refer=N` URLs redirect to the new pages (via each entry's hidden `legacyId`).
 
-The contact form opens the visitor's email app (the site is static). Search runs in the browser over `/search-index.json`.
+The contact form posts to the Cloudflare Worker in `worker/` (and falls back to the visitor's email app if that fails). Search runs in the browser over `/search-index.json` (`/ar/search-index.json` for Arabic).

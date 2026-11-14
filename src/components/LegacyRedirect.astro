@@ -10,7 +10,7 @@ interface Props {
 const { param, map } = Astro.props;
 ---
 
-<BaseLayout title="Redirecting">
+<BaseLayout title="Redirecting" alternates={false}>
 	<meta name="robots" content="noindex" slot="head" />
 	<div class="container page not-found">
 		<p>Redirecting… If nothing happens, <a href="/">go to the homepage</a>.</p>

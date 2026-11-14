@@ -1,20 +1,26 @@
 ---
 import { getRelated } from '../lib/content';
+import { langFromPath, localizePath, useT } from '../i18n';
 
 interface Props {
+	/** The English tags, which entries are matched on. */
+	tagKeys: string[];
+	/** The tags as shown on this page, in the same order. */
 	tags: string[];
 }
-const groups = await getRelated(Astro.props.tags, Astro.url.pathname);
+const lang = langFromPath(Astro.url.pathname);
+const groups = await getRelated(Astro.props.tagKeys, Astro.props.tags, Astro.url.pathname, lang);
+const search = localizePath('/search/', lang);
 ---
 
 {
 	groups.length > 0 && (
 		<aside class="related" aria-labelledby="related-title">
-			<h2 class="related-title" id="related-title">Related topics</h2>
+			<h2 class="related-title" id="related-title">{useT(lang)('relatedTopics')}</h2>
 			<div class="related-groups">
 				{groups.map((g) => (
 					<div class="related-group">
-						<a class="chip" href={`/search/?key=${encodeURIComponent(g.topic)}`}>
+						<a class="chip" href={`${search}?key=${encodeURIComponent(g.topic)}`}>
 							{g.topic}
 						</a>
 						<ul>

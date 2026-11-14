@@ -1,16 +1,20 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeading from '../../components/PageHeading.astro';
-import Card from '../../components/Card.astro';
-import { PAGES } from '../../consts';
-import { getCareers } from '../../lib/content';
-import { renderText } from '../../lib/text';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeading from '../../../components/PageHeading.astro';
+import Card from '../../../components/Card.astro';
+import { siteData } from '../../../consts';
+import { langPaths, localizePath, useT, type Lang } from '../../../i18n';
+import { getCareers } from '../../../lib/content';
+import { renderText } from '../../../lib/text';
 
-const jobs = await getCareers();
-const { title, intro, links } = PAGES.careers;
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const jobs = await getCareers(lang);
+const { title, intro, links } = siteData(lang).PAGES.careers;
 ---
 
-<BaseLayout title={title} description="Job opportunities at Masar Petroleum, Oman.">
+<BaseLayout title={title} description={useT(lang)('careersDescription')}>
 	<PageHeading title={title} crumbs={[{ label: title, href: '/careers/' }]} />
 	<div class="container page">
 		<div class="notice">
@@ -26,7 +30,7 @@ const { title, intro, links } = PAGES.careers;
 			}
 		</div>
 		<div class="grid grid-2">
-			{jobs.map((j) => <Card href={`/careers/${j.id}/`} image={j.data.image} title={j.data.title} badge={j.data.status} variant="wide" eager />)}
+			{jobs.map((j) => <Card href={localizePath(`/careers/${j.id}/`, lang)} image={j.data.image} title={j.data.title} badge={j.data.status} variant="wide" eager />)}
 		</div>
 	</div>
 </BaseLayout>

@@ -8,11 +8,13 @@ interface Props {
 	subtitle?: string;
 	image?: string;
 	crumbs: Array<{ label: string; href?: string }>;
+	/** A smaller title, for pages whose title is a full headline. */
+	compact?: boolean;
 }
-const { title, subtitle, image, crumbs } = Astro.props;
+const { title, subtitle, image, crumbs, compact = false } = Astro.props;
 ---
 
-<header class:list={['page-head', { 'has-image': image }]}>
+<header class:list={['page-head', { 'has-image': image, compact }]}>
 	{image && <img class="page-head-bg" src={image} alt="" width="1600" height="640" fetchpriority="high" decoding="async" />}
 	<div class="container">
 		<Breadcrumbs items={crumbs} />

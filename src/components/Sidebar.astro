@@ -1,0 +1,49 @@
+---
+// Beside the text of a news item, article or job: the latest news and articles,
+// so the reader always has somewhere to go next.
+import { siteData } from '../consts';
+import { getArticles, getEvents } from '../lib/content';
+import { langFromPath, localizePath, useT } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const { PAGES } = siteData(lang);
+const here = Astro.url.pathname.replace(/\/?$/, '/');
+const link = (section: string, id: string) => localizePath(`/${section}/${id}/`, lang);
+
+const pick = <T extends { id: string }>(entries: T[], section: string, count: number) =>
+	entries.filter((e) => link(section, e.id) !== here).slice(0, count);
+
+const groups = [
+	{ title: t('latestNews'), all: localizePath('/news/', lang), section: 'events', items: pick(await getEvents(lang), 'events', 3) },
+	{ title: t('latestArticles'), all: localizePath('/articles/', lang), section: 'articles', items: pick(await getArticles(lang), 'articles', 4) },
+].filter((g) => g.items.length);
+---
+
+<aside class="sidebar" aria-label={`${PAGES.news.title} · ${PAGES.articles.title}`}>
+	{
+		groups.map((g) => (
+			<section class="side-box">
+				<div class="side-head">
+					<h2>{g.title}</h2>
+					<a class="link-arrow" href={g.all}>
+						{t('viewAll')}
+					</a>
+				</div>
+				<ul class="side-list">
+					{g.items.map((item) => (
+						<li>
+							<a href={link(g.section, item.id)}>
+								<img src={item.data.image} alt="" width="72" height="72" loading="lazy" decoding="async" />
+								<span>
+									<strong>{item.data.title}</strong>
+									{item.data.subtitle && <small>{item.data.subtitle}</small>}
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		))
+	}
+</aside>

@@ -1,20 +1,27 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Billboard from '../components/Billboard.astro';
-import NewsList from '../components/NewsList.astro';
-import ArticleCarousel from '../components/ArticleCarousel.astro';
-import { CONTACT, HOME, SITE } from '../consts';
-import { renderText } from '../lib/text';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Billboard from '../../components/Billboard.astro';
+import NewsList from '../../components/NewsList.astro';
+import ArticleCarousel from '../../components/ArticleCarousel.astro';
+import { siteData } from '../../consts';
+import { langPaths, localizePath, useT, type Lang } from '../../i18n';
+import { renderText } from '../../lib/text';
 
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const t = useT(lang);
+const { CONTACT, HOME, SITE } = siteData(lang);
+const english = siteData('en');
 const organization = {
 	'@context': 'https://schema.org',
 	'@type': 'Organization',
-	name: `${SITE.name} SAOC`,
-	alternateName: SITE.name,
+	name: `${english.SITE.name} SAOC`,
+	alternateName: [...new Set([english.SITE.name, SITE.name])],
 	url: Astro.site?.href,
 	logo: new URL(SITE.ogImage, Astro.site).href,
 	foundingDate: '2015',
-	address: { '@type': 'PostalAddress', streetAddress: CONTACT.address.join(' '), addressCountry: 'OM' },
+	address: { '@type': 'PostalAddress', streetAddress: CONTACT.address.join(' '), addressLocality: 'Muscat', addressCountry: 'OM' },
 	telephone: CONTACT.phone,
 	email: CONTACT.email,
 	sameAs: [CONTACT.linkedin].filter(Boolean),
@@ -31,7 +38,7 @@ const { intro } = HOME;
 		<div class="container">
 			<div class="section-head">
 				<h2 id="recent-news">{HOME.newsTitle}</h2>
-				<a class="link-arrow" href="/news/">All news</a>
+				<a class="link-arrow" href={localizePath('/news/', lang)}>{t('allNews')}</a>
 			</div>
 			<NewsList />
 		</div>
@@ -46,7 +53,7 @@ const { intro } = HOME;
 				{
 					intro.buttonHref && intro.buttonLabel && (
 						<a class="btn-light" href={intro.buttonHref}>
-							{intro.buttonLabel.replace(/\s*(\.{2,}|…)\s*$/, '')}
+							{intro.buttonLabel}
 						</a>
 					)
 				}
@@ -71,9 +78,10 @@ const { intro } = HOME;
 		<div class="container">
 			<div class="section-head">
 				<h2 id="recent-articles">{HOME.articlesTitle}</h2>
-				<a class="link-arrow" href="/articles/">All articles</a>
+				<a class="link-arrow" href={localizePath('/articles/', lang)}>{t('allArticles')}</a>
 			</div>
-			<ArticleCarousel />
+			<ArticleCarousel label={HOME.articlesTitle} />
 		</div>
 	</section>
+
 </BaseLayout>

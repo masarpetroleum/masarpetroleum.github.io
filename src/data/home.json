@@ -4,7 +4,7 @@
 			"image": "/images/billboard/6.jpg",
 			"title": "Masar Petroleum",
 			"subtitle": "Paving the way for energy",
-			"ctaLabel": "More about us...",
+			"ctaLabel": "More about us",
 			"ctaHref": "/about/",
 			"theme": "light"
 		},
@@ -26,7 +26,7 @@
 	"intro": {
 		"title": "Masar Petroleum",
 		"text": "Masar Petroleum is a dynamic and forward-thinking oil and gas exploration and production company that began operations in 2015. With a strategic focus on unlocking hydrocarbon resources to meet the world's growing energy demands, Masar Petroleum owns 100% of Block 7 in Sahmah, a significant asset with immense potential for exploration and production activities.",
-		"buttonLabel": "more about us...",
+		"buttonLabel": "More about us",
 		"buttonHref": "/company/",
 		"background": "/images/files/FpBg.jpg"
 	},
@@ -47,5 +47,5 @@
 			"text": "Driving economic growth and its commitment to stakeholder and community development"
 		}
 	],
-	"articlesTitle": "Recent articles"
+	"articlesTitle": "Recent Articles"
 }

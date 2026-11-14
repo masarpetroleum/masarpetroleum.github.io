@@ -1,15 +1,21 @@
 ---
 import { render } from 'astro:content';
-import { PAGES } from '../../consts';
-import EntryLayout from '../../components/EntryLayout.astro';
-import { getArticles } from '../../lib/content';
+import { siteData } from '../../../consts';
+import EntryLayout from '../../../components/EntryLayout.astro';
+import { LOCALES, DEFAULT_LANG } from '../../../i18n';
+import { getArticles } from '../../../lib/content';
 
 export async function getStaticPaths() {
-	return (await getArticles()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+	const pages = await Promise.all(
+		LOCALES.map(async (lang) =>
+			(await getArticles(lang)).map((entry) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: entry.id }, props: { entry, lang } })),
+		),
+	);
+	return pages.flat();
 }
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { entry, lang } = Astro.props;
+const { Content } = await render(entry.source);
 ---
 
 <EntryLayout
@@ -17,9 +23,10 @@ const { Content } = await render(entry);
 	subtitle={entry.data.subtitle}
 	description={entry.data.excerpt}
 	image={entry.data.image}
-	crumbs={[{ label: PAGES.articles.title, href: '/articles/' }]}
-	
+	crumbs={[{ label: siteData(lang).PAGES.articles.title, href: '/articles/' }]}
 	tags={entry.data.tags}
+	tagKeys={entry.tagKeys}
+	translated={entry.translated}
 >
 	<Content />
 </EntryLayout>

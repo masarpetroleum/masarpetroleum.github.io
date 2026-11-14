@@ -32,10 +32,23 @@ export interface HeroSlide {
 	theme?: 'light' | 'dark';
 }
 
+export interface HeroLabels {
+	carousel: string;
+	/** "{i} of {n}" */
+	slideOf: string;
+	previous: string;
+	next: string;
+	pause: string;
+	play: string;
+}
+
 interface Props {
 	slides: HeroSlide[];
 	/** Seconds each slide stays before the next one. */
 	interval: number;
+	/** Right-to-left page (Arabic): "next" is towards the left, so swipes and arrow keys swap. */
+	rtl?: boolean;
+	labels: HeroLabels;
 }
 
 /** A swipe must travel this far, and mostly sideways, to change the slide. */
@@ -58,10 +71,7 @@ const fade: Variants = {
 	shown: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
 
-// "More about us..." reads better without the dots next to an arrow.
-const tidyLabel = (label: string) => label.replace(/\s*(\.{2,}|…)\s*$/, '');
-
-export default function Hero({ slides, interval }: Props) {
+export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 	const count = slides.length;
 	const many = count > 1;
 	const reduceMotion = useReducedMotion();
@@ -141,8 +151,9 @@ export default function Hero({ slides, interval }: Props) {
 	}, [images, reduceMotion]);
 
 	React.useEffect(() => {
-		glRef.current?.show(view.index, view.direction);
-	}, [view]);
+		// On a right-to-left page the next slide arrives from the left.
+		glRef.current?.show(view.index, (rtl ? -view.direction : view.direction) as 1 | -1);
+	}, [view, rtl]);
 
 	React.useEffect(() => {
 		glRef.current?.setActive(onScreen && tabVisible);
@@ -167,8 +178,8 @@ export default function Hero({ slides, interval }: Props) {
 	}, [running, view.index, next]);
 
 	const onKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === 'ArrowLeft') previous();
-		else if (e.key === 'ArrowRight') next();
+		if (e.key === 'ArrowLeft') (rtl ? next : previous)();
+		else if (e.key === 'ArrowRight') (rtl ? previous : next)();
 		else if (e.key === 'Home') go(0, -1);
 		else if (e.key === 'End') go(count - 1, 1);
 		else return;
@@ -189,7 +200,8 @@ export default function Hero({ slides, interval }: Props) {
 		const dy = e.clientY - start.y;
 		if (Math.abs(dx) >= SWIPE_DISTANCE && Math.abs(dx) > Math.abs(dy) * 1.2) {
 			start.swiped = true;
-			if (dx < 0) next();
+			// The next slide comes in from the far side: swipe towards the near side to pull it in.
+			if (dx < 0 !== rtl) next();
 			else previous();
 		}
 	};
@@ -208,8 +220,8 @@ export default function Hero({ slides, interval }: Props) {
 				ref={rootRef}
 				className="hero"
 				aria-roledescription="carousel"
-				aria-label="Highlights"
-				data-direction={view.direction}
+				aria-label={labels.carousel}
+				data-direction={rtl ? -view.direction : view.direction}
 				data-gl={gl || undefined}
 				onKeyDown={onKeyDown}
 				onPointerDown={onPointerDown}
@@ -242,7 +254,7 @@ export default function Hero({ slides, interval }: Props) {
 								data-state={state}
 								role="group"
 								aria-roledescription="slide"
-								aria-label={`${i + 1} of ${count}: ${slide.title}`}
+								aria-label={`${labels.slideOf.replace('{i}', String(i + 1)).replace('{n}', String(count))}: ${slide.title}`}
 								inert={!active || undefined}
 							>
 								<div className="hero-media">
@@ -277,8 +289,8 @@ export default function Hero({ slides, interval }: Props) {
 											<motion.div variants={fade}>
 												<AnimateIcon animateOnHover asChild>
 													<a className="hero-cta" href={slide.ctaHref} draggable={false}>
-														{tidyLabel(slide.ctaLabel)}
-														<ArrowRight size={18} strokeWidth={2.4} />
+														{slide.ctaLabel}
+														<ArrowRight className="flip-rtl" size={18} strokeWidth={2.4} />
 													</a>
 												</AnimateIcon>
 											</motion.div>
@@ -295,20 +307,20 @@ export default function Hero({ slides, interval }: Props) {
 				{many && (
 					<div className="container hero-ui">
 						<div className="hero-buttons">
-							<button type="button" className="hero-btn hero-step" aria-label="Previous slide" onClick={previous}>
-								<ChevronLeft size={22} animateOnHover />
+							<button type="button" className="hero-btn hero-step" aria-label={labels.previous} onClick={previous}>
+								<ChevronLeft className="flip-rtl" size={22} animateOnHover />
 							</button>
 							<button
 								type="button"
 								className="hero-btn"
-								aria-label={playing ? 'Pause slideshow' : 'Play slideshow'}
+								aria-label={playing ? labels.pause : labels.play}
 								aria-pressed={!playing}
 								onClick={() => setPlaying((p) => !p)}
 							>
 								{playing ? <Pause size={18} /> : <Play size={18} />}
 							</button>
-							<button type="button" className="hero-btn hero-step" aria-label="Next slide" onClick={next}>
-								<ChevronRight size={22} animateOnHover />
+							<button type="button" className="hero-btn hero-step" aria-label={labels.next} onClick={next}>
+								<ChevronRight className="flip-rtl" size={22} animateOnHover />
 							</button>
 						</div>
 					</div>

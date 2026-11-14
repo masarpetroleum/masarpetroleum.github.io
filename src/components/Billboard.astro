@@ -1,10 +1,27 @@
 ---
 // The home page hero is a React island (see hero/Hero.tsx). It is rendered to
 // HTML at build time, so the first slide shows before the script loads.
-import { HOME } from '../consts';
+import { siteData } from '../consts';
+import { langFromPath, useT } from '../i18n';
 import Hero from './hero/Hero';
 
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const { HOME } = siteData(lang);
 const interval = Math.max(2, Number(HOME.slideInterval) || 5);
 ---
 
-<Hero client:load slides={HOME.slides} interval={interval} />
+<Hero
+	client:load
+	slides={HOME.slides}
+	interval={interval}
+	rtl={lang === 'ar'}
+	labels={{
+		carousel: t('heroLabel'),
+		slideOf: t('slideOf'),
+		previous: t('previousSlide'),
+		next: t('nextSlide'),
+		pause: t('pauseSlides'),
+		play: t('playSlides'),
+	}}
+/>

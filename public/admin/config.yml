@@ -23,6 +23,18 @@ display_url: https://www.masarpetroleum.om
 logo:
   src: /images/site/logo.png
 
+# Two languages. English is written in `<name>.md` / `<name>.json`; the Arabic translation is saved
+# beside it as `<name>.ar.md` / `<name>.ar.json` and holds only the translated fields.
+# In the editor, switch between English and العربية at the top of each entry.
+i18n:
+  structure: multiple_files
+  locales: [en, ar]
+  default_locale: en
+  omit_default_locale_from_file_path: true
+  omit_default_locale_from_filename: true # the same setting under its older name, for the pinned CMS version
+  # A new entry starts in English only; add the Arabic version from the editor's ⋯ menu.
+  initial_locales: default
+
 # All site images live under public/images (subfolders: site, files, content, thumbs, billboard, photos, uploads…).
 media_folder: public/images
 public_folder: /images
@@ -47,6 +59,7 @@ collections:
   # ---------- Content ----------
 
   - name: events
+    i18n: true
     label: News & Events
     label_singular: News item / Event
     icon: campaign
@@ -63,17 +76,19 @@ collections:
       fields: [order, title, featured]
       default: { field: order, direction: ascending }
     fields:
-      - { name: title, label: Title }
-      - { name: subtitle, label: Subtitle / date, required: false, hint: 'For example “October 2024”.' }
+      - { name: title, i18n: true, label: Title }
+      - { name: subtitle, i18n: true, label: Subtitle / date, required: false, hint: 'For example “October 2024”.' }
       - { name: image, label: Card image, widget: image, hint: 'Square-ish photo used on cards and the homepage.' }
       - &excerpt
         name: excerpt
+        i18n: true
         label: Summary
         widget: text
         required: false
         hint: One or two sentences shown on the homepage news list and in search results. Leave empty to use the start of the content.
       - &body
         name: body
+        i18n: true
         label: Content
         widget: richtext
         format: html
@@ -103,6 +118,7 @@ collections:
         hint: Lower numbers are listed first (use negative numbers to put something at the top).
       - &tags
         name: tags
+        i18n: true
         label: Tags (related topics)
         widget: list
         required: false
@@ -111,6 +127,7 @@ collections:
         name: legacyId
         widget: hidden
   - name: articles
+    i18n: true
     label: Articles
     label_singular: Article
     icon: article
@@ -126,8 +143,8 @@ collections:
       fields: [order, title, carousel, featured]
       default: { field: order, direction: ascending }
     fields:
-      - { name: title, label: Title }
-      - { name: subtitle, label: Subtitle, required: false }
+      - { name: title, i18n: true, label: Title }
+      - { name: subtitle, i18n: true, label: Subtitle, required: false }
       - { name: image, label: Card image, widget: image }
       - *excerpt
       - *body
@@ -144,6 +161,7 @@ collections:
       - *legacy
 
   - name: careers
+    i18n: true
     label: Careers
     label_singular: Job posting
     icon: work
@@ -159,8 +177,8 @@ collections:
       fields: [order, title]
       default: { field: order, direction: ascending }
     fields:
-      - { name: title, label: Job title }
-      - { name: status, label: Status badge, required: false, hint: 'For example “Expired”. Leave empty for an open position.' }
+      - { name: title, i18n: true, label: Job title }
+      - { name: status, i18n: true, label: Status badge, required: false, hint: 'For example “Expired”. Leave empty for an open position.' }
       - { name: image, label: Card image (wide), widget: image }
       - *excerpt
       - *body
@@ -168,6 +186,7 @@ collections:
       - *legacy
 
   - name: team
+    i18n: true
     label: Our Team
     label_singular: Team member
     icon: groups
@@ -184,11 +203,11 @@ collections:
       fields: [order, name]
       default: { field: order, direction: ascending }
     fields:
-      - { name: name, label: Full name }
-      - { name: role, label: Position }
+      - { name: name, i18n: true, label: Full name }
+      - { name: role, i18n: true, label: Position }
       - { name: image, label: Card photo (square), widget: image }
       - { name: photo, label: Large portrait (beside the bio), widget: image, required: false }
-      - { name: body, label: Biography, widget: richtext, format: html, modes: [rich_text, raw] }
+      - { name: body, i18n: true, label: Biography, widget: richtext, format: html, modes: [rich_text, raw] }
       - *excerpt
       - *order
       - *tags
@@ -196,15 +215,17 @@ collections:
       - *legacy
 
   - name: pages
+    i18n: true
     label: Pages
     icon: description
     files:
       - name: company
+        i18n: true
         label: Company background
-        file: src/content/pages/company.md
+        file: 'src/content/pages/company.{{locale}}.md'
         preview_path: company/
         fields:
-          - { name: title, label: Title }
+          - { name: title, i18n: true, label: Title }
           - { name: hero, label: Hero image (top banner), widget: image }
           - { name: image, label: Card image, widget: image, required: false }
           - *excerpt
@@ -213,11 +234,12 @@ collections:
           - *tags
           - *legacy
       - name: operations
+        i18n: true
         label: Operations
-        file: src/content/pages/operations.md
+        file: 'src/content/pages/operations.{{locale}}.md'
         preview_path: operations/
         fields:
-          - { name: title, label: Title }
+          - { name: title, i18n: true, label: Title }
           - *body
           - name: gallery
             label: Photos
@@ -231,25 +253,28 @@ collections:
   # ---------- Site-wide settings ----------
 
   - name: site
+    i18n: true
     label: Site Settings
     icon: settings
     editor:
       preview: false
     files:
       - name: home
+        i18n: true
         label: Homepage (hero slider & sections)
-        file: src/data/home.json
+        file: 'src/data/home.{{locale}}.json'
         fields:
           - name: slides
+            i18n: true
             label: Hero slides
             label_singular: Slide
             widget: list
             summary: '{{fields.title}} — {{fields.subtitle}}'
             fields:
               - { name: image, label: Background image, widget: image, hint: 'Wide landscape image, about 2200 × 880 px. Keep the subject near the centre: phones crop the sides.' }
-              - { name: title, label: Title }
-              - { name: subtitle, label: Subtitle, required: false }
-              - { name: ctaLabel, label: Button text, required: false }
+              - { name: title, i18n: true, label: Title }
+              - { name: subtitle, i18n: true, label: Subtitle, required: false }
+              - { name: ctaLabel, i18n: true, label: Button text, required: false }
               - { name: ctaHref, label: Button link, required: false, hint: 'The button links here. Both button fields are needed to show it.' }
               - name: theme
                 label: Image brightness
@@ -260,116 +285,131 @@ collections:
                   - { label: Bright image (darker shade), value: light }
                   - { label: Dark image (lighter shade), value: dark }
           - { name: slideInterval, label: Seconds per slide, widget: number, value_type: int, default: 5, min: 2, max: 30 }
-          - { name: newsTitle, label: '“Recent News” heading' }
+          - { name: newsTitle, i18n: true, label: '“Recent News” heading' }
           - name: intro
+            i18n: true
             label: About band (parallax section)
             widget: object
             fields:
-              - { name: title, label: Title }
-              - { name: text, label: Text, widget: text }
-              - { name: buttonLabel, label: Button text, required: false }
+              - { name: title, i18n: true, label: Title }
+              - { name: text, i18n: true, label: Text, widget: text }
+              - { name: buttonLabel, i18n: true, label: Button text, required: false }
               - { name: buttonHref, label: Button link, required: false }
               - { name: background, label: Background image, widget: image, required: false }
           - name: values
+            i18n: true
             label: Value cards (pinned cards)
             label_singular: Card
             widget: list
             summary: '{{fields.title}}'
             fields:
               - { name: image, label: Image, widget: image }
-              - { name: title, label: Title }
-              - { name: text, label: Text, widget: text }
-          - { name: articlesTitle, label: '“Recent articles” heading' }
+              - { name: title, i18n: true, label: Title }
+              - { name: text, i18n: true, label: Text, widget: text }
+          - { name: articlesTitle, i18n: true, label: '“Recent articles” heading' }
 
       - name: navigation
+        i18n: true
         label: Main menu
-        file: src/data/navigation.json
+        file: 'src/data/navigation.{{locale}}.json'
         fields:
           - name: items
+            i18n: true
             label: Menu items
             label_singular: Menu item
             widget: list
             summary: '{{fields.label}} → {{fields.href}}'
             fields:
-              - { name: label, label: Label }
+              - { name: label, i18n: true, label: Label }
               - { name: href, label: Link, hint: 'A page path like /operations/ or a full URL.' }
               - name: children
+                i18n: true
                 label: Dropdown items
                 label_singular: Dropdown item
                 widget: list
                 required: false
                 summary: '{{fields.label}} → {{fields.href}}'
                 fields: &link_fields
-                  - { name: label, label: Label }
+                  - { name: label, i18n: true, label: Label }
                   - { name: href, label: Link, hint: 'A page path like /about/ or a full URL.' }
       - name: pages
+        i18n: true
         label: Page titles & intros
-        file: src/data/pages.json
+        file: 'src/data/pages.{{locale}}.json'
         fields:
           - name: about
+            i18n: true
             label: About page
             widget: object
             fields:
-              - { name: title, label: Title }
+              - { name: title, i18n: true, label: Title }
               - name: cards
+                i18n: true
                 label: Cards
                 widget: list
                 summary: '{{fields.title}}'
                 fields:
-                  - { name: title, label: Title }
+                  - { name: title, i18n: true, label: Title }
                   - { name: image, label: Image, widget: image }
                   - { name: href, label: Link }
           - name: team
+            i18n: true
             label: Our Team page
             widget: object
             fields:
-              - { name: title, label: Title }
-              - { name: intro, label: Introduction, widget: text, required: false, hint: 'Blank line = new paragraph. *italic*, **bold**, [link](https://…) are supported.' }
+              - { name: title, i18n: true, label: Title }
+              - { name: intro, i18n: true, label: Introduction, widget: text, required: false, hint: 'Blank line = new paragraph. *italic*, **bold**, [link](https://…) are supported.' }
           - name: careers
+            i18n: true
             label: Careers page
             widget: object
             fields:
-              - { name: title, label: Title }
-              - { name: intro, label: Introduction, widget: text, required: false, hint: 'Blank line = new paragraph. *italic*, **bold**, [link](https://…) are supported.' }
-              - { name: links, label: External job links, widget: list, required: false, summary: '{{fields.label}}', fields: *link_fields }
-          - { name: events, label: Events page, widget: object, fields: [{ name: title, label: Title }] }
-          - { name: articles, label: Articles page, widget: object, fields: [{ name: title, label: Title }] }
-          - { name: news, label: News page, widget: object, fields: [{ name: title, label: Title }] }
+              - { name: title, i18n: true, label: Title }
+              - { name: intro, i18n: true, label: Introduction, widget: text, required: false, hint: 'Blank line = new paragraph. *italic*, **bold**, [link](https://…) are supported.' }
+              - { name: links, i18n: true, label: External job links, widget: list, required: false, summary: '{{fields.label}}', fields: *link_fields }
+          - { name: events, i18n: true, label: Events page, widget: object, fields: [{ name: title, i18n: true, label: Title }] }
+          - { name: articles, i18n: true, label: Articles page, widget: object, fields: [{ name: title, i18n: true, label: Title }] }
+          - { name: news, i18n: true, label: News page, widget: object, fields: [{ name: title, i18n: true, label: Title }] }
           - name: contact
+            i18n: true
             label: Contact page
             widget: object
             fields:
-              - { name: title, label: Title }
-              - { name: formNote, label: Note under the form, required: false }
+              - { name: title, i18n: true, label: Title }
+              - { name: formNote, i18n: true, label: Note under the form, required: false }
 
       - name: settings
+        i18n: true
         label: Contact, footer & SEO
-        file: src/data/settings.json
+        file: 'src/data/settings.{{locale}}.json'
         fields:
-          - { name: siteName, label: Company name }
-          - { name: title, label: Homepage title (browser tab & Google) }
-          - { name: description, label: Site description (Google & social sharing), widget: text }
-          - { name: keywords, label: SEO keywords, widget: text, required: false }
+          - { name: siteName, i18n: true, label: Company name }
+          - { name: title, i18n: true, label: Homepage title (browser tab & Google) }
+          - { name: description, i18n: true, label: Site description (Google & social sharing), widget: text }
+          - { name: keywords, i18n: true, label: SEO keywords, widget: text, required: false }
           - { name: logo, label: Logo, widget: image }
           - { name: ogImage, label: Social sharing image, widget: image }
           - { name: gaId, label: Google Analytics ID, required: false, hint: 'For example G-XXXXXXXXXX. Leave empty to disable analytics.' }
           - name: contact
+            i18n: true
             label: Contact details
             widget: object
             fields:
-              - { name: company, label: Company }
-              - { name: addressLine1, label: Address line 1 }
-              - { name: addressLine2, label: Address line 2, required: false }
+              - { name: company, i18n: true, label: Company }
+              - { name: addressLine1, i18n: true, label: Address line 1 }
+              - { name: addressLine2, i18n: true, label: Address line 2, required: false }
               - { name: phone, label: Phone }
               - { name: email, label: Email }
               - { name: linkedin, label: LinkedIn URL, required: false }
               - { name: mapEmbed, label: Google Maps embed URL, widget: text, hint: 'Google Maps → Share → Embed a map → copy only the src="…" URL.' }
           - name: footer
+            i18n: true
             label: Footer
             widget: object
             fields:
-              - { name: links, label: Footer links, widget: list, summary: '{{fields.label}}', fields: *link_fields }
+              - { name: tagline, i18n: true, label: Short company line (under the name), widget: text, required: false }
+              - { name: links, i18n: true, label: Footer links, widget: list, summary: '{{fields.label}}', fields: *link_fields }
               - { name: badgeImage, label: Badge image (e.g. JSRS), widget: image, required: false }
               - { name: badgeLink, label: Badge link, required: false }
-              - { name: badgeAlt, label: Badge description, required: false }
-              - { name: copyright, label: Copyright text }
+              - { name: badgeAlt, i18n: true, label: Badge description, required: false }
+              - { name: copyright, i18n: true, label: Copyright text }

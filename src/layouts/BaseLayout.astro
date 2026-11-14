@@ -2,41 +2,63 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE } from '../consts';
-// The weights used above the fold. Preloading them means text is drawn in the
+import { siteData } from '../consts';
+import { DEFAULT_LANG, DIR, LOCALES, OG_LOCALE, langFromPath, localizePath, stripLang, useT } from '../i18n';
+// The fonts used above the fold. Preloading them means text is drawn in the
 // right font from the first frame, so the menu doesn't shift as fonts arrive.
 import font400 from '@fontsource/titillium-web/files/titillium-web-latin-400-normal.woff2?url';
 import font600 from '@fontsource/titillium-web/files/titillium-web-latin-600-normal.woff2?url';
 import font700 from '@fontsource/titillium-web/files/titillium-web-latin-700-normal.woff2?url';
+import fontArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
 
 interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
 	type?: 'website' | 'article';
+	/** Set to false on pages that exist in one language only (the legacy redirects, 404). */
+	alternates?: boolean;
 }
 
-const { title, type = 'website' } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const { SITE } = siteData(lang);
+const { title, type = 'website', alternates = true } = Astro.props;
 const description = Astro.props.description || SITE.description;
 const image = Astro.props.image || SITE.ogImage;
 const fullTitle = title ? `${title} | ${SITE.name}` : SITE.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
+const path = stripLang(Astro.url.pathname);
+const fonts = lang === 'ar' ? [fontArabic] : [font400, font600, font700];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang} dir={DIR[lang]}>
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<title>{fullTitle}</title>
 		<meta name="description" content={description} />
 		<meta name="keywords" content={SITE.keywords} />
-		{[font400, font600, font700].map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+		{fonts.map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
 		<link rel="canonical" href={canonical} />
+		{
+			alternates && (
+				<>
+					{LOCALES.map((l) => (
+						<link rel="alternate" hreflang={l} href={new URL(localizePath(path, l), Astro.site)} />
+					))}
+					<link rel="alternate" hreflang="x-default" href={new URL(localizePath(path, DEFAULT_LANG), Astro.site)} />
+				</>
+			)
+		}
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href={SITE.ogImage} />
 		<meta name="theme-color" content="#2d3075" />
-		<meta property="og:locale" content="en_US" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta property="og:locale" content={OG_LOCALE[lang]} />
+		{alternates && LOCALES.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={OG_LOCALE[l]} />)}
 		<meta property="og:site_name" content={SITE.name} />
 		<meta property="og:title" content={title ?? SITE.name} />
 		<meta property="og:description" content={description} />
@@ -62,7 +84,7 @@ const ogImage = new URL(image, Astro.site);
 		<slot name="head" />
 	</head>
 	<body>
-		<a class="skip-link" href="#main">Skip to content</a>
+		<a class="skip-link" href="#main">{t('skip')}</a>
 		<div class="wrapper">
 			<Header />
 			<main id="main">
@@ -70,12 +92,18 @@ const ogImage = new URL(image, Astro.site);
 			</main>
 			<Footer />
 		</div>
-		<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
-			<button class="lb-close" type="button" aria-label="Close">✕</button>
-			<button class="lb-prev" type="button" aria-label="Previous image">‹</button>
+		<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label={t('lightbox')} hidden>
+			<button class="lb-close" type="button" aria-label={t('close')}>
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+			</button>
+			<button class="lb-prev" type="button" aria-label={t('previousImage')}>
+				<svg class="flip-rtl" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+			</button>
 			<img alt="" />
-			<button class="lb-next" type="button" aria-label="Next image">›</button>
-			<div class="lb-count" aria-live="polite"></div>
+			<button class="lb-next" type="button" aria-label={t('nextImage')}>
+				<svg class="flip-rtl" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+			</button>
+			<div class="lb-count" aria-live="polite" dir="ltr"></div>
 		</div>
 		<script>
 			import '../scripts/site';

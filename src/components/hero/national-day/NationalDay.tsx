@@ -75,7 +75,9 @@ export default function NationalDay({ active }: Props) {
 					<p className="nd-ar" lang="ar" dir="rtl">
 						اليوم الوطني العُماني
 					</p>
-					<p className="nd-en">Oman National Day</p>
+					<p className="nd-en" lang="en" dir="ltr">
+						Oman National Day
+					</p>
 				</div>
 			</div>
 		</div>

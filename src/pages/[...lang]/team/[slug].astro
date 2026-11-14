@@ -1,14 +1,22 @@
 ---
 import { render } from 'astro:content';
-import EntryLayout from '../../components/EntryLayout.astro';
-import { getTeam } from '../../lib/content';
+import { siteData } from '../../../consts';
+import EntryLayout from '../../../components/EntryLayout.astro';
+import { LOCALES, DEFAULT_LANG } from '../../../i18n';
+import { getTeam } from '../../../lib/content';
 
 export async function getStaticPaths() {
-	return (await getTeam()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+	const pages = await Promise.all(
+		LOCALES.map(async (lang) =>
+			(await getTeam(lang)).map((entry) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: entry.id }, props: { entry, lang } })),
+		),
+	);
+	return pages.flat();
 }
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { entry, lang } = Astro.props;
+const { PAGES } = siteData(lang);
+const { Content } = await render(entry.source);
 ---
 
 <EntryLayout
@@ -16,9 +24,11 @@ const { Content } = await render(entry);
 	subtitle={entry.data.role}
 	description={entry.data.excerpt}
 	image={entry.data.photo ?? entry.data.image}
-	crumbs={[{ label: 'About', href: '/about/' }, { label: 'Our Team', href: '/team/' }]}
+	crumbs={[{ label: PAGES.about.title, href: '/about/' }, { label: PAGES.team.title, href: '/team/' }]}
 	aside={entry.data.photo}
 	tags={entry.data.tags}
+	tagKeys={entry.tagKeys}
+	translated={entry.translated}
 >
 	<Content />
 </EntryLayout>

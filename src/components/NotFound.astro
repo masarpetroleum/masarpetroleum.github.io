@@ -1,0 +1,21 @@
+---
+// The "page not found" page, in the language of its address (/404 and /ar/404/).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchForm from './SearchForm.astro';
+import { langFromPath, localizePath, useT } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+---
+
+<BaseLayout title={t('notFoundTitle')} alternates={false}>
+	<meta name="robots" content="noindex" slot="head" />
+	<slot name="head" slot="head" />
+	<div class="container not-found">
+		<div class="code" dir="ltr">404</div>
+		<h1>{t('notFoundTitle')}</h1>
+		<p>{t('notFoundText')}</p>
+		<SearchForm id="nf-search" />
+		<a class="btn-primary" href={localizePath('/', lang)}>{t('backHome')}</a>
+	</div>
+</BaseLayout>

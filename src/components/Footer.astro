@@ -1,5 +1,10 @@
 ---
-import { CONTACT, FOOTER, NAV, SITE } from '../consts';
+import { siteData } from '../consts';
+import { langFromPath, useT } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const { CONTACT, FOOTER, SITE } = siteData(lang);
 const year = new Date().getFullYear();
 ---
 
@@ -10,34 +15,45 @@ const year = new Date().getFullYear();
 	<div class="container footer-grid">
 		<div class="footer-brand">
 			<p class="footer-name">{SITE.name}</p>
+			{FOOTER.tagline && <p class="footer-tagline">{FOOTER.tagline}</p>}
 			<address>
 				{CONTACT.address.map((line) => <span>{line}</span>)}
 			</address>
-			<div class="footer-social">
-				<a href={CONTACT.phoneHref}>
-					<img src="/images/site/whatsapp.svg" alt="" width="30" height="30" loading="lazy" />
-					{CONTACT.phone}
-				</a>
-				<a href={CONTACT.linkedin} target="_blank" rel="noopener">
-					<img src="/images/files/linkedin.svg" alt="" width="30" height="30" loading="lazy" />
-					LinkedIn
-				</a>
-			</div>
-		</div>
-		<nav class="footer-col" aria-label="Footer">
-			<h2>Explore</h2>
-			<ul>
+			<ul class="footer-contact">
+				<li>
+					<a href={CONTACT.phoneHref}>
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"></path>
+						</svg>
+						<span class="sr-only">{t('phone')}:</span>
+						<bdi dir="ltr">{CONTACT.phone}</bdi>
+					</a>
+				</li>
+				<li>
+					<a href={`mailto:${CONTACT.email}`}>
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path>
+						</svg>
+						<span class="sr-only">{t('email')}:</span>
+						<bdi dir="ltr">{CONTACT.email}</bdi>
+					</a>
+				</li>
 				{
-					NAV.filter((item) => item.href !== '/').map((item) => (
+					CONTACT.linkedin && (
 						<li>
-							<a href={item.href}>{item.label}</a>
+							<a href={CONTACT.linkedin} target="_blank" rel="noopener">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+									<path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4V21H3V9.75Zm6.5 0h3.8v1.6h.06c.53-.95 1.83-1.95 3.76-1.95 4.02 0 4.88 2.5 4.88 5.9V21h-4v-5.1c0-1.35-.03-3.1-1.9-3.1-1.9 0-2.2 1.45-2.2 3V21h-4V9.75Z"></path>
+								</svg>
+								LinkedIn
+							</a>
 						</li>
-					))
+					)
 				}
 			</ul>
-		</nav>
-		<div class="footer-col">
-			<h2>Quick links</h2>
+		</div>
+		<nav class="footer-col" aria-label={t('footerNav')}>
+			<h2>{t('explore')}</h2>
 			<ul>
 				{
 					FOOTER.links.map((l) => (
@@ -47,18 +63,24 @@ const year = new Date().getFullYear();
 					))
 				}
 			</ul>
-		</div>
+		</nav>
 		<div class="footer-badge">
 			{
 				FOOTER.badgeImage && (
 					<a href={FOOTER.badgeLink} target="_blank" rel="noopener">
-						<img src={FOOTER.badgeImage} alt={FOOTER.badgeAlt} width="200" loading="lazy" />
+						<img src={FOOTER.badgeImage} alt={FOOTER.badgeAlt} width="180" height="212" loading="lazy" />
 					</a>
 				)
 			}
 		</div>
 	</div>
 	<div class="footer-bottom">
-		<div class="container">© {year} {FOOTER.copyright}</div>
+		<div class="container footer-bottom-inner">
+			<span>© <bdi>{year}</bdi> {FOOTER.copyright}</span>
+			<a class="footer-top" href="#main">
+				{t('backToTop')}
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+			</a>
+		</div>
 	</div>
 </footer>

@@ -1,15 +1,42 @@
 ---
 // The header is a React island (see header/SiteHeader.tsx). It is rendered to
 // HTML at build time, so links work before the script loads.
-import { CONTACT, NAV, SITE } from '../consts';
+import { siteData } from '../consts';
+import { LOCALES, langFromPath, localizePath, stripLang, useT } from '../i18n';
 import SiteHeader from './header/SiteHeader';
+
+const lang = langFromPath(Astro.url.pathname);
+const t = useT(lang);
+const { CONTACT, NAV, SITE } = siteData(lang);
+const other = LOCALES.find((l) => l !== lang)!;
+const path = stripLang(Astro.url.pathname);
+// The 404 page and the old-address redirects exist once, not per language.
+const single = /^\/(404|content|list)(\/|$)/.test(path);
 ---
 
 <SiteHeader
 	client:load
 	items={NAV}
 	path={Astro.url.pathname}
+	home={localizePath('/', lang)}
+	searchAction={localizePath('/search/', lang)}
 	logo={SITE.logo}
 	siteName={SITE.name}
 	contact={{ phone: CONTACT.phone, phoneHref: CONTACT.phoneHref, email: CONTACT.email }}
+	rtl={lang === 'ar'}
+	switcher={{ href: localizePath(single ? '/' : path, other), lang: other, label: t('switchTo'), title: t('switchToLabel') }}
+	labels={{
+		home: t('homeLabel'),
+		main: t('mainNav'),
+		menu: t('menu'),
+		openMenu: t('openMenu'),
+		closeMenu: t('closeMenu'),
+		overview: t('overview'),
+		pages: t('pages'),
+		search: t('search'),
+		searchSite: t('searchSite'),
+		searchPlaceholder: t('searchPlaceholder'),
+		getInTouch: t('getInTouch'),
+		language: t('language'),
+	}}
 />

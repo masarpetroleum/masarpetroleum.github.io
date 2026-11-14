@@ -3,7 +3,7 @@ import LegacyRedirect from '../../components/LegacyRedirect.astro';
 import { getAllSummaries } from '../../lib/content';
 
 // Old content/?id=N links, mapped through each entry's legacyId.
-const map = Object.fromEntries((await getAllSummaries()).filter((s) => s.legacyId !== undefined).map((s) => [String(s.legacyId), s.url]));
+const map = Object.fromEntries((await getAllSummaries('en')).filter((s) => s.legacyId !== undefined).map((s) => [String(s.legacyId), s.url]));
 ---
 
 <LegacyRedirect param="id" map={map} />

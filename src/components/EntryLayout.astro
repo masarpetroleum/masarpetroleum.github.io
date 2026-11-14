@@ -4,6 +4,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeading from './PageHeading.astro';
 import RelatedTopics from './RelatedTopics.astro';
+import Sidebar from './Sidebar.astro';
+import { langFromPath, useT } from '../i18n';
 
 interface Props {
 	title: string;
@@ -14,21 +16,42 @@ interface Props {
 	aside?: string;
 	gallery?: string[];
 	tags?: string[];
+	tagKeys?: string[];
+	/** False when this Arabic page is showing English text, for want of a translation. */
+	translated?: boolean;
 }
 
-const { title, subtitle, description, image, crumbs, aside, gallery = [], tags = [] } = Astro.props;
+const { title, subtitle, description, image, crumbs, aside, gallery = [], tags = [], tagKeys = tags, translated = true } = Astro.props;
+const t = useT(langFromPath(Astro.url.pathname));
 // A single photo sits beside the text; several become a gallery below it.
 const sidePhoto = aside ?? (gallery.length === 1 ? gallery[0] : undefined);
 const galleryImages = gallery.length > 1 ? gallery : [];
+// Pages without a photo beside the text get the news sidebar there instead.
+const sidebar = !sidePhoto;
 ---
 
 <BaseLayout title={title} description={description} image={image} type="article">
-	<PageHeading title={title} subtitle={subtitle} crumbs={crumbs} />
+	<PageHeading title={title} subtitle={subtitle} crumbs={crumbs} compact />
 	<div class="container page">
 		<article class="entry">
-			<div class:list={['entry-layout', { 'has-aside': sidePhoto }]}>
-				<div class="prose">
+			{!translated && <p class="notice notice-inline">{t('translationPending')}</p>}
+			<div class:list={['entry-layout', { 'has-aside': sidePhoto, 'has-sidebar': sidebar }]}>
+				<div class="entry-main">
+				<div class="prose" lang={translated ? undefined : 'en'} dir={translated ? undefined : 'ltr'}>
 					<slot />
+				</div>
+			{
+				galleryImages.length > 0 && (
+					<div class="gallery" aria-label={t('photoGallery')}>
+						{galleryImages.map((src, i) => (
+							<a href={src} data-lightbox="entry">
+								<img src={src} alt={`${title} — ${t('photo')} ${i + 1}`} width="300" height="300" loading="lazy" decoding="async" />
+							</a>
+						))}
+					</div>
+				)
+			}
+			<RelatedTopics tagKeys={tagKeys} tags={tags} />
 				</div>
 				{
 					sidePhoto && (
@@ -39,19 +62,8 @@ const galleryImages = gallery.length > 1 ? gallery : [];
 						</div>
 					)
 				}
+				{sidebar && <Sidebar />}
 			</div>
-			{
-				galleryImages.length > 0 && (
-					<div class="gallery" aria-label="Photo gallery">
-						{galleryImages.map((src, i) => (
-							<a href={src} data-lightbox="entry">
-								<img src={src} alt={`${title} — photo ${i + 1}`} width="300" height="300" loading="lazy" decoding="async" />
-							</a>
-						))}
-					</div>
-				)
-			}
-			<RelatedTopics tags={tags} />
 		</article>
 		<slot name="after" />
 	</div>

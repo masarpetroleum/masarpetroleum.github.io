@@ -24,13 +24,37 @@ export interface NavItem extends NavLink {
 	children?: NavLink[];
 }
 
+export interface HeaderLabels {
+	home: string;
+	main: string;
+	menu: string;
+	openMenu: string;
+	closeMenu: string;
+	overview: string;
+	pages: string;
+	search: string;
+	searchSite: string;
+	searchPlaceholder: string;
+	getInTouch: string;
+	language: string;
+}
+
 interface Props {
+	/** Links are already in the language of the page (`/ar/about/`). */
 	items: NavItem[];
 	/** The current page's pathname, used to mark the active section. */
 	path: string;
+	/** The home page in this language: `/` or `/ar/`. */
+	home: string;
+	searchAction: string;
 	logo: string;
 	siteName: string;
 	contact: { phone: string; phoneHref: string; email: string };
+	/** Right-to-left page (Arabic): the menu sheet opens from the left. */
+	rtl: boolean;
+	/** The link to this same page in the other language. */
+	switcher: { href: string; lang: string; label: string; title: string };
+	labels: HeaderLabels;
 }
 
 /** Matches the CSS breakpoint where the desktop menu replaces the sheet. */
@@ -44,14 +68,30 @@ const isPage = (href: string, path: string) => !isExternal(href) && withSlash(hr
 
 /** This page sits inside the link's section (e.g. an article under /articles/). */
 const inSection = (href: string, path: string) =>
-	!isExternal(href) && (href === '/' ? path === '/' : withSlash(path).startsWith(withSlash(href)));
+	!isExternal(href) && (isHome(href) ? isPage(href, path) : withSlash(path).startsWith(withSlash(href)));
+
+/** `/` and `/ar/` are home pages, not sections that contain every other page. */
+const isHome = (href: string) => /^\/([a-z]{2}\/)?$/.test(withSlash(href));
 
 const itemActive = (item: NavItem, path: string) =>
 	inSection(item.href, path) || !!item.children?.some((c) => inSection(c.href, path));
 
+function LanguageLink({ switcher, className }: { switcher: Props['switcher']; className: string }) {
+	return (
+		<a className={className} href={switcher.href} lang={switcher.lang} hrefLang={switcher.lang} title={switcher.title} aria-label={switcher.title}>
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+				<circle cx="12" cy="12" r="9" />
+				<path d="M3 12h18M12 3c2.6 2.5 3.9 5.5 3.9 9s-1.3 6.5-3.9 9c-2.6-2.5-3.9-5.5-3.9-9S9.4 5.5 12 3Z" />
+			</svg>
+			<span>{switcher.label}</span>
+		</a>
+	);
+}
+
 const externalProps = (href: string) => (isExternal(href) ? { target: '_blank', rel: 'noopener' } : {});
 
-export default function SiteHeader({ items, path, logo, siteName, contact }: Props) {
+export default function SiteHeader(props: Props) {
+	const { items, path, home, logo, siteName, switcher, labels } = props;
 	const [scrolled, setScrolled] = React.useState(false);
 
 	React.useEffect(() => {
@@ -67,13 +107,14 @@ export default function SiteHeader({ items, path, logo, siteName, contact }: Pro
 		<MotionConfig reducedMotion="user">
 			<header className="site-header" data-scrolled={scrolled || undefined}>
 				<div className="container header-inner">
-					<a className="brand" href="/" aria-label={`${siteName} home`}>
+					<a className="brand" href={home} aria-label={`${siteName} — ${labels.home}`}>
 						<img src={logo} width="130" height="100" alt={siteName} />
 					</a>
-					<DesktopNav items={items} path={path} />
+					<DesktopNav items={items} path={path} labels={labels} />
 					<div className="header-actions">
-						<SearchButton />
-						<MobileMenu items={items} path={path} logo={logo} siteName={siteName} contact={contact} />
+						<LanguageLink switcher={switcher} className="lang-link" />
+						<SearchButton action={props.searchAction} labels={labels} />
+						<MobileMenu {...props} />
 					</div>
 				</div>
 			</header>
@@ -81,11 +122,14 @@ export default function SiteHeader({ items, path, logo, siteName, contact }: Pro
 	);
 }
 
-function DesktopNav({ items, path }: { items: NavItem[]; path: string }) {
+function DesktopNav({ items, path, labels }: Pick<Props, 'items' | 'path' | 'labels'>) {
 	return (
-		<NavigationMenu.Root className="nav" aria-label="Main">
+		<NavigationMenu.Root className="nav" aria-label={labels.main}>
 			<NavigationMenu.List className="nav-list">
-				{items.map((item) => {
+				{/* The logo leads home, so the bar doesn't repeat it; the phone menu keeps the link. */}
+				{items
+					.filter((item) => !isHome(item.href))
+					.map((item) => {
 					const active = itemActive(item, path) || undefined;
 
 					if (!item.children?.length) {
@@ -106,7 +150,7 @@ function DesktopNav({ items, path }: { items: NavItem[]; path: string }) {
 
 					// The trigger opens the panel, so the section's own page is
 					// listed first inside it to keep it reachable.
-					const links: NavLink[] = [{ href: item.href, label: 'Overview' }, ...item.children];
+					const links: NavLink[] = [{ href: item.href, label: labels.overview }, ...item.children];
 					return (
 						<NavigationMenu.Item key={item.href} value={item.href} className="nav-item">
 							<NavigationMenu.Trigger className="nav-link" data-section={active}>
@@ -128,7 +172,7 @@ function DesktopNav({ items, path }: { items: NavItem[]; path: string }) {
 												{...externalProps(link.href)}
 											>
 												<span>{link.label}</span>
-												<ArrowRight className="nav-panel-arrow" size={16} animateOnHover />
+												<ArrowRight className="nav-panel-arrow flip-rtl" size={16} animateOnHover />
 											</NavigationMenu.Link>
 										</li>
 									))}
@@ -150,24 +194,24 @@ function DesktopNav({ items, path }: { items: NavItem[]; path: string }) {
 	);
 }
 
-function SearchButton() {
+function SearchButton({ action, labels }: { action: string; labels: HeaderLabels }) {
 	const inputRef = React.useRef<HTMLInputElement>(null);
 
 	return (
 		<Popover.Root>
-			<Popover.Trigger className="icon-btn" aria-label="Search">
+			<Popover.Trigger className="icon-btn" aria-label={labels.search}>
 				<Search size={21} animateOnHover />
 			</Popover.Trigger>
 			<Popover.Portal>
 				<Popover.Positioner className="search-positioner" side="bottom" align="end" sideOffset={14} collisionPadding={16}>
 					<Popover.Popup className="search-popup" initialFocus={inputRef}>
-						<Popover.Title className="sr-only">Search the site</Popover.Title>
-						<form className="search-form" action="/search/" method="get" role="search">
+						<Popover.Title className="sr-only">{labels.searchSite}</Popover.Title>
+						<form className="search-form" action={action} method="get" role="search">
 							<label className="sr-only" htmlFor="header-search">
-								Search
+								{labels.search}
 							</label>
-							<input ref={inputRef} id="header-search" name="key" type="search" placeholder="Search articles, events, careers…" autoComplete="off" />
-							<button type="submit" aria-label="Search">
+							<input ref={inputRef} id="header-search" name="key" type="search" placeholder={labels.searchPlaceholder} autoComplete="off" enterKeyHint="search" />
+							<button type="submit" aria-label={labels.search}>
 								<Search size={20} />
 							</button>
 						</form>
@@ -178,7 +222,7 @@ function SearchButton() {
 	);
 }
 
-function MobileMenu({ items, path, logo, siteName, contact }: Props) {
+function MobileMenu({ items, path, home, logo, siteName, contact, rtl, switcher, labels }: Props) {
 	const [open, setOpen] = React.useState(false);
 	const closeRef = React.useRef<HTMLButtonElement>(null);
 
@@ -193,30 +237,30 @@ function MobileMenu({ items, path, logo, siteName, contact }: Props) {
 	// Rows slide in one after another as the sheet opens.
 	let row = 0;
 	const enter = () => ({
-		initial: { opacity: 0, x: 24 },
+		initial: { opacity: 0, x: rtl ? -24 : 24 },
 		animate: { opacity: 1, x: 0 },
 		transition: { delay: 0.08 + row++ * 0.04, type: 'spring' as const, stiffness: 320, damping: 30 },
 	});
 
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
-			<Dialog.Trigger className="icon-btn menu-btn" aria-label={open ? 'Close menu' : 'Open menu'}>
+			<Dialog.Trigger className="icon-btn menu-btn" aria-label={open ? labels.closeMenu : labels.openMenu}>
 				<Menu size={26} animate={open} />
 			</Dialog.Trigger>
 			<Dialog.Portal>
 				<Dialog.Backdrop className="sheet-backdrop" />
-				<Dialog.Popup data-side="right" className="sheet" initialFocus={closeRef}>
+				<Dialog.Popup data-side={rtl ? 'left' : 'right'} className="sheet" initialFocus={closeRef}>
 					<div className="sheet-head">
-						<a className="brand" href="/" aria-label={`${siteName} home`}>
+						<a className="brand" href={home} aria-label={`${siteName} — ${labels.home}`}>
 							<img src={logo} width="130" height="100" alt={siteName} />
 						</a>
-						<Dialog.Close ref={closeRef} className="icon-btn sheet-close" aria-label="Close menu">
+						<Dialog.Close ref={closeRef} className="icon-btn sheet-close" aria-label={labels.closeMenu}>
 							<X size={22} animateOnHover />
 						</Dialog.Close>
 					</div>
-					<Dialog.Title className="sr-only">Menu</Dialog.Title>
+					<Dialog.Title className="sr-only">{labels.menu}</Dialog.Title>
 
-					<nav className="sheet-nav" aria-label="Main">
+					<nav className="sheet-nav" aria-label={labels.main}>
 						<ul>
 							{items.map((item) => {
 								const active = itemActive(item, path) || undefined;
@@ -239,7 +283,7 @@ function MobileMenu({ items, path, logo, siteName, contact }: Props) {
 												<a className="sheet-link" href={item.href} aria-current={current} data-section={active} {...externalProps(item.href)}>
 													{item.label}
 												</a>
-												<Collapsible.Trigger className="sheet-toggle" aria-label={`${item.label} pages`}>
+												<Collapsible.Trigger className="sheet-toggle" aria-label={`${item.label} — ${labels.pages}`}>
 													<ChevronDown size={20} />
 												</Collapsible.Trigger>
 											</div>
@@ -266,19 +310,23 @@ function MobileMenu({ items, path, logo, siteName, contact }: Props) {
 						</ul>
 					</nav>
 
+					<motion.div className="sheet-lang" {...enter()}>
+						<LanguageLink switcher={switcher} className="sheet-lang-link" />
+					</motion.div>
+
 					<motion.div className="sheet-foot" {...enter()}>
-						<p className="sheet-foot-title">Get in touch</p>
+						<p className="sheet-foot-title">{labels.getInTouch}</p>
 						<a className="sheet-contact" href={contact.phoneHref}>
 							<span className="sheet-contact-icon">
 								<Phone size={18} />
 							</span>
-							{contact.phone}
+							<bdi dir="ltr">{contact.phone}</bdi>
 						</a>
 						<a className="sheet-contact" href={`mailto:${contact.email}`}>
 							<span className="sheet-contact-icon">
 								<Mail size={18} />
 							</span>
-							{contact.email}
+							<bdi dir="ltr">{contact.email}</bdi>
 						</a>
 					</motion.div>
 				</Dialog.Popup>

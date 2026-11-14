@@ -61,11 +61,31 @@ if (lightbox) {
 	prev.addEventListener('click', () => show(index - 1));
 	next.addEventListener('click', () => show(index + 1));
 	lightbox.addEventListener('click', (e) => e.target === lightbox && close());
+
+	// Swipe sideways on a touch screen to move between photos.
+	let touchX: number | null = null;
+	lightbox.addEventListener('touchstart', (e) => (touchX = e.touches.length === 1 ? e.touches[0].clientX : null), { passive: true });
+	lightbox.addEventListener('touchend', (e) => {
+		if (touchX === null || group.length < 2) return;
+		const dx = e.changedTouches[0].clientX - touchX;
+		touchX = null;
+		if (Math.abs(dx) < 48) return;
+		const rtl = document.documentElement.dir === 'rtl';
+		show(index + (dx < 0 !== rtl ? 1 : -1));
+	});
 	document.addEventListener('keydown', (e) => {
 		if (lightbox.hidden) return;
 		if (e.key === 'Escape') close();
-		if (e.key === 'ArrowLeft') show(index - 1);
-		if (e.key === 'ArrowRight') show(index + 1);
+		// The arrow keys follow the buttons on screen, which swap sides in Arabic.
+		const forward = document.documentElement.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
+		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') show(index + (e.key === forward ? 1 : -1));
+		// Keep keyboard focus inside the viewer while it is open.
+		if (e.key === 'Tab') {
+			const buttons = Array.from(lightbox.querySelectorAll<HTMLButtonElement>('button:not([hidden])'));
+			const at = buttons.indexOf(document.activeElement as HTMLButtonElement);
+			e.preventDefault();
+			buttons[(at + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length]?.focus();
+		}
 	});
 
 	// Images inside article bodies open in the lightbox too.

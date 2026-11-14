@@ -1,23 +1,30 @@
 ---
-import { getEntry, render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeading from '../../components/PageHeading.astro';
-import RelatedTopics from '../../components/RelatedTopics.astro';
+import { render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeading from '../../../components/PageHeading.astro';
+import RelatedTopics from '../../../components/RelatedTopics.astro';
+import { siteData } from '../../../consts';
+import { langPaths, type Lang } from '../../../i18n';
+import { getPage } from '../../../lib/content';
 
-const entry = (await getEntry('pages', 'company'))!;
-const { Content } = await render(entry);
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const { about } = siteData(lang).PAGES;
+const entry = await getPage('company', lang);
+const { Content } = await render(entry.source);
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.excerpt} image={entry.data.hero}>
 	<PageHeading
 		title={entry.data.title}
 		image={entry.data.hero}
-		crumbs={[{ label: 'About', href: '/about/' }, { label: 'Company background', href: '/company/' }]}
+		crumbs={[{ label: about.title, href: '/about/' }, { label: about.cards[0]?.title ?? entry.data.title, href: '/company/' }]}
 	/>
 	<div class="container page">
 		<div class="prose">
 			<Content />
 		</div>
-		<RelatedTopics tags={entry.data.tags} />
+		<RelatedTopics tagKeys={entry.tagKeys} tags={entry.data.tags} />
 	</div>
 </BaseLayout>

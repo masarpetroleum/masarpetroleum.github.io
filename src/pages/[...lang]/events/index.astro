@@ -1,18 +1,23 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeading from '../../components/PageHeading.astro';
-import Card from '../../components/Card.astro';
-import { PAGES } from '../../consts';
-import { getEvents } from '../../lib/content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeading from '../../../components/PageHeading.astro';
+import Card from '../../../components/Card.astro';
+import { siteData } from '../../../consts';
+import { langPaths, localizePath, useT, type Lang } from '../../../i18n';
+import { getEvents } from '../../../lib/content';
 
-const entries = await getEvents();
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const { title } = siteData(lang).PAGES.events;
+const entries = await getEvents(lang);
 ---
 
-<BaseLayout title={PAGES.events.title} description="News and events from Masar Petroleum, Block 7, Oman.">
-	<PageHeading title={PAGES.events.title} crumbs={[{ label: PAGES.events.title, href: '/events/' }]} />
+<BaseLayout title={title} description={useT(lang)('eventsDescription')}>
+	<PageHeading title={title} crumbs={[{ label: title, href: '/events/' }]} />
 	<div class="container page">
 		<div class="grid grid-4">
-			{entries.map((e, i) => <Card href={`/events/${e.id}/`} image={e.data.image} title={e.data.title} subtitle={e.data.subtitle} eager={i < 4} />)}
+			{entries.map((e, i) => <Card href={localizePath(`/events/${e.id}/`, lang)} image={e.data.image} title={e.data.title} subtitle={e.data.subtitle} eager={i < 4} />)}
 		</div>
 	</div>
 </BaseLayout>
