@@ -17,9 +17,11 @@ const FLAG = '/images/site/oman-flag.webp';
 interface Props {
 	/** False while the hero is off screen or the tab is hidden. */
 	active: boolean;
+	/** True on a computer that struggles with WebGL: the flag is drawn once and stays still. */
+	lite?: boolean;
 }
 
-export default function NationalDay({ active }: Props) {
+export default function NationalDay({ active, lite = false }: Props) {
 	const reduceMotion = useReducedMotion();
 	const canvasRef = React.useRef<HTMLCanvasElement>(null);
 	const glRef = React.useRef<NationalDayGL | null>(null);
@@ -38,7 +40,7 @@ export default function NationalDay({ active }: Props) {
 				if (cancelled) return;
 				glRef.current = createNationalDayGL(canvas, {
 					flag: FLAG,
-					animate: !reduceMotion,
+					animate: !reduceMotion && !lite,
 					onReady: () => setFlag('gl'),
 					onFail: () => setFlag('flat'),
 				});
@@ -51,7 +53,7 @@ export default function NationalDay({ active }: Props) {
 			glRef.current = null;
 			setFlag('loading');
 		};
-	}, [season, reduceMotion]);
+	}, [season, reduceMotion, lite]);
 
 	React.useEffect(() => {
 		glRef.current?.setActive(active);

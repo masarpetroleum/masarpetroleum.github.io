@@ -3,8 +3,9 @@
 // - The photos are drawn with WebGL (Three.js, see ./gl.ts): one blends into the
 //   next through a rippling front, and leans towards the mouse. The text rises
 //   line by line from behind a mask. The styles are in global.css ("Hero").
-// - Without WebGL, or under "reduce motion", the slides are plain stacked
-//   images and the next one opens over the current one like a curtain.
+// - Without WebGL, under "reduce motion", or on a computer that can't keep the
+//   WebGL layer smooth, the slides are plain stacked images that cross-fade:
+//   only opacity and transform change, which every graphics card does smoothly.
 // - Swipe on touch screens, drag with a mouse, or use the arrow keys.
 // - Moves on by itself every `interval` seconds; the buttons step and pause it.
 // - From 1 to 22 November the flag of Oman flies in the bottom left corner, for Oman
@@ -20,6 +21,20 @@ import { ChevronRight } from '../animate-ui/icons/chevron-right';
 import { Pause } from '../animate-ui/icons/pause';
 import { Play } from '../animate-ui/icons/play';
 import type { HeroGL } from './gl';
+
+/** Kept in step with QUALITY_KEY in ./gl.ts, which is only loaded when WebGL is going to be used. */
+const QUALITY_KEY = 'masar-hero-quality';
+
+/** A computer that is better off with the plain slideshow: it said so last time, or it is clearly modest. */
+function prefersLite() {
+	try {
+		if (window.localStorage.getItem(QUALITY_KEY) === 'off') return true;
+	} catch {
+		// No storage: fall through to the hardware hints.
+	}
+	const { hardwareConcurrency, deviceMemory } = navigator as Navigator & { deviceMemory?: number };
+	return (hardwareConcurrency ?? 8) <= 2 || (deviceMemory ?? 8) <= 2;
+}
 import NationalDay from './national-day/NationalDay';
 
 export interface HeroSlide {
@@ -81,6 +96,8 @@ export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 	const glRef = React.useRef<HeroGL | null>(null);
 	// True once the WebGL layer has drawn its first photo and takes over from the images.
 	const [gl, setGl] = React.useState(false);
+	// True on computers that can't run the WebGL layer smoothly: the CSS slideshow is used, and stays.
+	const [lite, setLite] = React.useState(false);
 	// `from` is the slide being covered; `direction` is 1 for next, -1 for previous.
 	const [view, setView] = React.useState<{ index: number; from: number | null; direction: 1 | -1 }>({ index: 0, from: null, direction: 1 });
 	const [playing, setPlaying] = React.useState(true);
@@ -128,7 +145,11 @@ export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 	viewRef.current = view;
 	React.useEffect(() => {
 		const canvas = canvasRef.current;
-		if (!canvas || reduceMotion) return;
+		if (!canvas || reduceMotion || lite) return;
+		if (prefersLite()) {
+			setLite(true);
+			return;
+		}
 		let cancelled = false;
 		import('./gl')
 			.then(({ createHeroGL }) => {
@@ -137,7 +158,10 @@ export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 					index: viewRef.current.index,
 					onReady: () => setGl(true),
 					onLost: () => setGl(false),
+					onSlow: () => setLite(true),
 				});
+				// No hardware-accelerated WebGL here.
+				if (!glRef.current) setLite(true);
 			})
 			.catch(() => {
 				// The stacked images keep working as the slideshow.
@@ -148,7 +172,7 @@ export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 			glRef.current = null;
 			setGl(false);
 		};
-	}, [images, reduceMotion]);
+	}, [images, reduceMotion, lite]);
 
 	React.useEffect(() => {
 		// On a right-to-left page the next slide arrives from the left.
@@ -302,7 +326,7 @@ export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 					})}
 				</div>
 
-				<NationalDay active={onScreen && tabVisible} />
+				<NationalDay active={onScreen && tabVisible} lite={lite} />
 
 				{many && (
 					<div className="container hero-ui">

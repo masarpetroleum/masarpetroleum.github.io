@@ -7,6 +7,14 @@
 // and leans a little towards the mouse.
 //
 // Loaded on demand by Hero.tsx, so Three.js is not part of the first download.
+//
+// Kept light, so it stays smooth on modest hardware:
+// - A resting slide costs one texture read per pixel; the blend work is only
+//   done while a blend is running, and drawing stops once the picture is still.
+// - Each blend is timed. If frames come slowly, the canvas is drawn at a lower
+//   resolution next time; if the lowest still isn't smooth, `onSlow` hands the
+//   slideshow back to the plain CSS one (see global.css, "Hero").
+// - Browsers that would draw WebGL in software are refused up front.
 import {
 	Camera,
 	LinearFilter,
@@ -39,7 +47,34 @@ interface Options {
 	onReady(): void;
 	/** Called if the browser takes the WebGL context away. */
 	onLost(): void;
+	/** Called when this computer can't draw the blends smoothly, even at the lowest quality. */
+	onSlow(): void;
 }
+
+/** Where the quality that suited this computer is remembered between visits. */
+export const QUALITY_KEY = 'masar-hero-quality';
+
+/** Canvas pixels per CSS pixel, best first. */
+const TIERS = [1.5, 1, 0.75];
+/** A blend whose frames take longer than this on average (about 40 a second) is too slow. */
+const SLOW_FRAME = 0.025;
+/** The canvas is never asked to fill more pixels than this. */
+const MAX_PIXELS = 2_400_000;
+
+const remembered = () => {
+	try {
+		return window.localStorage.getItem(QUALITY_KEY);
+	} catch {
+		return null;
+	}
+};
+const remember = (value: string) => {
+	try {
+		window.localStorage.setItem(QUALITY_KEY, value);
+	} catch {
+		// Private browsing: decide again next time.
+	}
+};
 
 /** Seconds a blend takes. Keep in step with --hero-wipe in global.css. */
 const DURATION = 1.6;
@@ -85,7 +120,7 @@ const fragmentShader = /* glsl */ `
 	float fbm(vec2 p) {
 		float value = 0.0;
 		float amplitude = 0.5;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 3; i++) {
 			value += amplitude * noise(p);
 			p *= 2.03;
 			amplitude *= 0.5;
@@ -108,6 +143,14 @@ const fragmentShader = /* glsl */ `
 
 	void main() {
 		float progress = uProgress;
+		vec2 lean = (uMouse - 0.5) * vec2(-0.012, 0.008);
+
+		// A resting slide: just the photo. Everything below is for the blend.
+		if (progress >= 1.0) {
+			gl_FragColor = vec4(texture2D(uTo, cover(vUv + lean, uToSize, uZoomTo)).rgb, 1.0);
+			return;
+		}
+
 		// Strongest in the middle of the blend, nothing at either end.
 		float swell = sin(progress * 3.14159265);
 
@@ -121,13 +164,16 @@ const fragmentShader = /* glsl */ `
 		// Screen-space travel: the old photo leaves the way the new one is going.
 		vec2 travel = vec2(-uDirection, 0.0);
 		vec2 ripple = travel * swell * n * 0.1;
-		vec2 lean = (uMouse - 0.5) * vec2(-0.012, 0.008);
 		vec2 split = travel * swell * 0.005;
 
 		vec2 fromUv = cover(vUv - travel * progress * 0.22 - ripple + lean, uFromSize, uZoomFrom);
 		vec2 toUv = cover(vUv + travel * (1.0 - progress) * 0.22 + ripple + lean, uToSize, uZoomTo);
 
-		vec3 color = mix(photo(uFrom, fromUv, split), photo(uTo, toUv, split), reveal);
+		// Away from the front only one photo shows, so only that one is read.
+		vec3 color;
+		if (reveal <= 0.0) color = texture2D(uFrom, fromUv).rgb;
+		else if (reveal >= 1.0) color = texture2D(uTo, toUv).rgb;
+		else color = mix(photo(uFrom, fromUv, split), photo(uTo, toUv, split), reveal);
 
 		// A faint band of light rides the front.
 		color += reveal * (1.0 - reveal) * swell * 0.35;
@@ -145,13 +191,24 @@ const zoomAt = (age: number) => 1.05 + 0.11 * Math.exp(-age * 0.45);
 export function createHeroGL(canvas: HTMLCanvasElement, images: string[], options: Options): HeroGL | null {
 	let renderer: WebGLRenderer;
 	try {
-		renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
+		// Refuse a software renderer: it would be slower than the CSS slideshow it replaces.
+		renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false, stencil: false, depth: false, failIfMajorPerformanceCaveat: true });
 	} catch {
+		return null;
+	}
+	// Some browsers hand out a software renderer anyway (no graphics driver, or
+	// acceleration switched off). It can't keep up; leave the job to CSS.
+	const context = renderer.getContext();
+	const info = context.getExtension('WEBGL_debug_renderer_info');
+	const gpu = info ? String(context.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+	if (/swiftshader|llvmpipe|software|basic render/i.test(gpu)) {
+		renderer.dispose();
 		return null;
 	}
 	// The photos are drawn as they are, with no colour conversion on the way in or out.
 	renderer.outputColorSpace = 'srgb-linear';
-	renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+	// Start at the quality that worked here last time.
+	let quality = Math.min(window.devicePixelRatio || 1, Number(remembered()) || TIERS[0], TIERS[0]);
 
 	const blank = new Texture();
 	const uniforms = {
@@ -205,6 +262,7 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 	const resize = () => {
 		const { clientWidth: width, clientHeight: height } = canvas;
 		if (!width || !height) return;
+		renderer.setPixelRatio(Math.min(quality, Math.sqrt(MAX_PIXELS / (width * height))));
 		renderer.setSize(width, height, false);
 		uniforms.uResolution.value.set(width, height);
 	};
@@ -212,21 +270,54 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 	observer.observe(canvas);
 	resize();
 
+	// Timing of the blend in progress, to judge whether this computer keeps up.
+	let lastFrame = 0;
+	let blendFrames = 0;
+	let blendTime = 0;
+	const judge = () => {
+		const average = blendFrames ? blendTime / blendFrames : 0;
+		blendFrames = blendTime = 0;
+		if (average <= SLOW_FRAME) return;
+		const lower = TIERS.find((tier) => tier < quality - 0.01);
+		if (lower) {
+			quality = lower;
+			remember(String(lower));
+			resize();
+		} else {
+			remember('off');
+			options.onSlow();
+		}
+	};
+
 	const draw = () => {
 		frame = 0;
 		if (disposed || !active) return;
 		const time = now();
 		const progress = Math.min(1, (time - blendStart) / DURATION);
+		if (progress < 1) {
+			if (lastFrame) {
+				blendTime += Math.min(0.5, time - lastFrame);
+				blendFrames++;
+			}
+		} else if (blendFrames) {
+			judge();
+			if (disposed) return;
+		}
+		lastFrame = time;
 		uniforms.uProgress.value = easeInOut(progress);
 		uniforms.uZoomTo.value = zoomAt(time - shownAt);
 		uniforms.uZoomFrom.value = zoomAt(time - previousShownAt);
 		uniforms.uTime.value = time;
 		uniforms.uMouse.value.lerp(mouse, 0.06);
 		renderer.render(scene, camera);
-		frame = requestAnimationFrame(draw);
+		// Once the photo has settled and the mouse is still, there is nothing left to draw.
+		const settled = progress >= 1 && time - shownAt > 14 && uniforms.uMouse.value.distanceToSquared(mouse) < 1e-6;
+		if (!settled) frame = requestAnimationFrame(draw);
 	};
 	const start = () => {
-		if (!frame && active && !disposed && current >= 0) frame = requestAnimationFrame(draw);
+		if (frame || !active || disposed || current < 0) return;
+		lastFrame = 0;
+		frame = requestAnimationFrame(draw);
 	};
 
 	async function show(index: number, direction: 1 | -1) {
@@ -261,7 +352,10 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 
 	return {
 		show: (index, direction) => void show(index, direction),
-		pointer: (x, y) => mouse.set(x, 1 - y),
+		pointer: (x, y) => {
+			mouse.set(x, 1 - y);
+			start();
+		},
 		setActive(next) {
 			active = next;
 			if (active) start();

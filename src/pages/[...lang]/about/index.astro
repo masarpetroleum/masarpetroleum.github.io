@@ -14,7 +14,7 @@ const { title, cards } = siteData(lang).PAGES.about;
 <BaseLayout title={title} description={useT(lang)('aboutDescription')}>
 	<PageHeading title={title} crumbs={[{ label: title, href: '/about/' }]} />
 	<div class="container page">
-		<div class="grid grid-2 grid-narrow">
+		<div class="grid grid-2">
 			{cards.map((c) => <Card href={c.href} image={c.image} title={c.title} variant="centered" eager />)}
 		</div>
 	</div>

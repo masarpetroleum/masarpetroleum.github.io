@@ -853,30 +853,31 @@ main {
 	z-index: 2;
 }
 
-/* The curtain: the new slide opens over the old one, from the side it comes from. */
+/* The plain slideshow: the new slide fades in over the old one while its photo
+   glides in from the side it comes from. Only opacity and transform change,
+   so the browser's compositor does all of it, smoothly on any graphics card. */
 .hero-slide[data-state='enter'] {
-	animation: heroOpenFromRight var(--hero-wipe) var(--hero-ease) both;
+	animation: heroFadeIn var(--hero-wipe) cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.hero[data-direction='-1'] .hero-slide[data-state='enter'] {
-	animation-name: heroOpenFromLeft;
+.hero-slide[data-state='enter'] .hero-media {
+	animation: heroGlideIn var(--hero-wipe) cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes heroOpenFromRight {
+.hero {
+	--hero-shift: 3%;
+}
+
+.hero[data-direction='-1'] {
+	--hero-shift: -3%;
+}
+
+@keyframes heroGlideIn {
 	from {
-		clip-path: inset(0 0 0 100%);
+		transform: translate3d(var(--hero-shift), 0, 0);
 	}
 	to {
-		clip-path: inset(0 0 0 0);
-	}
-}
-
-@keyframes heroOpenFromLeft {
-	from {
-		clip-path: inset(0 100% 0 0);
-	}
-	to {
-		clip-path: inset(0 0 0 0);
+		transform: translate3d(0, 0, 0);
 	}
 }
 
@@ -891,6 +892,13 @@ main {
 	object-fit: cover;
 	-webkit-user-drag: none;
 	pointer-events: none;
+	backface-visibility: hidden;
+}
+
+/* The slides on show get their own layer for as long as they move. */
+.hero-slide[data-state] .hero-photo,
+.hero-slide[data-state='enter'] {
+	will-change: transform, opacity;
 }
 
 /* The photo arrives zoomed in, settles, then drifts slowly. Every shown slide
@@ -920,31 +928,8 @@ main {
 	}
 }
 
-/* The covered slide slides away a little and dims, which gives the curtain depth. */
-.hero-slide[data-state='leave'] .hero-media {
-	animation: heroPushLeft var(--hero-wipe) var(--hero-ease) both;
-}
-
-.hero[data-direction='-1'] .hero-slide[data-state='leave'] .hero-media {
-	animation-name: heroPushRight;
-}
-
 .hero-slide[data-state='leave'] .hero-content {
 	animation: heroCopyOut 0.45s ease both;
-}
-
-@keyframes heroPushLeft {
-	to {
-		transform: translateX(-9%);
-		filter: brightness(0.45);
-	}
-}
-
-@keyframes heroPushRight {
-	to {
-		transform: translateX(9%);
-		filter: brightness(0.45);
-	}
 }
 
 @keyframes heroCopyOut {
@@ -971,6 +956,12 @@ main {
 .hero[data-gl] .hero-media {
 	opacity: 0;
 	animation: none;
+}
+
+/* The canvas is drawing the photos: the hidden images must not keep animating under it. */
+.hero[data-gl] .hero-photo {
+	animation: none;
+	will-change: auto;
 }
 
 .hero[data-gl] .hero-slide[data-state='enter'] {
@@ -1120,10 +1111,9 @@ main {
 	padding: 0;
 	border: 0;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.14);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+	/* No backdrop blur here: blurring a moving picture every frame is costly on modest graphics cards. */
+	background: rgba(20, 22, 58, 0.42);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 	color: #fff;
 	cursor: pointer;
 	transition:
@@ -1132,7 +1122,7 @@ main {
 }
 
 .hero-btn:hover {
-	background: rgba(255, 255, 255, 0.26);
+	background: rgba(20, 22, 58, 0.62);
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
@@ -2070,7 +2060,7 @@ main {
 }
 
 .card.centered .card-media img {
-	aspect-ratio: 4 / 3;
+	aspect-ratio: 16 / 9;
 }
 
 .card-body {
@@ -3200,11 +3190,6 @@ main {
 	padding: 12px 18px;
 	color: var(--muted);
 	font-size: 0.95rem;
-}
-
-/* The two cards of the About page: wide enough to read, not stretched across the page. */
-.grid-narrow {
-	max-width: 820px;
 }
 
 /* A link with nowhere to go (a closed job posting) is shown as a quiet label. */
