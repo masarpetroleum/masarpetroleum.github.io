@@ -1944,7 +1944,6 @@ main {
 }
 
 .lead {
-	max-width: 78ch;
 	margin-bottom: clamp(28px, 4vw, 44px);
 	color: var(--muted);
 	font-size: 1.125rem;
@@ -1961,7 +1960,6 @@ main {
 }
 
 .notice {
-	max-width: 920px;
 	margin-bottom: clamp(28px, 4vw, 44px);
 	padding: 20px 24px;
 	background: var(--surface-alt);
@@ -2707,7 +2705,7 @@ main {
 
 .search-page .search-form {
 	max-width: 720px;
-	margin: 0 0 20px;
+	margin: 0 auto 20px;
 }
 
 .search-page .search-form input,
@@ -2731,6 +2729,7 @@ main {
 
 #search-summary {
 	color: var(--muted);
+	text-align: center;
 }
 
 .search-results {
@@ -2738,7 +2737,7 @@ main {
 	gap: 14px;
 	max-width: 900px;
 	list-style: none;
-	margin: 0;
+	margin: 0 auto;
 	padding: 0;
 }
 
@@ -3180,6 +3179,224 @@ main {
 .sheet-lang-link:hover {
 	background: var(--surface-alt);
 	color: var(--primary-dark);
+}
+
+/* ---------- Company page: centred column and timeline ---------- */
+
+.page-centered > .prose,
+.page-centered > .related {
+	max-width: 860px;
+	margin-inline: auto;
+}
+
+.page-centered .prose h3 {
+	font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem);
+}
+
+/* Markup: components/Timeline.astro. */
+
+.timeline-section {
+	max-width: 1040px;
+	margin: clamp(48px, 7vw, 88px) auto 0;
+	padding-top: clamp(40px, 6vw, 72px);
+	border-top: 1px solid var(--border);
+}
+
+.timeline-head {
+	max-width: 620px;
+	margin: 0 auto clamp(32px, 5vw, 56px);
+	text-align: center;
+}
+
+.timeline-head h2 {
+	margin: 0;
+}
+
+/* A short rule in the two brand colours under the title. */
+.timeline-head h2::after {
+	content: '';
+	display: block;
+	width: 64px;
+	height: 3px;
+	margin: 16px auto 0;
+	border-radius: 3px;
+	background: linear-gradient(90deg, var(--primary) 50%, var(--secondary) 50%);
+}
+
+.timeline-head p {
+	margin: 16px 0 0;
+	color: var(--muted);
+	font-size: 1.0625rem;
+}
+
+.timeline {
+	--tl-dot: 68px;
+	position: relative;
+	display: grid;
+	gap: 20px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* The line the years sit on. */
+.timeline::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	inset-inline-start: calc(var(--tl-dot) / 2 - 1px);
+	width: 2px;
+	background: linear-gradient(180deg, transparent, #cfd2e6 6%, #cfd2e6 94%, transparent);
+}
+
+.tl-item {
+	--tl-color: var(--primary);
+	position: relative;
+	display: grid;
+	grid-template-columns: var(--tl-dot) minmax(0, 1fr);
+	align-items: center;
+	gap: 18px;
+}
+
+.tl-item:nth-child(even) {
+	--tl-color: var(--secondary);
+}
+
+.tl-year {
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: var(--tl-dot);
+	height: var(--tl-dot);
+	border-radius: 50%;
+	background: var(--tl-color);
+	/* A white ring lifts the circle off the line. */
+	box-shadow:
+		0 0 0 6px var(--surface),
+		0 10px 22px -12px var(--tl-color);
+	color: #fff;
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: 0.04em;
+}
+
+.tl-range {
+	font-size: 0.86rem;
+}
+
+/* The two ends of a range, with a small mark between them. */
+.tl-range span + span::before {
+	content: '';
+	display: block;
+	width: 14px;
+	height: 2px;
+	margin: 2px auto;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.6);
+}
+
+.tl-card {
+	position: relative;
+	padding: 18px 20px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-inline-start: 3px solid var(--tl-color);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-sm);
+}
+
+.tl-card ul {
+	display: grid;
+	gap: 10px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.tl-card li {
+	position: relative;
+	padding-inline-start: 18px;
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+.tl-card li::before {
+	content: '';
+	position: absolute;
+	top: 0.62em;
+	inset-inline-start: 0;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--tl-color);
+	opacity: 0.75;
+}
+
+html:lang(ar) .tl-card li {
+	line-height: 1.85;
+}
+
+html:lang(ar) .tl-card li::before {
+	top: 0.8em;
+}
+
+/* Wide screens: the line runs down the middle and the cards take turns on either side. */
+@media (min-width: 860px) {
+	.timeline {
+		--tl-dot: 96px;
+		gap: 12px;
+	}
+
+	.timeline::before {
+		inset-inline-start: calc(50% - 1px);
+	}
+
+	.tl-item {
+		grid-template-columns: minmax(0, 1fr) var(--tl-dot) minmax(0, 1fr);
+		gap: 36px;
+	}
+
+	.tl-year {
+		grid-column: 2;
+		grid-row: 1;
+		font-size: 1.4rem;
+	}
+
+	.tl-range {
+		font-size: 1.12rem;
+	}
+
+	.tl-card {
+		grid-column: 3;
+		grid-row: 1;
+		padding: 22px 26px;
+	}
+
+	/* Every second card sits before the line, with its coloured edge still facing it. */
+	.tl-item:nth-child(even) .tl-card {
+		grid-column: 1;
+		border-inline-start: 1px solid var(--border);
+		border-inline-end: 3px solid var(--tl-color);
+	}
+
+	/* A short arm joins each card to its year. */
+	.tl-card::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		inset-inline-start: -39px;
+		width: 36px;
+		height: 2px;
+		background: #cfd2e6;
+	}
+
+	.tl-item:nth-child(even) .tl-card::before {
+		inset-inline: auto -39px;
+	}
 }
 
 /* ---------- Small additions ---------- */

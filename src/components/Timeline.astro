@@ -1,0 +1,40 @@
+---
+// The company's history as a vertical timeline: years down a centre line, with
+// the events of each on alternating sides (in one column on phones).
+// The text comes from the `timeline` field of src/content/pages/company.md.
+interface Props {
+	title: string;
+	intro?: string;
+	items: Array<{ year: string; events: string[] }>;
+}
+const { title, intro, items } = Astro.props;
+// "2001–2014" is shown as two lines, one year above the other.
+const years = (year: string) => year.split(/\s*[–—-]\s*/).filter(Boolean);
+---
+
+<section class="timeline-section" aria-labelledby="timeline-title">
+	<header class="timeline-head" data-reveal>
+		<h2 id="timeline-title">{title}</h2>
+		{intro && <p>{intro}</p>}
+	</header>
+	<ol class="timeline">
+		{
+			items.map((item) => (
+				<li class="tl-item" data-reveal>
+					<div class:list={['tl-year', { 'tl-range': years(item.year).length > 1 }]}>
+						{years(item.year).map((y) => (
+							<span dir="ltr">{y}</span>
+						))}
+					</div>
+					<div class="tl-card">
+						<ul>
+							{item.events.map((event) => (
+								<li>{event}</li>
+							))}
+						</ul>
+					</div>
+				</li>
+			))
+		}
+	</ol>
+</section>

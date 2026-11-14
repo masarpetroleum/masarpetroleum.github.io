@@ -230,6 +230,27 @@ collections:
           - { name: image, label: Card image, widget: image, required: false }
           - *excerpt
           - *body
+          - name: timeline
+            i18n: true
+            label: Timeline (company history)
+            widget: object
+            required: false
+            fields:
+              - { name: title, i18n: true, label: Title }
+              - { name: intro, i18n: true, label: Introduction, widget: text, required: false }
+              - name: items
+                i18n: true
+                label: Milestones
+                label_singular: Milestone
+                widget: list
+                summary: '{{fields.year}}'
+                fields:
+                  - { name: year, i18n: true, label: 'Year(s)', hint: 'One year, or a range such as 2016–2018.' }
+                  - name: events
+                    i18n: true
+                    label: Events
+                    widget: list
+                    field: { name: event, label: Event, widget: text }
           - *featured
           - *tags
           - *legacy

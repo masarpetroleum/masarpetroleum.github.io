@@ -16,7 +16,7 @@ const entries = await getEvents(lang);
 <BaseLayout title={title} description={useT(lang)('eventsDescription')}>
 	<PageHeading title={title} crumbs={[{ label: title, href: '/events/' }]} />
 	<div class="container page">
-		<div class="grid grid-4">
+		<div class="grid grid-3">
 			{entries.map((e, i) => <Card href={localizePath(`/events/${e.id}/`, lang)} image={e.data.image} title={e.data.title} subtitle={e.data.subtitle} eager={i < 4} />)}
 		</div>
 	</div>

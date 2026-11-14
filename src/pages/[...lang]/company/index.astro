@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PageHeading from '../../../components/PageHeading.astro';
 import RelatedTopics from '../../../components/RelatedTopics.astro';
+import Timeline from '../../../components/Timeline.astro';
 import { siteData } from '../../../consts';
 import { langPaths, type Lang } from '../../../i18n';
 import { getPage } from '../../../lib/content';
@@ -21,10 +22,11 @@ const { Content } = await render(entry.source);
 		image={entry.data.hero}
 		crumbs={[{ label: about.title, href: '/about/' }, { label: about.cards[0]?.title ?? entry.data.title, href: '/company/' }]}
 	/>
-	<div class="container page">
+	<div class="container page page-centered">
 		<div class="prose">
 			<Content />
 		</div>
+		{entry.data.timeline && <Timeline {...entry.data.timeline} />}
 		<RelatedTopics tagKeys={entry.tagKeys} tags={entry.data.tags} />
 	</div>
 </BaseLayout>

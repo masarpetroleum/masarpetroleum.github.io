@@ -23,6 +23,15 @@ const story = z.object({
 	featured,
 });
 
+/** The company history shown on the Company background page. */
+const timeline = z
+	.object({
+		title: z.string(),
+		intro: z.string().optional(),
+		items: z.array(z.object({ year: z.string(), events: z.array(z.string()).default([]) })).default([]),
+	})
+	.optional();
+
 const schemas = {
 	articles: story.extend({ carousel: z.number().optional() }),
 	events: story.extend({ gallery: z.array(z.string()).default([]) }),
@@ -52,6 +61,7 @@ const schemas = {
 		image: z.string().optional(),
 		excerpt: z.string().default(''),
 		gallery: z.array(z.string()).default([]),
+		timeline,
 		tags,
 		featured,
 	}),
@@ -74,6 +84,7 @@ const translationSchema = z.object({
 	status: z.string().optional(),
 	excerpt: z.string().optional(),
 	tags: z.array(z.string()).optional(),
+	timeline,
 });
 
 /** Arabic files are filed under the name of the English file they translate (`shale-oil.ar.md` → `shale-oil`). */
