@@ -3,8 +3,7 @@
 //
 // The transition is a soft, uneven front that sweeps across the picture. Both
 // photos slide and ripple as it passes, and the colour channels separate
-// slightly at the front. While a slide rests, its photo eases out of a zoom
-// and leans a little towards the mouse.
+// slightly at the front. A resting photo is shown as it is: no zoom, no movement.
 //
 // Loaded on demand by Hero.tsx, so Three.js is not part of the first download.
 //
@@ -33,8 +32,6 @@ import {
 export interface HeroGL {
 	/** Blend to a slide. `direction` is 1 for next, -1 for previous. */
 	show(index: number, direction: 1 | -1): void;
-	/** Mouse position over the hero, each axis from 0 to 1. */
-	pointer(x: number, y: number): void;
 	/** Stop drawing while the hero is off screen or the tab is hidden. */
 	setActive(active: boolean): void;
 	dispose(): void;
@@ -95,11 +92,8 @@ const fragmentShader = /* glsl */ `
 	uniform vec2 uFromSize;
 	uniform vec2 uToSize;
 	uniform vec2 uResolution;
-	uniform vec2 uMouse;
 	uniform float uProgress;
 	uniform float uDirection;
-	uniform float uZoomFrom;
-	uniform float uZoomTo;
 	uniform float uTime;
 
 	varying vec2 vUv;
@@ -128,12 +122,12 @@ const fragmentShader = /* glsl */ `
 		return value;
 	}
 
-	// Like CSS object-fit: cover, with a zoom about the centre.
-	vec2 cover(vec2 uv, vec2 size, float zoom) {
+	// Like CSS object-fit: cover.
+	vec2 cover(vec2 uv, vec2 size) {
 		float screen = uResolution.x / uResolution.y;
 		float image = size.x / size.y;
 		vec2 scale = screen > image ? vec2(1.0, image / screen) : vec2(screen / image, 1.0);
-		return (uv - 0.5) * scale / zoom + 0.5;
+		return (uv - 0.5) * scale + 0.5;
 	}
 
 	// One photo, with its colour channels pulled apart along the direction of travel.
@@ -143,11 +137,9 @@ const fragmentShader = /* glsl */ `
 
 	void main() {
 		float progress = uProgress;
-		vec2 lean = (uMouse - 0.5) * vec2(-0.012, 0.008);
-
 		// A resting slide: just the photo. Everything below is for the blend.
 		if (progress >= 1.0) {
-			gl_FragColor = vec4(texture2D(uTo, cover(vUv + lean, uToSize, uZoomTo)).rgb, 1.0);
+			gl_FragColor = vec4(texture2D(uTo, cover(vUv, uToSize)).rgb, 1.0);
 			return;
 		}
 
@@ -166,8 +158,8 @@ const fragmentShader = /* glsl */ `
 		vec2 ripple = travel * swell * n * 0.1;
 		vec2 split = travel * swell * 0.005;
 
-		vec2 fromUv = cover(vUv - travel * progress * 0.22 - ripple + lean, uFromSize, uZoomFrom);
-		vec2 toUv = cover(vUv + travel * (1.0 - progress) * 0.22 + ripple + lean, uToSize, uZoomTo);
+		vec2 fromUv = cover(vUv - travel * progress * 0.22 - ripple, uFromSize);
+		vec2 toUv = cover(vUv + travel * (1.0 - progress) * 0.22 + ripple, uToSize);
 
 		// Away from the front only one photo shows, so only that one is read.
 		vec3 color;
@@ -183,9 +175,6 @@ const fragmentShader = /* glsl */ `
 `;
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-
-/** A slide's photo starts zoomed in and eases back as the slide rests. */
-const zoomAt = (age: number) => 1.05 + 0.11 * Math.exp(-age * 0.45);
 
 /** Returns null when WebGL is not available; the caller keeps its CSS slideshow. */
 export function createHeroGL(canvas: HTMLCanvasElement, images: string[], options: Options): HeroGL | null {
@@ -217,11 +206,8 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 		uFromSize: { value: new Vector2(1, 1) },
 		uToSize: { value: new Vector2(1, 1) },
 		uResolution: { value: new Vector2(1, 1) },
-		uMouse: { value: new Vector2(0.5, 0.5) },
 		uProgress: { value: 1 },
 		uDirection: { value: 1 },
-		uZoomFrom: { value: 1.05 },
-		uZoomTo: { value: 1.05 },
 		uTime: { value: 0 },
 	};
 	const material = new ShaderMaterial({ uniforms, vertexShader, fragmentShader, depthTest: false, depthWrite: false });
@@ -255,9 +241,6 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 	let current = -1;
 	let wanted = options.index;
 	let blendStart = -Infinity;
-	let shownAt = now();
-	let previousShownAt = now();
-	const mouse = new Vector2(0.5, 0.5);
 
 	const resize = () => {
 		const { clientWidth: width, clientHeight: height } = canvas;
@@ -265,7 +248,11 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 		renderer.setPixelRatio(Math.min(quality, Math.sqrt(MAX_PIXELS / (width * height))));
 		renderer.setSize(width, height, false);
 		uniforms.uResolution.value.set(width, height);
+		// Resizing empties the canvas. Nothing is being drawn while a slide rests,
+		// so put the picture back at once, before the browser shows the empty frame.
+		if (current >= 0 && !disposed) renderer.render(scene, camera);
 	};
+
 	const observer = new ResizeObserver(resize);
 	observer.observe(canvas);
 	resize();
@@ -305,14 +292,10 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 		}
 		lastFrame = time;
 		uniforms.uProgress.value = easeInOut(progress);
-		uniforms.uZoomTo.value = zoomAt(time - shownAt);
-		uniforms.uZoomFrom.value = zoomAt(time - previousShownAt);
 		uniforms.uTime.value = time;
-		uniforms.uMouse.value.lerp(mouse, 0.06);
 		renderer.render(scene, camera);
-		// Once the photo has settled and the mouse is still, there is nothing left to draw.
-		const settled = progress >= 1 && time - shownAt > 14 && uniforms.uMouse.value.distanceToSquared(mouse) < 1e-6;
-		if (!settled) frame = requestAnimationFrame(draw);
+		// A resting photo doesn't change: drawing stops until the next blend.
+		if (progress < 1) frame = requestAnimationFrame(draw);
 	};
 	const start = () => {
 		if (frame || !active || disposed || current < 0) return;
@@ -332,9 +315,7 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 		uniforms.uTo.value = texture;
 		uniforms.uToSize.value = sizeOf(texture);
 		uniforms.uDirection.value = direction;
-		previousShownAt = shownAt;
-		shownAt = now();
-		blendStart = first ? -Infinity : shownAt;
+		blendStart = first ? -Infinity : now();
 		current = index;
 		start();
 		if (first) requestAnimationFrame(() => !disposed && options.onReady());
@@ -352,10 +333,6 @@ export function createHeroGL(canvas: HTMLCanvasElement, images: string[], option
 
 	return {
 		show: (index, direction) => void show(index, direction),
-		pointer: (x, y) => {
-			mouse.set(x, 1 - y);
-			start();
-		},
 		setActive(next) {
 			active = next;
 			if (active) start();

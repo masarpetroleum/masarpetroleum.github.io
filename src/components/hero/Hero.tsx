@@ -1,7 +1,7 @@
 // The home page hero: a full-bleed slideshow.
 //
 // - The photos are drawn with WebGL (Three.js, see ./gl.ts): one blends into the
-//   next through a rippling front, and leans towards the mouse. The text rises
+//   next through a rippling front. A resting photo stays perfectly still. The text rises
 //   line by line from behind a mask. The styles are in global.css ("Hero").
 // - Without WebGL, under "reduce motion", or on a computer that can't keep the
 //   WebGL layer smooth, the slides are plain stacked images that cross-fade:
@@ -251,11 +251,6 @@ export default function Hero({ slides, interval, rtl = false, labels }: Props) {
 				onPointerDown={onPointerDown}
 				onPointerUp={onPointerUp}
 				onPointerCancel={() => (gesture.current = null)}
-				onPointerMove={(e) => {
-					if (e.pointerType !== 'mouse' || !glRef.current) return;
-					const box = e.currentTarget.getBoundingClientRect();
-					glRef.current.pointer((e.clientX - box.left) / box.width, (e.clientY - box.top) / box.height);
-				}}
 				onClickCapture={onClickCapture}
 				onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(true)}
 				onPointerLeave={() => setHovered(false)}

@@ -249,6 +249,8 @@ main {
 .read-more {
 	display: inline-flex;
 	align-items: center;
+	/* Tall enough to tap comfortably. */
+	min-height: 40px;
 	gap: 6px;
 	color: var(--primary);
 	font-weight: 600;
@@ -895,37 +897,10 @@ main {
 	backface-visibility: hidden;
 }
 
-/* The slides on show get their own layer for as long as they move. */
-.hero-slide[data-state] .hero-photo,
-.hero-slide[data-state='enter'] {
+/* The slide coming in gets its own layer while it moves. */
+.hero-slide[data-state='enter'],
+.hero-slide[data-state='enter'] .hero-media {
 	will-change: transform, opacity;
-}
-
-/* The photo arrives zoomed in, settles, then drifts slowly. Every shown slide
-   carries the same animation list, so a slide that is being covered keeps its
-   place in the drift instead of snapping back. */
-.hero-slide[data-state] .hero-photo {
-	animation:
-		heroPhotoIn 1.7s cubic-bezier(0.16, 1, 0.3, 1) both,
-		heroDrift 9s linear 1.7s both;
-}
-
-@keyframes heroPhotoIn {
-	from {
-		transform: scale(1.3);
-	}
-	to {
-		transform: scale(1.1);
-	}
-}
-
-@keyframes heroDrift {
-	from {
-		transform: scale(1.1);
-	}
-	to {
-		transform: scale(1);
-	}
 }
 
 .hero-slide[data-state='leave'] .hero-content {
@@ -956,12 +931,6 @@ main {
 .hero[data-gl] .hero-media {
 	opacity: 0;
 	animation: none;
-}
-
-/* The canvas is drawing the photos: the hidden images must not keep animating under it. */
-.hero[data-gl] .hero-photo {
-	animation: none;
-	will-change: auto;
 }
 
 .hero[data-gl] .hero-slide[data-state='enter'] {
@@ -1342,7 +1311,7 @@ main {
 .section-head {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: flex-end;
+	align-items: center;
 	justify-content: space-between;
 	gap: 8px 24px;
 	margin-bottom: clamp(24px, 4vw, 40px);
@@ -1469,6 +1438,7 @@ main {
 
 /* Pinned to the foot of the card, so the links line up along a row. */
 .news-body .read-more {
+	min-height: 0;
 	justify-content: space-between;
 	margin-top: auto;
 	padding-top: 14px;
@@ -2154,10 +2124,10 @@ main {
 
 .side-head {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
-	padding-bottom: 12px;
+	padding-bottom: 6px;
 	border-bottom: 1px solid var(--line);
 }
 
@@ -2459,6 +2429,11 @@ main {
 	border-radius: 50%;
 	background: rgba(185, 51, 48, 0.08);
 	color: var(--secondary);
+}
+
+.contact-list a {
+	display: inline-block;
+	padding-block: 8px;
 }
 
 .contact-form-title {
@@ -2922,6 +2897,10 @@ main {
 	line-height: 1.4;
 }
 
+.footer-badge a {
+	display: inline-block;
+}
+
 .footer-badge img {
 	width: 180px;
 	height: auto;
@@ -3189,7 +3168,7 @@ main {
 	margin-inline: auto;
 }
 
-.page-centered .prose h3 {
+.page-centered .prose h2 {
 	font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem);
 }
 
@@ -3409,7 +3388,8 @@ html:lang(ar) .tl-card li::before {
 	font-size: 0.95rem;
 }
 
-/* A link with nowhere to go (a closed job posting) is shown as a quiet label. */
+/* A closed job posting: where the link to apply used to be. */
+.prose .closed-link,
 .prose a.primaryButton:not([href]) {
 	display: inline-flex;
 	align-items: center;

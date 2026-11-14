@@ -8,7 +8,7 @@ carousel: 4
 ---
 
 <p>Well drilling is a critical process in the oil and gas industry, enabling the extraction of valuable resources from beneath the Earth's surface. This article outlines the essential steps in the well drilling process, from initial exploration to the final completion of the well.</p>
-<h4>1. <strong>Exploration</strong></h4>
+<h3>1. <strong>Exploration</strong></h3>
 <p>The first step in the well drilling process is exploration, where geologists and geophysicists work together to identify potential drilling sites. This phase includes:</p>
 <ul>
 <li>
@@ -21,7 +21,7 @@ carousel: 4
 <p><strong>Exploratory Drilling:</strong> If seismic surveys indicate a promising location, exploratory drilling (or wildcat drilling) is conducted. These initial wells help confirm the presence of hydrocarbons.</p>
 </li>
 </ul>
-<h4>2. <strong>Planning and Permitting</strong></h4>
+<h3>2. <strong>Planning and Permitting</strong></h3>
 <p>Once a potential drilling site is identified, the planning and permitting phase begins:</p>
 <ul>
 <li>
@@ -34,7 +34,7 @@ carousel: 4
 <p><strong>Drilling Plan Development:</strong> A detailed drilling plan is created, outlining the drilling method, equipment needed, safety measures, and contingency plans.</p>
 </li>
 </ul>
-<h4>3. <strong>Drilling Preparation</strong></h4>
+<h3>3. <strong>Drilling Preparation</strong></h3>
 <p>Before actual drilling begins, several preparations are made:</p>
 <ul>
 <li>
@@ -47,7 +47,7 @@ carousel: 4
 <p><strong>Drill String Assembly:</strong> The drill string, which consists of a series of connected drill pipes and bits, is assembled at the site.</p>
 </li>
 </ul>
-<h4>4. <strong>Drilling Phase</strong></h4>
+<h3>4. <strong>Drilling Phase</strong></h3>
 <p>The drilling phase involves several steps:</p>
 <ul>
 <li>
@@ -63,7 +63,7 @@ carousel: 4
 <p><strong>Well Control:</strong> The drilling team must be vigilant about well control, managing pressure to prevent blowouts or uncontrolled releases of hydrocarbons.</p>
 </li>
 </ul>
-<h4>5. <strong>Completion</strong></h4>
+<h3>5. <strong>Completion</strong></h3>
 <p>Once the desired depth is reached and the target formation is confirmed, the completion phase begins:</p>
 <ul>
 <li>
@@ -76,7 +76,7 @@ carousel: 4
 <p><strong>Final Adjustments:</strong> Depending on test results, further adjustments may be made, including perforating the casing to allow hydrocarbons to flow into the well.</p>
 </li>
 </ul>
-<h4>6. <strong>Production Phase</strong></h4>
+<h3>6. <strong>Production Phase</strong></h3>
 <p>After completion, the well is prepared for production:</p>
 <ul>
 <li>
@@ -86,7 +86,7 @@ carousel: 4
 <p><strong>Monitoring and Maintenance:</strong> Regular monitoring and maintenance of the well and production equipment are essential to ensure optimal production rates and prevent issues.</p>
 </li>
 </ul>
-<h4>7. <strong>Decommissioning</strong></h4>
+<h3>7. <strong>Decommissioning</strong></h3>
 <p>At the end of a well's productive life, decommissioning is required:</p>
 <ul>
 <li>
