@@ -200,7 +200,7 @@ function SearchButton({ action, labels }: { action: string; labels: HeaderLabels
 	return (
 		<Popover.Root>
 			<Popover.Trigger className="icon-btn" aria-label={labels.search}>
-				<Search size={21} animateOnHover />
+				<Search size={21} animateOnHover style={{ color: '#ff0000' }} />
 			</Popover.Trigger>
 			<Popover.Portal>
 				<Popover.Positioner className="search-positioner" side="bottom" align="end" sideOffset={14} collisionPadding={16}>
