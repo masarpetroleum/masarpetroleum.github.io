@@ -95,9 +95,13 @@ export default function SiteHeader(props: Props) {
 	const [scrolled, setScrolled] = React.useState(false);
 
 	React.useEffect(() => {
-		// Shrink a little way down the page and grow back only near the top. The gap
-		// between the two points keeps the bar from flickering at a single threshold.
-		const onScroll = () => setScrolled((was) => (was ? window.scrollY > 4 : window.scrollY > 48));
+		// Use separate thresholds to avoid flickering while the sticky header resizes.
+		// Expand before smooth "Go to Top" scrolling finishes, even if the page
+		// settles a few pixels below zero due to layout or scroll anchoring.
+		const onScroll = () => {
+			const y = Math.max(0, window.scrollY);
+			setScrolled((was) => (was ? y > 64 : y > 112));
+		};
 		onScroll();
 		window.addEventListener('scroll', onScroll, { passive: true });
 		return () => window.removeEventListener('scroll', onScroll);
