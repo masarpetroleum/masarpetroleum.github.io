@@ -68,13 +68,10 @@
 html {
 	-webkit-text-size-adjust: 100%;
 	scroll-behavior: smooth;
-	/* Prevent sticky-header height transitions from shifting the scroll position
-	   while Go to Top is animating back to the document origin. */
-	overflow-anchor: none;
 	/* Reserve the scrollbar's space, so short and long pages line up. */
 	scrollbar-gutter: stable;
-	/* Keep in-page anchors clear of the sticky header. */
-	scroll-padding-top: calc(var(--header-h-compact) + 16px);
+	/* Keep in-page anchors clear of the fixed header, even at its full height. */
+	scroll-padding-top: calc(var(--header-h) + 16px);
 }
 
 body {
@@ -178,6 +175,9 @@ h3 {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
+	/* Room for the fixed header at its full height. It stays the same when the
+	   bar shrinks, so the page under it never moves. */
+	padding-top: var(--header-h);
 }
 
 main {
@@ -335,26 +335,35 @@ main {
 
 .site-header {
 	view-transition-name: site-header;
-	position: sticky;
-	top: 0;
+	/* Fixed rather than sticky: .wrapper holds its full height open, so the bar
+	   can shrink and grow without moving the page or the scroll position. */
+	position: fixed;
+	inset: 0 0 auto;
 	z-index: 1000;
 	background: rgba(255, 255, 255, 0.86);
 	backdrop-filter: saturate(180%) blur(14px);
 	-webkit-backdrop-filter: saturate(180%) blur(14px);
-	border-bottom: 1px solid transparent;
+	/* The hairline is a shadow, not a border, so the bar is exactly --header-h tall. */
+	box-shadow:
+		0 1px 0 transparent,
+		0 12px 30px -20px transparent;
 	transition:
 		box-shadow 0.3s ease,
-		border-color 0.3s ease,
-		background-color 0.3s ease,
-		margin-bottom 0.3s ease;
+		background-color 0.3s ease;
 }
 
 .site-header[data-scrolled] {
-	/* Give back the height the bar loses, so the page below stays put. */
-	margin-bottom: calc(var(--header-h) - var(--header-h-compact));
 	background: rgba(255, 255, 255, 0.95);
-	border-bottom-color: var(--line);
-	box-shadow: 0 12px 30px -20px rgba(31, 33, 87, 0.4);
+	box-shadow:
+		0 1px 0 var(--line),
+		0 12px 30px -20px rgba(31, 33, 87, 0.4);
+}
+
+@media print {
+	/* A fixed bar would repeat on every printed page. */
+	.site-header {
+		position: absolute;
+	}
 }
 
 .header-inner {
