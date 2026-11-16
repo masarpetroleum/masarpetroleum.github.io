@@ -95,9 +95,9 @@ export default function SiteHeader(props: Props) {
 	const [scrolled, setScrolled] = React.useState(false);
 
 	React.useEffect(() => {
-		// Use separate thresholds to avoid flickering while the sticky header resizes.
-		// Expand before smooth "Go to Top" scrolling finishes, even if the page
-		// settles a few pixels below zero due to layout or scroll anchoring.
+		// The bar is fixed and its full height is reserved in the layout, so
+		// shrinking it never moves the page. Two thresholds keep it from
+		// flickering when the page rests near the switch point.
 		const onScroll = () => {
 			const y = Math.max(0, window.scrollY);
 			setScrolled((was) => (was ? y > 64 : y > 112));
